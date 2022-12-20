@@ -74,7 +74,7 @@ ASDF_PLUGINS='nodejs tenv uv'
 export ASDF_PLUGINS
 
 # Defined for all operating systems to support Linux containers from MacOS
-DEBS='bash bind9-host curl file fping git less procps tmux tree'
+DEBS='bash ca-certificates bind9-host curl file fping git less procps tmux tree'
 export DEBS
 
 # We should probably deprecate `PACKAGES` in favor of `DEBS` and `BRWS`.
@@ -339,7 +339,7 @@ forceready() {
                 # shellcheck disable=SC2046,SC2086
                 sudo apt-get install --no-install-recommends --yes $DEBS
             else
-                "echo ERROR: USER=$USER and sudo missing"
+                echo "ERROR: USER=$USER and sudo missing"
                 return 1
             fi
         fi

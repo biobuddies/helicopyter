@@ -93,7 +93,7 @@ fastjsonschema==2.21.1
     # via validate-pyproject
 filelock==3.18.0
     # via virtualenv
-hadolint-py @ git+https://github.com/AleksaC/hadolint-py.git@a54e4d51787678062c8e108b20782f00e707a40e
+hadolint-py @ git+https://github.com/AleksaC/hadolint-py.git@446db46ab58b26eb8e40d5626c1229e8cf75b3b5
     # via helicopyter (pyproject.toml)
 id==1.5.0
     # via twine
