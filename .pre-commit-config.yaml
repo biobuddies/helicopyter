@@ -1,0 +1,53 @@
+---
+default_language_version:
+    python: python3.10 # Using .python-version would be nice
+repos:
+    # Autoformatters
+    - repo: https://github.com/pre-commit/pre-commit-hooks
+      rev: v4.4.0
+      hooks:
+          - id: double-quote-string-fixer
+    - repo: https://github.com/astral-sh/ruff-pre-commit
+      rev: v0.0.270
+      hooks:
+          - id: ruff
+    - repo: https://github.com/psf/black
+      rev: 23.3.0
+      hooks:
+          - id: black
+    - repo: https://github.com/jazzband/pip-tools
+      rev: 6.13.0
+      hooks:
+          - id: pip-compile
+            args:
+                - --resolver=backtracking
+    - repo: https://github.com/pre-commit/mirrors-prettier
+      rev: v2.7.1
+      hooks:
+          - id: prettier
+            types_or:
+                - json
+                - yaml
+                - toml
+
+    # Linters
+    - repo: https://github.com/adrienverge/yamllint.git
+      rev: v1.32.0
+      hooks:
+          - id: yamllint
+
+    - repo: local
+      hooks:
+          - id: gitignore
+            entry: 'curl -so .gitignore https://raw.githubusercontent.com/github/gitignore/main/Python.gitignore'
+            language: system
+            name: gitignore
+            pass_filenames: false
+
+          - id: mypy
+            entry: 'mypy .'
+            language: system
+            name: mypy
+            pass_filenames: false
+            types:
+                - python

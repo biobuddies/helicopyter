@@ -1,0 +1,9 @@
+# Build time
+ipython
+mypy
+pip-tools
+pre-commit
+
+# Run time
+cdktf
+typed-argument-parser
