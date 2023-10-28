@@ -1,1 +1,1 @@
-alias pca='SKIP=pip-compile pre-commit run --all-files'
+alias pca='pre-commit run --all-files'

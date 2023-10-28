@@ -1,15 +1,27 @@
 # Helicopyter
 
-Like a helicopter hovering between the clouds and the ground, Helicopyter allows people to describe infrastructure using Python in a way that's less like the AWS Cloud Development Kit (CDK) and more like Terraform.
+Helicopyter allows people to conveniently describe infrastructure using Python.
 
-It is inspired by [Configerator](https://research.facebook.com/file/877841159827226/holistic-configuration-management-at-facebook.pdf), [Terraformpy](https://github.com/NerdWalletOSS/terraformpy), [Terraform JSON configuration syntax](https://developer.hashicorp.com/terraform/language/syntax/json), and uses [CDKTF](https://github.com/hashicorp/terraform-cdk).
+Perhaps like a helicopter hovering between the clouds and the ground, it allows this in a way that's less like the AWS
+Cloud Development Kit (CDK) and more like Terraform.
 
-Terraform has a pretty good command line interface, so Helicopyter focuses on generating JSON it can easily use.
+## Background
+Helicopyter uses [CDKTF](https://github.com/hashicorp/terraform-cdk) and is inspired by [Configerator](https://research.facebook.com/file/877841159827226/holistic-configuration-management-at-facebook.pdf), [Terraformpy](https://github.com/NerdWalletOSS/terraformpy), and [Terraform JSON configuration syntax](https://developer.hashicorp.com/terraform/language/syntax/json).
 
-Meaningful names make review easy. Terraform's resource prefix style results in meaningful names and aligns with "Namespaces are one honking great idea -- let's do more of those!" The AWS CDK style of suffixing hashes does neither.
+## What Helicopyter does (goals)
+- Fix the CDKTF naming mess. Meaningful names make review easy. Terraform's resource prefix style results in meaningful
+  names and aligns with "Namespaces are one honking great idea -- let's do more of those!" The AWS CDK style of
+  suffixing hashes generates difficult-to-review `terraform plan` output and ignores the existing namespaces.
+- Provide a directory structure that groups primarily by "codename" (could be called application, service) and secondarily by tool. For now it assumes f'deploys/{codename}/terraform'.
 
-Possible future directions:
-- [ ] The f'deploys/{deploy}/terraform' directory structure may be surprising. What's a better layout that allows the Terraform to coexist nicely with other tools like Ansible and Python scripts?
-- [ ] `id` is a built-in function, and given special highlighting in vim, so rename the argument to something like `name`
-- [ ] `__str__()` for `to_string()`, etc.
-- [ ] Why do we need a Node.js server? If CDKTF is able to generate this much Python, why not just generate dataclasses or Pydantic models?
+## What Helicopyter will probably never do (non-goals)
+- Terraform has a pretty good command line interface. Helicopyter focuses on generating JSON for it. Helicopyter does
+  not try to wrap the `terraform` command line interface itself and using CDKTF's wrapper is untested and not
+  recommended.
+
+## What Helicopyter might do in the future
+- Support multiple backend configurations per codename
+- Iterate on the directory structure
+- `__str__()` for `to_string()`, etc.
+- Why do we need a Node.js server? Can we build dataclasses or Pydantic models out of the type annotations already being
+  generated?

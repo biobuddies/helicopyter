@@ -11,6 +11,8 @@ repos:
       rev: v0.0.270
       hooks:
           - id: ruff
+            args:
+                - --fix
     - repo: https://github.com/psf/black
       rev: 23.3.0
       hooks:
@@ -20,7 +22,10 @@ repos:
       hooks:
           - id: pip-compile
             args:
+                - --no-emit-index-url
                 - --resolver=backtracking
+            stages:
+                - manual
     - repo: https://github.com/pre-commit/mirrors-prettier
       rev: v2.7.1
       hooks:
@@ -39,15 +44,36 @@ repos:
     - repo: local
       hooks:
           - id: gitignore
-            entry: 'curl -so .gitignore https://raw.githubusercontent.com/github/gitignore/main/Python.gitignore'
+            entry: curl -so .gitignore https://raw.githubusercontent.com/github/gitignore/main/Python.gitignore
             language: system
             name: gitignore
             pass_filenames: false
 
+          - id: helicopyter-all
+            entry: python -m helicopyter all
+            files: helicopyter.py
+            language: system
+            name: helicopyter-all
+            pass_filenames: false
+
+          - id: helicopyter-codenames
+            entry: python -m helicopyter
+            files: deploys/.+/terraform/main.py
+            language: system
+            name: helicopyter-codenames
+
           - id: mypy
-            entry: 'mypy .'
+            entry: mypy .
             language: system
             name: mypy
             pass_filenames: false
             types:
                 - python
+            stages:
+                - manual
+
+          - id: pip-check
+            entry: pip check
+            language: system
+            name: pip-check
+            pass_filenames: false
