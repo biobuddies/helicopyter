@@ -1,6 +1,7 @@
-name: GitHub Actions Demo
+---
+name: Check
 run-name: Checking on behalf of ${{ github.actor }}
-on:
+on: # yamllint disable-line rule:truthy
     - pull_request
 jobs:
     check:
@@ -8,5 +9,15 @@ jobs:
         steps:
             - uses: actions/checkout@v4
             - uses: actions/setup-python@v4
-            - run: source includes.sh
-            - run: pcm --color always --show-diff-on-failure
+            - uses: actions/cache@v3
+              with:
+                  path: ~/.cache/pip
+                  key: ${{ runner.os }}-pip-${{ hashFiles('pyproject.toml') }}-${{ hashFiles('requirements.in') }}
+                  restore-keys: ${{ runner.os }}-pip-
+            - uses: actions/cache@v3
+              with:
+                  path: ~/.cache/pre-commit
+                  key: ${{ runner.os }}-pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
+                  restore-keys: ${{ runner.os }}-pre-commit-
+            - run: pip install pip-tools && pip-sync
+            - run: set -x && source includes.sh && type pcam && pcam --color always --show-diff-on-failure

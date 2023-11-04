@@ -16,9 +16,8 @@ if ! [[ -x $(command -v nvm) ]]; then
     [[ -s "$NVM_DIR/nvm.sh" ]] && source "$NVM_DIR/nvm.sh" || echo ERROR: nvm missing
 fi
 
+# Aliases only work in interactive shells
 alias ls='ls --color=auto'
-alias pca='pre-commit run --all-files'
-alias pcm='pre-commit run --all-files --hook-stage manual'
 
 a() {
     : Activate virtual environment after changing directory
@@ -51,7 +50,17 @@ devready() {
     [[ $(git config --global user.email) ]] || echo ERROR: git user.email missing
     [[ $(git config --global pull.rebase) == true ]] || echo WARNING: git pull.rebase != true
     [[ $(git config --global rebase.autosquash) == true ]] || echo WARNING: git rebase.autosquash != true
-    [[ $(git config --global push.default) == upstream ]] || echo WARNING: git push.default != upstream
+    [[ $(git config --global push.default) == current ]] || echo WARNING: git push.default != current
+}
+
+pca() {
+    : run Pre-Commit on All files
+    pre-commit run --all-files "$@"
+}
+
+pcam() {
+    : run Pre-Commit on All files but just Manual stage hooks
+    pre-commit run --all-files --hook-stage manual "$@"
 }
 
 resourcerun() {
