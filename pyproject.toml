@@ -1,3 +1,27 @@
+[build-system]
+requires = ['setuptools>=61.0', 'setuptools_scm[toml]>=6.2']
+build-backend = 'setuptools.build_meta'
+
+[project]
+classifiers = [
+    'Programming Language :: Python :: 3',
+    'License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)',
+    'Operating System :: OS Independent',
+    'Topic :: System :: Systems Administration',
+    'Topic :: System :: Installation/Setup',
+]
+description = 'Python Terraform JSON configuration generator'
+dependencies = [
+    'cdktf',
+    'typed-argument-parser',
+]
+dynamic = ['version']
+name = 'helicopyter'
+readme = 'README.md'
+
+[project.urls]
+Homepage = 'https://github.com/covracer/helicopyter'
+
 [tool.black]
 line-length = 120
 skip-magic-trailing-comma = true

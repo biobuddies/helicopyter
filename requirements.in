@@ -1,8 +1,12 @@
 # Build time
+black
 ipython
 mypy
+shellcheck-py
 pip-tools
+piptools-sync
 pre-commit
+twine
 
 # Run time
 cdktf

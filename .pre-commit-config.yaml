@@ -14,7 +14,7 @@ repos:
             args:
                 - --fix
     - repo: https://github.com/psf/black
-      rev: 23.3.0
+      rev: 23.10.1
       hooks:
           - id: black
     - repo: https://github.com/jazzband/pip-tools
@@ -34,13 +34,22 @@ repos:
                 - json
                 - yaml
                 - toml
+    - repo: https://github.com/stephen-ra-king/piptools-sync
+      rev: v1.0.4
+      hooks:
+          - id: piptools_sync
 
     # Linters
+    - repo: https://github.com/shellcheck-py/shellcheck-py
+      rev: v0.9.0.6
+      hooks:
+          - id: shellcheck
     - repo: https://github.com/adrienverge/yamllint.git
       rev: v1.32.0
       hooks:
           - id: yamllint
 
+    # Outside the box
     - repo: local
       hooks:
           - id: gitignore
