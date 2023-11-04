@@ -1,0 +1,12 @@
+name: GitHub Actions Demo
+run-name: Checking on behalf of ${{ github.actor }}
+on:
+    - pull_request
+jobs:
+    check:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-python@v4
+            - run: source includes.sh
+            - run: pcm --color always --show-diff-on-failure

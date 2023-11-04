@@ -1,0 +1,3 @@
+exclude .*
+exclude deploys/demo/terraform/*
+exclude requirements*
