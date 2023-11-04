@@ -1,8 +1,6 @@
----
 default_language_version:
-    python: python3.10 # Using .python-version would be nice
+    python: python3.11
 repos:
-    # Autoformatters
     - repo: https://github.com/pre-commit/pre-commit-hooks
       rev: v4.4.0
       hooks:
@@ -38,18 +36,18 @@ repos:
       rev: v1.0.4
       hooks:
           - id: piptools_sync
-
-    # Linters
-    - repo: https://github.com/shellcheck-py/shellcheck-py
-      rev: v0.9.0.6
+    - repo: https://github.com/abravalheri/validate-pyproject
+      rev: v0.15
       hooks:
-          - id: shellcheck
+          - id: validate-pyproject
     - repo: https://github.com/adrienverge/yamllint.git
       rev: v1.32.0
       hooks:
           - id: yamllint
-
-    # Outside the box
+    - repo: https://github.com/shellcheck-py/shellcheck-py
+      rev: v0.9.0.6
+      hooks:
+          - id: shellcheck
     - repo: local
       hooks:
           - id: gitignore
@@ -57,20 +55,17 @@ repos:
             language: system
             name: gitignore
             pass_filenames: false
-
           - id: helicopyter-all
             entry: python -m helicopyter all
             files: helicopyter.py
             language: system
             name: helicopyter-all
             pass_filenames: false
-
           - id: helicopyter-codenames
             entry: python -m helicopyter
             files: deploys/.+/terraform/main.py
             language: system
             name: helicopyter-codenames
-
           - id: mypy
             entry: mypy .
             language: system
@@ -80,7 +75,6 @@ repos:
                 - python
             stages:
                 - manual
-
           - id: pip-check
             entry: pip check
             language: system
