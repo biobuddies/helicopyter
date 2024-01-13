@@ -11,6 +11,13 @@ Using 100 characters allows two side-by-side files to be displayed with tmux, et
 This reduces visual noise. Black made the wrong choice; double-quote-fixer can help.
 
 ## Settings
+### Required environment variables
+- CODE: Unique CODEname (or plain language name, but the good ones tend to get used up).
+- ENVI: ENVIronment which should be set to `prod` if there's only one. Not called ENV to avoid colliding with the shell command.
+- ROLE: `web` is a good choice for web servers. Different executables should get different ROLE values. (Should it be EXECutable instead?)
+- HASH: `git describe --match=NeVeRmAtCh --always --abbrev=40 --dirty`. Always set.
+- TABR: TAg or BRanch `git describe --all --exact-match`. May be unset or null during local development.
+
 ### Begin as you mean to go on (people edition)
 Choose default values that will work, out-of-the-box, for most people, most of the time. Even if the machines outnumber the people, reconfiguring the development systems of people is probably harder than reconfiguring many hosted production and pre-production machines (pets versus cattle).
 

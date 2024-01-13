@@ -12,9 +12,7 @@ def synth(stack: HeliStack):
         'main',
         provisioners=[
             LocalExecProvisioner(
-                command='echo $ENVIRONS',
-                environment={'ENVIRONS': '${local.environs}'},
-                type='local-exec',
+                command='echo $ENVI', environment={'ENVI': '${local.envi}'}, type='local-exec'
             )
         ],
     )

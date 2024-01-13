@@ -35,9 +35,9 @@
                 "provisioner": [
                     {
                         "local-exec": {
-                            "command": "echo $ENVIRONS",
+                            "command": "echo $ENVI",
                             "environment": {
-                                "ENVIRONS": "${local.environs}"
+                                "ENVI": "${local.envi}"
                             }
                         }
                     }
