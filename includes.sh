@@ -8,7 +8,6 @@ case $(uname -s) in
         [[ -d /opt/homebrew/bin ]] && export PATH="/opt/homebrew/bin:$PATH"
         [[ -x $(command -v brew) ]] || echo ERROR: homebrew missing
     fi
-
 esac
 
 if ! [[ -x $(command -v nvm) ]]; then
@@ -56,6 +55,7 @@ a() {
         source .venv/bin/activate
         pathver python
     elif [[ -d conda ]]; then
+        # shellcheck disable=SC1091
         source "$HOME/miniconda3/etc/profile.d/conda.sh"
         conda activate "$(basename "$directory")"
         pathver python
