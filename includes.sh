@@ -62,7 +62,7 @@ a() {
     fi
 
     if [[ -f .nvmrc ]]; then
-        nvm install && nvm use
+        nvm install &>/dev/null && nvm use &>/dev/null
         pathver node
     fi
 }
