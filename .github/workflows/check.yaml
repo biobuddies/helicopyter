@@ -11,12 +11,17 @@ jobs:
             - uses: actions/cache@v3
               with:
                   path: ~/.cache/pip
-                  key: ${{ runner.os }}-pip-${{ hashFiles('pyproject.toml') }}-${{ hashFiles('requirements.in') }}
-                  restore-keys: ${{ runner.os }}-pip-
+                  key: |
+                      ${{ runner.os }}-pip
+                      ${{ hashFiles('pyproject.toml') }}
+                      ${{ hashFiles('requirements.in') }}
+                  restore-keys: ${{ runner.os }}-pip
             - uses: actions/cache@v3
               with:
                   path: ~/.cache/pre-commit
-                  key: ${{ runner.os }}-pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
-                  restore-keys: ${{ runner.os }}-pre-commit-
+                  key: |
+                      ${{ runner.os }}-pre-commit
+                      ${{ hashFiles('.pre-commit-config.yaml') }}
+                  restore-keys: ${{ runner.os }}-pre-commit
             - run: pip install pip-tools && pip-sync
             - run: source includes.sh && pcam --color always --show-diff-on-failure
