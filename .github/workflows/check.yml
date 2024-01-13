@@ -20,4 +20,4 @@ jobs:
                   key: ${{ runner.os }}-pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
                   restore-keys: ${{ runner.os }}-pre-commit-
             - run: pip install pip-tools && pip-sync
-            - run: set -x && source includes.sh && type pcam && pcam --color always --show-diff-on-failure
+            - run: source includes.sh && pcam --color always --show-diff-on-failure
