@@ -1,4 +1,3 @@
----
 name: Check
 run-name: Checking on behalf of ${{ github.actor }}
 on: # yamllint disable-line rule:truthy
