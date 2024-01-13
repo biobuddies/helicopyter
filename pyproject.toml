@@ -24,9 +24,9 @@ readme = 'README.md'
 Homepage = 'https://github.com/covracer/helicopyter'
 
 [tool.black]
-line-length = 120
+line-length = 100
 skip-magic-trailing-comma = true
 skip-string-normalization = true
 
 [tool.ruff]
-line-length = 120
+line-length = 100
