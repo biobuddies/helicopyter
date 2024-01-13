@@ -8,6 +8,7 @@ case $(uname -s) in
         [[ -d /opt/homebrew/bin ]] && export PATH="/opt/homebrew/bin:$PATH"
         [[ -x $(command -v brew) ]] || echo ERROR: homebrew missing
     fi
+
 esac
 
 if ! [[ -x $(command -v nvm) ]]; then
@@ -16,8 +17,19 @@ if ! [[ -x $(command -v nvm) ]]; then
     [[ -s "$NVM_DIR/nvm.sh" ]] && source "$NVM_DIR/nvm.sh" || echo ERROR: nvm missing
 fi
 
+# F: no-op for single page, R: color, X: keep text when exiting, i: case insensitive searching
+LESS="-FRXi"
+export LESS
+
 # Aliases only work in interactive shells
+alias jq='jq --color-output'
 alias ls='ls --color=auto'
+
+pathver() {
+    : Print path and version
+    (type "$1" && "$1" --version) |
+        sed -Ee N -e 's,^[^/(]*,,' -e 's,\((.+)\),\1,' -e 's/\n/ /'
+}
 
 a() {
     : Activate virtual environment after changing directory
@@ -35,12 +47,23 @@ a() {
 
     cd "$directory" || return 1
 
+    # TODO pyenv-virtualenv wants `. deactivate`
+    # TODO conda wants `conda deactivate`
     [[ $(command -v deactivate) ]] && deactivate
 
-    if [[ -f $directory/.venv/bin/activate ]]; then
+    if [[ -f .venv/bin/activate ]]; then
         # shellcheck disable=SC1091
-        source "$directory/.venv/bin/activate"
-        python --version
+        source .venv/bin/activate
+        pathver python
+    elif [[ -d conda ]]; then
+        source "$HOME/miniconda3/etc/profile.d/conda.sh"
+        conda activate "$(basename "$directory")"
+        pathver python
+    fi
+
+    if [[ -f .nvmrc ]]; then
+        nvm install && nvm use
+        pathver node
     fi
 }
 
@@ -53,14 +76,24 @@ devready() {
     [[ $(git config --global push.default) == current ]] || echo WARNING: git push.default != current
 }
 
+pc() {
+    : run Pre-Commit on modified files
+    pre-commit run "$@"
+}
+
 pca() {
     : run Pre-Commit on All files
     pre-commit run --all-files "$@"
 }
 
 pcam() {
-    : run Pre-Commit on All files but just Manual stage hooks
+    : run Pre-Commit on All files including Manual stage hooks
     pre-commit run --all-files --hook-stage manual "$@"
+}
+
+pcm() {
+    : run Pre-Commit on modified files including Manual stage hooks
+    pre-commit run --hook-stage manual "$@"
 }
 
 resourcerun() {
