@@ -3,8 +3,5 @@ line-length = 120
 skip-magic-trailing-comma = true
 skip-string-normalization = true
 
-[mypy]
-plugins = 'mypy_django_plugin.main'
-
-[mypy_django_plugin]
-ignore_missing_model_attributes = true
+[tool.ruff]
+line-length = 120
