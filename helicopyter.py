@@ -4,7 +4,14 @@ from json import dump
 from pathlib import Path
 from typing import Callable, Iterable, Type, Union
 
-from cdktf import App, TerraformElement, TerraformLocal, TerraformOutput, TerraformStack, TerraformVariable
+from cdktf import (
+    App,
+    TerraformElement,
+    TerraformLocal,
+    TerraformOutput,
+    TerraformStack,
+    TerraformVariable,
+)
 from constructs import Construct, Node
 from tap import Tap
 
@@ -43,7 +50,9 @@ class HeliStack(TerraformStack):
         snake_case_element = ''.join(
             [element[0].lower(), *('_' + c.lower() if c.isupper() else c for c in element[1:])]
         )
-        return self.load_path(f'cdktf_cdktf_provider_{infix}.{snake_case_element}', element[0].upper() + element[1:])
+        return self.load_path(
+            f'cdktf_cdktf_provider_{infix}.{snake_case_element}', element[0].upper() + element[1:]
+        )
 
 
 def multisynth(codenames: Iterable[str]):
@@ -53,12 +62,17 @@ def multisynth(codenames: Iterable[str]):
 
     if 'all' in codenames:
         codenames = {
-            file.parent.parent.name for file in (Path(__file__).parent / 'deploys').glob('**/terraform/main.py')
+            file.parent.parent.name
+            for file in (Path(__file__).parent / 'deploys').glob('**/terraform/main.py')
         }
 
     for codename in codenames:
         path_to_check = Path(codename)
-        if path_to_check.exists() and path_to_check.name == 'main.py' and path_to_check.parent.name == 'terraform':
+        if (
+            path_to_check.exists()
+            and path_to_check.name == 'main.py'
+            and path_to_check.parent.name == 'terraform'
+        ):
             codename = path_to_check.parent.parent.name
         relative_path = f'deploys/{codename}/terraform/main.tf.json'
         print(f'Generating {relative_path}')

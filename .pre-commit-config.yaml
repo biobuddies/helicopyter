@@ -51,7 +51,9 @@ repos:
     - repo: local
       hooks:
           - id: gitignore
-            entry: curl -so .gitignore https://raw.githubusercontent.com/github/gitignore/main/Python.gitignore
+            entry: |
+                curl -so .gitignore
+                https://raw.githubusercontent.com/github/gitignore/main/Python.gitignore
             language: system
             name: gitignore
             pass_filenames: false
