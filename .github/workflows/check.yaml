@@ -23,5 +23,9 @@ jobs:
                       ${{ runner.os }}-pre-commit
                       ${{ hashFiles('.pre-commit-config.yaml') }}
                   restore-keys: ${{ runner.os }}-pre-commit
-            - run: pip install pip-tools && pip-sync
+            - run: pip install --upgrade pip && pip install --upgrade 'pip-tools>7' && pip-sync
+              env:
+                  PIP_PROGRESS_BAR: 'off'
             - run: source includes.sh && pcam --color always --show-diff-on-failure
+            - run: terraform -chdir=deploys/demo/terraform init
+            - run: terraform -chdir=deploys/demo/terraform validate

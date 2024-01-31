@@ -11,12 +11,12 @@ Using 100 characters allows two side-by-side files to be displayed with tmux, et
 This reduces visual noise. Black made the wrong choice; double-quote-fixer can help.
 
 ## Settings
-### Required environment variables
-- CODE: Unique CODEname (or plain language name, but the good ones tend to get used up).
-- ENVI: ENVIronment which should be set to `prod` if there's only one. Not called ENV to avoid colliding with the shell command.
-- ROLE: `web` is a good choice for web servers. Different executables should get different ROLE values. (Should it be EXECutable instead?)
-- HASH: `git describe --match=NeVeRmAtCh --always --abbrev=40 --dirty`. Always set.
-- TABR: TAg or BRanch `git describe --all --exact-match`. May be unset or null during local development.
+### Standard environment variables
+- CODE: Unique CODEname (or plain language name, but the good ones tend to get used up) to tell deployments apart. Must be set at build time and run time. Should match one main git repository. Should be baked into container images.
+- ENVI: ENVIronment to tell pre-production environments from `prod`. Must be set at run time. Should be set to `prod` if there's only one. Not called ENV to avoid colliding with the shell command. Should not be baked into container images.
+- GASH: `git describe --match=NeVeRmAtCh --always --abbrev=40 --dirty`. So people can see what version of code is used. Must be set at build time and run time. Should be baked into container images. Not called GASH to avoid colliding with the Python built-in function.
+- ROLE: `web` is a good choice for web servers. Must be set at run time. Different executables should get different ROLE values. (Should it be EXECutable instead?). Should not be baked into container images.
+- TABR: TAg or BRanch `git describe --all --exact-match`. Must be set at run time in `prod`. May be unset or null when running in pre-production, especially `local` development. Should not be baked into a container images.
 
 ### Begin as you mean to go on (people edition)
 Choose default values that will work, out-of-the-box, for most people, most of the time. Even if the machines outnumber the people, reconfiguring the development systems of people is probably harder than reconfiguring many hosted production and pre-production machines (pets versus cattle).

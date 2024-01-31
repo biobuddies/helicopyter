@@ -9,18 +9,18 @@
         "outputs": {
             "demo": {
                 "output": {
-                    "hash": "hash"
+                    "gash": "gash"
                 }
             }
         }
     },
     "locals": {
-        "codename": "demo",
-        "environs": "${terraform.workspace}"
+        "code": "demo",
+        "envi": "${terraform.workspace}"
     },
     "output": {
-        "hash": {
-            "value": "${var.hash}"
+        "gash": {
+            "value": "${var.gash}"
         }
     },
     "resource": {
@@ -46,7 +46,7 @@
         }
     },
     "variable": {
-        "hash": {
+        "gash": {
             "type": "string"
         }
     }
