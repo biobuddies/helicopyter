@@ -6,7 +6,11 @@ from helicopyter import HeliStack
 
 
 def synth(stack: HeliStack) -> None:
-    """Output the Git hASH (GASH)."""
+    """
+    Accept the Git hASH (GASH) as a variable and output it.
+
+    Also infer the ENVIronment (ENVI) from the workspace and echo it to standard output.
+    """
     NullResource = stack.load('null_resource')  # noqa: N806
 
     stack.Local('code', stack.code)

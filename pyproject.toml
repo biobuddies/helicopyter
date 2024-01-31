@@ -47,6 +47,7 @@ ignore = [
     'EM102',
     'INP001',
     'ISC001',
+    # N806 tries to lowercase classes; currently ignored on a line-by-line basis
     'TRY002',
     'TRY003',
     'Q001',
