@@ -15,8 +15,6 @@ attrs==23.2.0
     #   aiohttp
     #   cattrs
     #   jsii
-black==23.12.1
-    # via -r requirements.in
 build==1.0.3
     # via pip-tools
 cattrs==23.2.3
@@ -35,7 +33,6 @@ charset-normalizer==3.3.2
     # via requests
 click==8.1.7
     # via
-    #   black
     #   pip-tools
     #   piptools-sync
 constructs==10.3.0
@@ -101,7 +98,6 @@ mypy==1.8.0
     # via -r requirements.in
 mypy-extensions==1.0.0
     # via
-    #   black
     #   mypy
     #   typing-inspect
 nh3==0.2.15
@@ -109,13 +105,9 @@ nh3==0.2.15
 nodeenv==1.8.0
     # via pre-commit
 packaging==23.2
-    # via
-    #   black
-    #   build
+    # via build
 parso==0.8.3
     # via jedi
-pathspec==0.12.1
-    # via black
 pexpect==4.9.0
     # via ipython
 pip-tools==7.3.0
@@ -125,9 +117,7 @@ piptools-sync==1.0.4
 pkginfo==1.9.6
     # via twine
 platformdirs==4.1.0
-    # via
-    #   black
-    #   virtualenv
+    # via virtualenv
 pre-commit==3.6.0
     # via -r requirements.in
 prompt-toolkit==3.0.43
