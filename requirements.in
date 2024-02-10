@@ -1,5 +1,4 @@
 # Build time
-black
 ipython
 mypy
 shellcheck-py

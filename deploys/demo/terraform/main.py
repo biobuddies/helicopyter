@@ -1,22 +1,28 @@
+"""Demonstrate a simple HeliStack synth function."""
+
 from cdktf import LocalExecProvisioner
+
 from helicopyter import HeliStack
 
 
-def synth(stack: HeliStack):
-    NullResource = stack.load('null_resource')
+def synth(stack: HeliStack) -> None:
+    """
+    Accept the Git hASH (GASH) as a variable and output it.
 
-    stack.Local('codename', stack.codename)
-    stack.Local('environs', '${terraform.workspace}')
+    Also infer the ENVIronment (ENVI) from the workspace and echo it to standard output.
+    """
+    NullResource = stack.load('null_resource')  # noqa: N806
+
+    stack.Local('code', stack.code)
+    stack.Local('envi', '${terraform.workspace}')
 
     NullResource(
         'main',
         provisioners=[
             LocalExecProvisioner(
-                command='echo $ENVIRONS',
-                environment={'ENVIRONS': '${local.environs}'},
-                type='local-exec',
+                command='echo $ENVI', environment={'ENVI': '${local.envi}'}, type='local-exec'
             )
         ],
     )
-    hash_ = stack.Variable('hash', type='string')
-    stack.Output('hash', value=hash_.to_string())
+    gash = stack.Variable('gash', type='string')
+    stack.Output('gash', value=gash.to_string())

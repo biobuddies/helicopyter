@@ -1,31 +1,23 @@
 default_language_version:
-    python: python3.11
+    python: python3.12
 repos:
-    - repo: https://github.com/pre-commit/pre-commit-hooks
-      rev: v4.4.0
-      hooks:
-          - id: double-quote-string-fixer
     - repo: https://github.com/astral-sh/ruff-pre-commit
-      rev: v0.0.270
+      rev: v0.1.15
       hooks:
           - id: ruff
             args:
                 - --fix
-    - repo: https://github.com/psf/black
-      rev: 23.10.1
-      hooks:
-          - id: black
+          - id: ruff-format
     - repo: https://github.com/jazzband/pip-tools
-      rev: 6.13.0
+      rev: 7.3.0
       hooks:
           - id: pip-compile
             args:
                 - --no-emit-index-url
-                - --resolver=backtracking
             stages:
                 - manual
     - repo: https://github.com/pre-commit/mirrors-prettier
-      rev: v2.7.1
+      rev: v3.1.0
       hooks:
           - id: prettier
             types_or:
@@ -40,8 +32,8 @@ repos:
       rev: v0.15
       hooks:
           - id: validate-pyproject
-    - repo: https://github.com/adrienverge/yamllint.git
-      rev: v1.32.0
+    - repo: https://github.com/adrienverge/yamllint
+      rev: v1.33.0
       hooks:
           - id: yamllint
     - repo: https://github.com/shellcheck-py/shellcheck-py
@@ -51,9 +43,10 @@ repos:
     - repo: local
       hooks:
           - id: gitignore
-            entry: |
-                curl -so .gitignore
-                https://raw.githubusercontent.com/github/gitignore/main/Python.gitignore
+            entry: >
+                bash -c 'langs={Python,Terraform};
+                curl -s https://raw.githubusercontent.com/github/gitignore/main/$langs.gitignore >
+                .gitignore'
             language: system
             name: gitignore
             pass_filenames: false
@@ -82,3 +75,8 @@ repos:
             language: system
             name: pip-check
             pass_filenames: false
+          - id: yaml-extension # http://www.yaml.org/faq.html
+            entry: YAML Ain't Markup Language files must use .yaml
+            files: '.*\.yml$'
+            language: fail
+            name: yaml-extension

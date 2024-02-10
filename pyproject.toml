@@ -23,10 +23,40 @@ readme = 'README.md'
 [project.urls]
 Homepage = 'https://github.com/covracer/helicopyter'
 
-[tool.black]
-line-length = 100
-skip-magic-trailing-comma = true
-skip-string-normalization = true
-
 [tool.ruff]
 line-length = 100
+target-version = 'py312'
+
+[tool.ruff.format]
+quote-style = 'single'
+skip-magic-trailing-comma = true
+
+[tool.ruff.isort]
+split-on-trailing-comma = false
+
+[tool.ruff.lint]
+fixable = ['ALL']
+ignore = [
+    'ANN101',
+    'COM812', # Insists on join([],) over join([])
+    'D101',
+    'D103',
+    'D104',
+    'D107',
+    'EM101',
+    'EM102',
+    'INP001',
+    'ISC001',
+    # N806 tries to lowercase classes; currently ignored on a line-by-line basis
+    'TRY002',
+    'TRY003',
+    'Q001',
+]
+select = ['ALL']
+
+[tool.ruff.lint.flake8-quotes]
+inline-quotes = 'single'
+multiline-quotes = 'single'
+
+[tool.ruff.lint.pydocstyle]
+convention = 'pep257'
