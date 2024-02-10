@@ -27,6 +27,8 @@ cdktf-cdktf-provider-null==10.0.0
     # via -r requirements.in
 certifi==2023.11.17
     # via requests
+cffi==1.16.0
+    # via cryptography
 cfgv==3.4.0
     # via pre-commit
 charset-normalizer==3.3.2
@@ -39,6 +41,8 @@ constructs==10.3.0
     # via
     #   cdktf
     #   cdktf-cdktf-provider-null
+cryptography==42.0.0
+    # via secretstorage
 decorator==5.1.1
     # via ipython
 distlib==0.3.8
@@ -75,6 +79,10 @@ jaraco-classes==3.3.0
     # via keyring
 jedi==0.19.1
     # via ipython
+jeepney==0.8.0
+    # via
+    #   keyring
+    #   secretstorage
 jsii==1.94.0
     # via
     #   cdktf
@@ -132,6 +140,8 @@ publication==0.0.3
     #   jsii
 pure-eval==0.2.2
     # via stack-data
+pycparser==2.21
+    # via cffi
 pygments==2.17.2
     # via
     #   ipython
@@ -158,6 +168,8 @@ rfc3986==2.0.0
     # via twine
 rich==13.7.0
     # via twine
+secretstorage==3.3.3
+    # via keyring
 shellcheck-py==0.9.0.6
     # via -r requirements.in
 six==1.16.0

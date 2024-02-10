@@ -31,7 +31,7 @@ alias ls='ls --color=auto'
 pathver() {
     : 'Print path and version'
     (type "$1" && "$1" --version) |
-        sed -Ee N -e 's,^[^/(]*,,' -e 's,\((.+)\),\1,' -e 's/\n/ /'
+        sed -Ee N -e 's,^[^/(]*,,' -e 's,\((.+)\),\1,' -e "s/\n($1 )?/ /i"
 }
 
 a() {
@@ -69,6 +69,8 @@ a() {
         nvm install &>/dev/null && nvm use &>/dev/null
         pathver node
     fi
+
+    export PS1='\w$ '
 }
 
 devready() {
@@ -84,6 +86,8 @@ devready() {
     if [[ $OS == Darwin ]]; then
         grep --fixed-strings --no-messages --quiet '.DS_Store' ~/.config/git/ignore ||
             echo WARNING: .DS_Store files not globally git ignored
+        [[ $(defaults read NSGlobalDomain ApplePressAndHoldEnabled) == '0' ]] ||
+            echo WARNING: MacOS press and hold enabled
         [[ $(defaults read NSGlobalDomain NSAutomaticPeriodSubstitutionEnabled) == '0' ]] ||
             echo WARNING: MacOS period substitution enabled
         [[ $(defaults read NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled) == '0' ]] ||
@@ -93,6 +97,8 @@ devready() {
 
 forceready() {
     : 'FORCE system to be READY for development, clobbering current settings'
+    [[ -n $INSH_NAME ]] || git config --global user.name "$INSH_NAME"
+    [[ -n $INSH_EMAIL ]] || git config --global user.email "$INSH_EMAIL"
     git config --global pull.rebase true
     git config --global rebase.autosquash true
     git config --global push.default current
@@ -101,6 +107,7 @@ forceready() {
     if [[ $OS == Darwin ]]; then
         [[ -f ~/.config/git/ignore ]] || curl -so ~/.config/git/ignore \
             https://raw.githubusercontent.com/github/gitignore/master/Global/macOS.gitignore
+        defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
         defaults write NSGlobalDomain NSAutomaticPeriodSubstitutionEnabled -bool false
         defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
     fi
