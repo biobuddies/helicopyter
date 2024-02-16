@@ -38,19 +38,26 @@ split-on-trailing-comma = false
 fixable = ['ALL']
 ignore = [
     'ANN101',
+    'ANN401',
     'COM812', # Insists on join([],) over join([])
     'D101',
+    'D102',
     'D103',
     'D104',
     'D107',
     'EM101',
     'EM102',
+    'FIX002',
     'INP001',
     'ISC001',
     # N806 tries to lowercase classes; currently ignored on a line-by-line basis
+    'Q001',
+    'S607',
+    'TD',
     'TRY002',
     'TRY003',
-    'Q001',
+    # UP031 suggests f-strings even when curly brackets are already being used; currently ignored on
+    # a line-by-line basis
 ]
 select = ['ALL']
 
