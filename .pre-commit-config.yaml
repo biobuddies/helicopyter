@@ -7,7 +7,16 @@ repos:
           - id: ruff
             args:
                 - --fix
+            exclude: '^providers/.*$'
           - id: ruff-format
+            exclude: '^providers/.*$'
+    - repo: https://github.com/codespell-project/codespell
+      rev: v2.0.0
+      hooks:
+          - id: codespell
+            args:
+                - --check-filenames
+                - --exclude-file .codespell-ignore
     - repo: https://github.com/jazzband/pip-tools
       rev: 7.3.0
       hooks:
