@@ -44,7 +44,7 @@ repos:
       hooks:
           - id: gitignore
             entry: >
-                bash -c 'langs={Python,Terraform};
+                bash -c 'langs={Node,Python,Terraform};
                 curl -s https://raw.githubusercontent.com/github/gitignore/main/$langs.gitignore >
                 .gitignore'
             language: system

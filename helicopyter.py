@@ -6,6 +6,7 @@ from importlib import import_module
 from json import dump
 from pathlib import Path
 
+# TODO boot CDKTF usage / HeliStack to its own file
 from cdktf import (
     App,
     TerraformElement,
@@ -40,15 +41,21 @@ class HeliStack(TerraformStack):
         Example usage:
         stack.load('null_resource')
         """
-        infix, _, element = label.rpartition('_')
-        snake_case_element = ''.join(
-            [element[0].lower(), *('_' + c.lower() if c.isupper() else c for c in element[1:])]
-        )
-        module = import_module(f'cdktf_cdktf_provider_{infix}.{snake_case_element}')
-        element_class = getattr(module, element[0].upper() + element[1:])
+        provider, _, snake_case_element = label.partition('_')
+        print(f'Loading {snake_case_element} from {provider}')
+        module = import_module(f'cdktf_cdktf_provider_{provider}.{snake_case_element}')
+        if snake_case_element == 'provider':
+            camel_case_element = f'{provider.title()}Provider'
+        else:
+            camel_case_element = ''.join(part.title() for part in snake_case_element.split('_'))
+        element_class = getattr(module, camel_case_element)
         if issubclass(element_class, TerraformElement):
             return partial(element_class, Construct(self, module.__name__))
-        raise Exception(f'{element} is not a TerraformElement')
+        raise Exception(f'{camel_case_element} is not a TerraformElement')
+
+    def push(self, element: TerraformElement) -> TerraformElement:
+        """No-op for easier migration."""
+        return element
 
 
 # ruff: noqa: T201
@@ -88,7 +95,7 @@ def multisynth(codes: Iterable[str]) -> None:
 class Parameters(Tap):
     codes: list[str]
 
-    def configure(self) -> None:  # noqa: D102
+    def configure(self) -> None:
         self.add_argument('codes')
 
 
