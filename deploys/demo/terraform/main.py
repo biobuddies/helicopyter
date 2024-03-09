@@ -1,4 +1,4 @@
-"""Demonstrate a simple HeliStack synth function."""
+"""Demonstrate a simple HeliStack synth function using CDKTF constructs."""
 
 from cdktf import LocalExecProvisioner
 

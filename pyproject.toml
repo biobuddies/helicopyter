@@ -48,9 +48,11 @@ ignore = [
     'INP001',
     'ISC001',
     # N806 tries to lowercase classes; currently ignored on a line-by-line basis
+    'TD002', # The git log records who wrote a TODO line
+    'TD003', # Don't require issue links
+    'TD004', # A colon takes up space without really improving readability
     'TRY002',
     'TRY003',
-    'Q001',
 ]
 select = ['ALL']
 
