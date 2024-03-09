@@ -48,6 +48,9 @@ ignore = [
     'TD002', # The git log records who wrote a TODO line
     'TD003', # Don't require issue links
     'TD004', # A colon takes up space without really improving readability
+    'TD002', # The git log records who wrote a TODO line
+    'TD003', # Don't require issue links
+    'TD004', # A colon takes up space without really improving readability
     'TRY002',
     'TRY003',
     'Q001', # Single quote

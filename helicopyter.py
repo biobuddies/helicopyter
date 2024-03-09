@@ -6,7 +6,6 @@ from importlib import import_module
 from json import dump
 from pathlib import Path
 
-# TODO boot CDKTF usage / HeliStack to its own file
 from cdktf import (
     App,
     TerraformElement,
@@ -95,7 +94,7 @@ def multisynth(codes: Iterable[str]) -> None:
 class Parameters(Tap):
     codes: list[str]
 
-    def configure(self) -> None:
+    def configure(self) -> None:  # noqa: D102
         self.add_argument('codes')
 
 
