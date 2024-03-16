@@ -2,12 +2,15 @@
 ipython
 mypy
 shellcheck-py
-pip-tools
 piptools-sync
 pre-commit
+pytest
+ruff
 twine
+uv
 
-# In theory, pip-compile should be able to source these from pyproject.toml
+# Runtime
+# TODO figure out how to install these from pyproject.toml
 cdktf
 cdktf-cdktf-provider-null
 typed-argument-parser

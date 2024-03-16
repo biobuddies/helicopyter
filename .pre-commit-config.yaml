@@ -2,20 +2,12 @@ default_language_version:
     python: python3.12
 repos:
     - repo: https://github.com/astral-sh/ruff-pre-commit
-      rev: v0.1.15
+      rev: v0.3.3
       hooks:
           - id: ruff
             args:
                 - --fix
           - id: ruff-format
-    - repo: https://github.com/jazzband/pip-tools
-      rev: 7.3.0
-      hooks:
-          - id: pip-compile
-            args:
-                - --no-emit-index-url
-            stages:
-                - manual
     - repo: https://github.com/pre-commit/mirrors-prettier
       rev: v3.1.0
       hooks:
@@ -24,10 +16,11 @@ repos:
                 - json
                 - yaml
                 - toml
-    - repo: https://github.com/stephen-ra-king/piptools-sync
-      rev: v1.0.4
-      hooks:
-          - id: piptools_sync
+    # Doesn't work with uv-generated requirements.txt files yet
+    #    - repo: https://github.com/stephen-ra-king/piptools-sync
+    #      rev: v1.0.4
+    #      hooks:
+    #          - id: piptools_sync
     - repo: https://github.com/abravalheri/validate-pyproject
       rev: v0.15
       hooks:
@@ -75,8 +68,13 @@ repos:
             language: system
             name: pip-check
             pass_filenames: false
+          - id: uv-pip-compile
+            entry: uv pip compile requirements.in -o requirements.txt
+            files: requirements.in
+            language: system
+            name: uv-pip-compile
           - id: yaml-extension # http://www.yaml.org/faq.html
             entry: YAML Ain't Markup Language files must use .yaml
-            files: '.*\.yml$'
+            files: .*\.yml$
             language: fail
             name: yaml-extension
