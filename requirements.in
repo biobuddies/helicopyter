@@ -1,10 +1,10 @@
 # Build time
 ipython
 mypy
-shellcheck-py
 piptools-sync
 pre-commit
 ruff
+shellcheck-py
 twine
 uv
 validate-pyproject[all]
