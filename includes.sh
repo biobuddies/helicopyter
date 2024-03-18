@@ -153,3 +153,12 @@ resourcerun() {
     "$@"
     set +x
 }
+
+wg() {
+    : 'With Git hash (gash) set'
+    old_gash=$gash
+    gash=$(git describe --match=- --always --abbrev=40 --dirty)
+    export gash
+    "$@"
+    gash=$old_gash
+}
