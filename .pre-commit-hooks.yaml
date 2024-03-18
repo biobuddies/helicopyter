@@ -69,7 +69,7 @@
   name: shellcheck
   description: Test shell scripts with shellcheck
   entry: shellcheck
-  language: python
+  language: system
   types:
       - shell
   require_serial: true # shellcheck can detect sourcing this way
