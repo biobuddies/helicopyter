@@ -58,8 +58,6 @@ importlib-metadata==7.0.1
     # via twine
 importlib-resources==6.1.1
     # via jsii
-iniconfig==2.0.0
-    # via pytest
 ipython==8.20.0
 jaraco-classes==3.3.0
     # via keyring
@@ -93,8 +91,6 @@ nh3==0.2.15
     # via readme-renderer
 nodeenv==1.8.0
     # via pre-commit
-packaging==23.2
-    # via pytest
 parso==0.8.3
     # via jedi
 pexpect==4.9.0
@@ -104,8 +100,6 @@ pkginfo==1.9.6
     # via twine
 platformdirs==4.1.0
     # via virtualenv
-pluggy==1.4.0
-    # via pytest
 pre-commit==3.6.0
 prompt-toolkit==3.0.43
     # via ipython
@@ -124,7 +118,6 @@ pygments==2.17.2
     #   ipython
     #   readme-renderer
     #   rich
-pytest==8.1.1
 python-dateutil==2.8.2
     # via jsii
 pyyaml==6.0.1

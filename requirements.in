@@ -4,7 +4,6 @@ mypy
 shellcheck-py
 piptools-sync
 pre-commit
-pytest
 ruff
 twine
 uv

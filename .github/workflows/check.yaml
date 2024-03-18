@@ -14,7 +14,7 @@ jobs:
                   key: |
                       ${{ runner.os }}-pip
                       ${{ hashFiles('pyproject.toml') }}
-                      ${{ hashFiles('requirements.in') }}
+                      ${{ hashFiles('requirements.txt') }}
                   restore-keys: ${{ runner.os }}-pip
             - uses: actions/cache@v3
               with:
@@ -23,7 +23,7 @@ jobs:
                       ${{ runner.os }}-pre-commit
                       ${{ hashFiles('.pre-commit-config.yaml') }}
                   restore-keys: ${{ runner.os }}-pre-commit
-            - run: pip install --upgrade pip && pip install --upgrade 'pip-tools>7' && pip-sync
+            - run: pip install --upgrade pip uv && uv pip sync requirements.txt
               env:
                   PIP_PROGRESS_BAR: 'off'
             - run: source includes.sh && pcam --color always --show-diff-on-failure
