@@ -113,6 +113,18 @@ forceready() {
     fi
 }
 
+ghas() {
+    : 'GitHub Action Summary'
+    # TODO use the variables, maybe after calling a helper function that sets them
+    cat <<EOD >> "$GITHUB_STEP_SUMMARY"
+| Variable      | Value                                          |
+| ------------- | ---------------------------------------------- |
+| CODEname      | $GITHUB_REPOSITORY |
+| Git hASH      | $GITHUB_SHA |
+| TAg or BRanch | $GITHUB_REF |
+EOD
+}
+
 pc() {
     : 'run Pre-Commit on modified files'
     pre-commit run "$@"

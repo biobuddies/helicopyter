@@ -7,6 +7,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
+            - run: source includes.sh && ghas
             - uses: actions/setup-python@v4
             - uses: actions/cache@v3
               with:
@@ -23,9 +24,9 @@ jobs:
                       ${{ runner.os }}-pre-commit
                       ${{ hashFiles('.pre-commit-config.yaml') }}
                   restore-keys: ${{ runner.os }}-pre-commit
-            - run: pip install --upgrade pip uv && uv pip sync requirements.txt
+            - run: pip install --upgrade pip uv && uv venv && uv pip sync requirements.txt
               env:
                   PIP_PROGRESS_BAR: 'off'
-            - run: source includes.sh && pcam --color always --show-diff-on-failure
+            - run: source includes.sh && a && pcam --color always --show-diff-on-failure
             - run: terraform -chdir=deploys/demo/terraform init
             - run: terraform -chdir=deploys/demo/terraform validate
