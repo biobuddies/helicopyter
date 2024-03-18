@@ -1,0 +1,98 @@
+- id: dot-yaml
+  description: Require four letter suffix http://www.yaml.org/faq.html
+  entry: dot-yaml
+  files: .*\.yml$
+  language: fail
+  name: dot-yaml
+
+- id: gitignore-node-python-terraform
+  entry: >
+      bash -c 'langs={Node,Python,Terraform};
+      curl -s https://raw.githubusercontent.com/github/gitignore/main/$langs.gitignore >
+      .gitignore'
+  language: system
+  name: gitignore-node-python-terraform
+  pass_filenames: false
+
+- id: helicopyter-all
+  entry: python -m helicopyter all
+  files: helicopyter.py
+  language: system
+  name: helicopyter-all
+  pass_filenames: false
+
+- id: helicopyter-codenames
+  entry: python -m helicopyter
+  files: deploys/.+/terraform/main.py
+  language: system
+  name: helicopyter-codenames
+
+- id: mypy
+  entry: mypy .
+  language: system
+  name: mypy
+  pass_filenames: false
+  types:
+      - python
+  stages:
+      - manual
+
+- id: pip-check
+  entry: pip check
+  language: system
+  name: pip-check
+  pass_filenames: false
+
+- id: ruff
+  description: "Run 'ruff' for extremely fast Python linting"
+  entry: ruff check --force-exclude
+  language: system
+  minimum_pre_commit_version: '2.9.2'
+  name: ruff
+  require_serial: true
+  types_or:
+      - python
+      - pyi
+
+- id: ruff-format
+  description: "Run 'ruff format' for extremely fast Python formatting"
+  entry: ruff format --force-exclude
+  language: system
+  minimum_pre_commit_version: '2.9.2'
+  name: ruff-format
+  require_serial: true
+  types_or:
+      - python
+      - pyi
+
+- id: shellcheck
+  name: shellcheck
+  description: Test shell scripts with shellcheck
+  entry: shellcheck
+  language: system
+  types:
+      - shell
+  require_serial: true # shellcheck can detect sourcing this way
+
+- id: validate-pyproject
+  description: >
+      Validation library for a simple check on pyproject.toml, including optional dependencies
+  entry: validate-pyproject
+  files: ^pyproject.toml$
+  name: Validate pyproject.toml
+  language: system
+
+- id: uv-pip-compile
+  entry: uv pip compile -o requirements.txt
+  files: requirements.in
+  language: system
+  name: uv-pip-compile
+
+- id: yamllint
+  description: This hook runs yamllint.
+  entry: yamllint
+  language: system
+  name: yamllint
+  types:
+      - file
+      - yaml

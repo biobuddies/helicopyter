@@ -31,9 +31,6 @@ target-version = 'py312'
 quote-style = 'single'
 skip-magic-trailing-comma = true
 
-[tool.ruff.isort]
-split-on-trailing-comma = false
-
 [tool.ruff.lint]
 fixable = ['ALL']
 ignore = [
@@ -53,12 +50,16 @@ ignore = [
     'TD004', # A colon takes up space without really improving readability
     'TRY002',
     'TRY003',
+    'Q001', # Single quote
 ]
 select = ['ALL']
 
 [tool.ruff.lint.flake8-quotes]
 inline-quotes = 'single'
 multiline-quotes = 'single'
+
+[tool.ruff.lint.isort]
+split-on-trailing-comma = false
 
 [tool.ruff.lint.pydocstyle]
 convention = 'pep257'

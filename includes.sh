@@ -113,6 +113,18 @@ forceready() {
     fi
 }
 
+ghas() {
+    : 'GitHub Action Summary'
+    # TODO use the variables, maybe after calling a helper function that sets them
+    cat <<EOD >> "$GITHUB_STEP_SUMMARY"
+| Variable      | Value                                          |
+| ------------- | ---------------------------------------------- |
+| CODEname      | $GITHUB_REPOSITORY |
+| Git hASH      | $GITHUB_SHA |
+| TAg or BRanch | $GITHUB_REF |
+EOD
+}
+
 pc() {
     : 'run Pre-Commit on modified files'
     pre-commit run "$@"
@@ -140,4 +152,13 @@ resourcerun() {
     set -x
     "$@"
     set +x
+}
+
+wg() {
+    : 'With Git hash (gash) set'
+    old_gash=$gash
+    gash=$(git describe --match=- --always --abbrev=40 --dirty)
+    export gash
+    "$@"
+    gash=$old_gash
 }
