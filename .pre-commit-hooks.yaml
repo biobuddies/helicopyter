@@ -47,7 +47,7 @@
   description: "Run 'ruff' for extremely fast Python linting"
   entry: ruff check --force-exclude
   language: system
-  minimum_pre_commit_version: "2.9.2"
+  minimum_pre_commit_version: '2.9.2'
   name: ruff
   require_serial: true
   types_or:
@@ -58,7 +58,7 @@
   description: "Run 'ruff format' for extremely fast Python formatting"
   entry: ruff format --force-exclude
   language: system
-  minimum_pre_commit_version: "2.9.2"
+  minimum_pre_commit_version: '2.9.2'
   name: ruff-format
   require_serial: true
   types_or:
