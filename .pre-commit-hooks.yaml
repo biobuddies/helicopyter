@@ -83,7 +83,7 @@
   language: system
 
 - id: uv-pip-compile
-  entry: uv pip compile -o requirements.txt requirements.in
+  entry: uv pip compile -o requirements.txt
   files: requirements.in
   language: system
   name: uv-pip-compile
