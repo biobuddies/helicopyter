@@ -1,0 +1,81 @@
+- id: gitignore-node-python-terraform
+  entry: >
+      bash -c 'langs={Node,Python,Terraform};
+      curl -s https://raw.githubusercontent.com/github/gitignore/main/$langs.gitignore >
+      .gitignore'
+  language: system
+  name: gitignore
+  pass_filenames: false
+
+- id: helicopyter-all
+  entry: python -m helicopyter all
+  files: helicopyter.py
+  language: system
+  name: helicopyter-all
+  pass_filenames: false
+
+- id: helicopyter-codenames
+  entry: python -m helicopyter
+  files: deploys/.+/terraform/main.py
+  language: system
+  name: helicopyter-codenames
+
+- id: mypy
+  entry: mypy .
+  language: system
+  name: mypy
+  pass_filenames: false
+  types:
+      - python
+  stages:
+      - manual
+
+- id: pip-check
+  entry: pip check
+  language: system
+  name: pip-check
+  pass_filenames: false
+
+- id: ruff
+  name: ruff
+  description: "Run 'ruff' for extremely fast Python linting"
+  entry: ruff check --force-exclude
+  language: python
+  types_or: [python, pyi]
+  args: []
+  require_serial: true
+  additional_dependencies: []
+  minimum_pre_commit_version: "2.9.2"
+
+- id: ruff-format
+  name: ruff-format
+  description: "Run 'ruff format' for extremely fast Python formatting"
+  entry: ruff format --force-exclude
+  language: python
+  types_or: [python, pyi]
+  args: []
+  require_serial: true
+  additional_dependencies: []
+  minimum_pre_commit_version: "2.9.2"
+
+- repo: https://github.com/shellcheck-py/shellcheck-py
+  rev: v0.9.0.6
+  hooks:
+      - id: shellcheck
+
+- id: uv-pip-compile
+  entry: uv pip compile requirements.in -o requirements.txt
+  files: requirements.in
+  language: system
+  name: uv-pip-compile
+
+- id: yaml-extension # http://www.yaml.org/faq.html
+  entry: YAML Ain't Markup Language files must use .yaml
+  files: .*\.yml$
+  language: fail
+  name: yaml-extension
+
+- repo: https://github.com/adrienverge/yamllint
+  rev: v1.33.0
+  hooks:
+      - id: yamllint
