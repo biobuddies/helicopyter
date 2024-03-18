@@ -2,13 +2,22 @@ default_language_version:
     python: python3.12
 repos:
     - repo: .
-      rev: latest
+      rev: HEAD
       hooks:
+          - id: dot-yaml
           - id: gitignore-node-python-terraform
+          - id: helicopyter-all
+          - id: helicopyter-codenames
+          - id: mypy
+          - id: pip-check
           - id: ruff
             args:
                 - --fix
           - id: ruff-format
+          - id: shellcheck
+          - id: validate-pyproject
+          - id: uv-pip-compile
+          - id: yamllint
     - repo: https://github.com/pre-commit/mirrors-prettier
       rev: v3.1.0
       hooks:

@@ -27,6 +27,14 @@ jobs:
             - run: pip install --upgrade pip uv && uv venv && uv pip sync requirements.txt
               env:
                   PIP_PROGRESS_BAR: 'off'
-            - run: source includes.sh && a && pcam --color always --show-diff-on-failure
+            - run: >
+                  source includes.sh &&
+                  a &&
+                  pre-commit try-repo . \
+                      --all-files \
+                      --color always \
+                      --hook-stage manual \
+                      --show-diff-on-failure \
+                      --verbose
             - run: terraform -chdir=deploys/demo/terraform init
             - run: terraform -chdir=deploys/demo/terraform validate

@@ -7,6 +7,8 @@ pre-commit
 ruff
 twine
 uv
+validate-pyproject[all]
+yamllint
 
 # Runtime
 # TODO figure out how to install these from pyproject.toml

@@ -42,6 +42,8 @@ docutils==0.20.1
     # via readme-renderer
 executing==2.0.1
     # via stack-data
+fastjsonschema==2.19.1
+    # via validate-pyproject
 filelock==3.13.1
     # via virtualenv
 frozenlist==1.4.1
@@ -99,8 +101,12 @@ nh3==0.2.15
     # via readme-renderer
 nodeenv==1.8.0
     # via pre-commit
+packaging==24.0
+    # via validate-pyproject
 parso==0.8.3
     # via jedi
+pathspec==0.12.1
+    # via yamllint
 pexpect==4.9.0
     # via ipython
 piptools-sync==1.0.4
@@ -134,6 +140,7 @@ pyyaml==6.0.1
     # via
     #   piptools-sync
     #   pre-commit
+    #   yamllint
 readme-renderer==42.0
     # via twine
 requests==2.31.0
@@ -169,6 +176,8 @@ traitlets==5.14.1
     # via
     #   ipython
     #   matplotlib-inline
+trove-classifiers==2024.3.3
+    # via validate-pyproject
 twine==4.0.2
 typed-argument-parser==1.9.0
 typeguard==2.13.3
@@ -189,10 +198,12 @@ urllib3==2.1.0
     #   requests
     #   twine
 uv==0.1.21
+validate-pyproject==0.16
 virtualenv==20.25.0
     # via pre-commit
 wcwidth==0.2.13
     # via prompt-toolkit
+yamllint==1.35.1
 yarl==1.9.4
     # via aiohttp
 zipp==3.17.0
