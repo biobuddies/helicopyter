@@ -1,7 +1,6 @@
 # Build time
 ipython
 mypy
-piptools-sync
 pre-commit
 ruff
 shellcheck-py
