@@ -162,7 +162,7 @@ ghas() {
 | -----|----------- | ---------------------------------------------- |
 | cona | COdeNAme   | $(cona) |
 | gash | Git hASH   | $(gash) |
-| tabr | TAg/BRanch | $GITHUB_REF |
+| tabr | TAg/BRanch | $(tabr) |
 EOD
 }
 
@@ -195,11 +195,10 @@ resourcerun() {
     set +x
 }
 
-wg() {
-    : 'With Git hash (gash) set'
-    old_gash=$gash
-    gash=$(git describe --match=- --always --abbrev=40 --dirty)
-    export gash
-    "$@"
-    gash=$old_gash
+tabr() {
+    : 'TAg or BRanch or empty string'
+    # GITHUB_HEAD_REF works for Pull Requests, GITHUB_REF_NAME for all the other triggers
+    # https://stackoverflow.com/questions/58033366
+    echo "${GITHUB_HEAD_REF:-$GITHUB_REF_NAME}"
+    # TODO how should people set this locally?
 }
