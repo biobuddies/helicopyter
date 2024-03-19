@@ -1,15 +1,14 @@
+env:
+    TABR: ${{ github.head_ref || github.ref_name }}
 name: Check
-run-name: Checking on behalf of ${{ github.actor }}
-on: # yamllint disable-line rule:truthy
-    - pull_request
 jobs:
     check:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
             - run: source includes.sh && ghas
-            - uses: actions/setup-python@v4
-            - uses: actions/cache@v3
+            - uses: actions/setup-python@v5
+            - uses: actions/cache@v4
               with:
                   path: ~/.cache/pip
                   key: |
@@ -17,7 +16,7 @@ jobs:
                       ${{ hashFiles('pyproject.toml') }}
                       ${{ hashFiles('requirements.txt') }}
                   restore-keys: ${{ runner.os }}-pip
-            - uses: actions/cache@v3
+            - uses: actions/cache@v4
               with:
                   path: ~/.cache/pre-commit
                   key: |
@@ -38,3 +37,10 @@ jobs:
                       --verbose
             - run: terraform -chdir=deploys/demo/terraform init
             - run: terraform -chdir=deploys/demo/terraform validate
+on: # yamllint disable-line rule:truthy
+    pull_request:
+    push:
+        branches:
+            - main
+    workflow_dispatch:
+run-name: Checking on behalf of ${{ github.actor }}
