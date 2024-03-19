@@ -73,18 +73,45 @@ a() {
     export PS1='\w$ '
 }
 
+cona() {
+    : 'CodeNAme'
+    if [[ $GITHUB_REPOSITORY ]]; then
+        echo "${GITHUB_REPOSITORY##*/}"
+    else
+        echo "$VIRTUAL_ENV" | sed -E 's,.*/([^/]+)/\.?venv,\1,'
+    fi
+}
+
 devready() {
     : 'DEVelopment READYness check'
-    [[ $(git config --global user.name) ]] || echo ERROR: git user.name missing
-    [[ $(git config --global user.email) ]] || echo ERROR: git user.email missing
-    [[ $(git config --global pull.rebase) == true ]] || echo WARNING: git pull.rebase != true
-    [[ $(git config --global rebase.autosquash) == true ]] ||
-        echo WARNING: git rebase.autosquash != true
+    [[ $0 == bash ]] || echo 'ERROR: not running in BASH
+Testing multiple shells is a lot of work, and shellcheck does not support zsh.'
+    [[ $(git config --global advice.skipCherryPicks) == true ]] ||
+        echo 'WARNING: git advice.skipCherryPicks != true
+This reduces noise when pull requests are squashed on the server side.'
+    [[ $(git config --global core.commentChar) == ';' ]] ||
+        echo 'WARNING: git core.commentChar != ;
+This allows # hash character to be used for Markdown headers'
+    [[ $(git config --global diff.colormoved) == zebra ]] ||
+        echo 'WARNING: git diff.colormoved != zebra
+This distinguishes moved lines from added and removed lines'
+    [[ $(git config --global user.name) ]] ||
+        echo 'ERROR: git user.name missing
+Inconsistency breaks reports like git shortlog'
+    [[ $(git config --global user.email) ]] ||
+        echo 'ERROR: git user.email missing
+Inconsistency breaks reports like git shortlog'
+    [[ $(git config --global pull.rebase) == true ]] ||
+        echo 'WARNING: git pull.rebase != true
+Always be rebasing'
     [[ $(git config --global push.default) == current ]] ||
-        echo WARNING: git push.default != current
-    [[ -f ~/.config/git/ignore ]] || echo WARNING: global git ignore file absent
+        echo 'WARNING: git push.default != current
+Use feature branches with "GitHub Flow"'
+    [[ $(git config --global rebase.autosquash) == true ]] ||
+        echo 'WARNING: git rebase.autosquash != true
+Act on "fixup!" and "squash!" commit title prefixes'
     if [[ $OS == Darwin ]]; then
-        grep --fixed-strings --no-messages --quiet '.DS_Store' ~/.config/git/ignore ||
+        grep --fixed-strings --no-messages --quiet .DS_Store ~/.config/git/ignore ||
             echo WARNING: .DS_Store files not globally git ignored
         [[ $(defaults read NSGlobalDomain ApplePressAndHoldEnabled) == '0' ]] ||
             echo WARNING: MacOS press and hold enabled
@@ -97,11 +124,21 @@ devready() {
 
 forceready() {
     : 'FORCE system to be READY for development, clobbering current settings'
-    [[ -n $INSH_NAME ]] || git config --global user.name "$INSH_NAME"
-    [[ -n $INSH_EMAIL ]] || git config --global user.email "$INSH_EMAIL"
+    if [[ $0 != bash ]]; then
+        chsh -s /bin/bash
+        echo 'Shell changed to BASH. Please restart your shell and rerun forceready.'
+        # TODO could we run this function with bash?
+        return
+    fi
+
+    git config --global advice.skipCherryPicks true
+    git config --global core.commentChar ';'
+    git config --global diff.colormoved zebra
+    ! [[ $INSH_NAME ]] || git config --global user.name "$INSH_NAME"
+    ! [[ $INSH_EMAIL ]] || git config --global user.email "$INSH_EMAIL"
     git config --global pull.rebase true
-    git config --global rebase.autosquash true
     git config --global push.default current
+    git config --global rebase.autosquash true
     [[ -d ~/.config/git ]] || mkdir -p ~/.config/git
 
     if [[ $OS == Darwin ]]; then
@@ -113,15 +150,19 @@ forceready() {
     fi
 }
 
+gash() {
+    : 'Git hASH'
+    git describe --abbrev=40 --always --dirty --match=-
+}
+
 ghas() {
     : 'GitHub Action Summary'
-    # TODO use the variables, maybe after calling a helper function that sets them
     cat <<EOD >> "$GITHUB_STEP_SUMMARY"
-| Variable      | Value                                          |
-| ------------- | ---------------------------------------------- |
-| CODEname      | $GITHUB_REPOSITORY |
-| Git hASH      | $GITHUB_SHA |
-| TAg or BRanch | $GITHUB_REF |
+| FLAN | Unabbrev.  | Value                                          |
+| -----|----------- | ---------------------------------------------- |
+| cona | COdeNAme   | $(cona) |
+| gash | Git hASH   | $(gash) |
+| tabr | TAg/BRanch | $GITHUB_REF |
 EOD
 }
 
