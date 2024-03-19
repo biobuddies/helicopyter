@@ -8,8 +8,8 @@ jobs:
         steps:
             - uses: actions/checkout@v4
             - run: source includes.sh && ghas
-            - uses: actions/setup-python@v4
-            - uses: actions/cache@v3
+            - uses: actions/setup-python@v5
+            - uses: actions/cache@v4
               with:
                   path: ~/.cache/pip
                   key: |
@@ -17,7 +17,7 @@ jobs:
                       ${{ hashFiles('pyproject.toml') }}
                       ${{ hashFiles('requirements.txt') }}
                   restore-keys: ${{ runner.os }}-pip
-            - uses: actions/cache@v3
+            - uses: actions/cache@v4
               with:
                   path: ~/.cache/pre-commit
                   key: |
