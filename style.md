@@ -47,6 +47,22 @@ In operational data systems, do not delete. Set a status field to `canceled` ins
 2. Check correctness and completeness
 3. Contract (delete)
 
+### Avoid State Secrets
+1. Collaborators (many) should be able to (re)view Infrastructure-as-Code (IaC) files.
+2. Using individual credentials, Developers (many) should be able to `terraform apply` to
+   pre-production and `terraform plan` for production, with or without local changes. Specific
+   `terraform apply` to production may also be appropriate, like to deploy/rollback container
+   images built from properly reviewed code.
+3. Using individual credentials, Automation and Administrators (few) should be able to `terraform apply` to production.
+
+First, writing usernames and passwords into IaC or state files breaks the individual credentials pattern. Second, allowing secrets into state files means you can't use access controls appropriate for code any more, but must instead apply password manager level access controls. Remember, the target is Infrastructure-as-Code, not Infrastructure-as-a-Password-Manager.
+
+1. Supply provider credentials via environment variables.
+2. Unless they're encrypted like aws_iam_user passwords, set passwords in resources to a placeholder
+   value like `SEE-PASSWORD-MANAGER` and configure lifecycle ignore.
+
+TODO patch OpenTofu to help with this. TODO find or develop a good approach to securely storing secrets from newly created resources, like `cloudflare_access_service_token`, and rotating secrets.
+
 ## See Also
 * https://12factor.net/
 * https://peps.python.org/pep-0008/

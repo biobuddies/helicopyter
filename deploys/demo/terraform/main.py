@@ -20,7 +20,7 @@ def synth(stack: HeliStack) -> None:
         'main',
         provisioners=[
             LocalExecProvisioner(
-                command='echo $ENVI', environment={'ENVI': '${local.envi}'}, type='local-exec'
+                command='echo $envi', environment={'envi': '${local.envi}'}, type='local-exec'
             )
         ],
     )
