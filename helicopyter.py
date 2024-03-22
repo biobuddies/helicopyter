@@ -5,6 +5,7 @@ from functools import partial
 from importlib import import_module
 from json import dump
 from pathlib import Path
+from typing import Any, TypeVar
 
 from cdktf import (
     App,
@@ -27,7 +28,7 @@ class HeliStack(TerraformStack):
         self.Output = partial(TerraformOutput, Construct(self, 'output'))
         self.Variable = partial(TerraformVariable, Construct(self, 'variable'))
         self.cona = cona
-        self.imports: dict[TerraformElement, str] = {}  # {to: id}
+        self.imports: dict[str, str] = {}  # {to: id}
         self._scopes: dict[str, Construct] = {}
 
     def _allocate_logical_id(self, element: Node | TerraformElement) -> str:
@@ -63,7 +64,7 @@ class HeliStack(TerraformStack):
             return partial(element_class, self.scopes(module.__name__))
         raise Exception(f'{camel_case_element} is not a TerraformElement')
 
-    def provide(self, name: str) -> None:
+    def provide(self, name: str) -> type[TerraformElement]:
         """
         Return a Provider class instance given its short name.
 
@@ -73,14 +74,16 @@ class HeliStack(TerraformStack):
         module = import_module(f'cdktf_cdktf_provider_{name}.provider')
         return getattr(module, f'{name.title()}Provider')(self, 'this')
 
+    E = TypeVar('E', bound=TerraformElement)
+
     def push(
         self,
-        Element: type[TerraformElement],  # noqa: N803
+        Element: type[E],  # noqa: N803
         id_: str,
-        *args: any,
+        *args: Any,  # noqa: ANN401
         import_id: str = '',
-        **kwargs: any,
-    ) -> TerraformElement:
+        **kwargs: Any,  # noqa: ANN401
+    ) -> E:
         """
         Add Data or a Resource to the stack and return it.
 
@@ -112,7 +115,7 @@ def multisynth(all_or_conas_or_paths: Iterable[str]) -> None:
             for file in (Path(__file__).parent / 'deploys').glob('**/terraform/main.py')
         }
     else:
-        conas_or_paths = all_or_conas_or_paths
+        conas_or_paths = set(all_or_conas_or_paths)
 
     for cona_or_path in conas_or_paths:
         path_to_check = Path(cona_or_path)
