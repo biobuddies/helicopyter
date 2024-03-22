@@ -21,6 +21,10 @@ This reduces visual noise. Black made the wrong choice; double-quote-fixer can h
 ### Begin as you mean to go on (people edition)
 Choose default values that will work, out-of-the-box, for most people, most of the time. Even if the machines outnumber the people, reconfiguring the development systems of people is probably harder than reconfiguring many hosted production and pre-production machines (pets versus cattle).
 
+### Single static assignment
+Try not to mutate variables, except in obvious ways like appending an element to a list for each iteration of a for loop.
+Prefer multiple, specific variable names over a general variable name with shifting values.
+
 ### Make use of tooling
 Allow the jump-to-definition features of editors to find the good default values you have chosen.
 
@@ -28,7 +32,20 @@ Allow the jump-to-definition features of editors to find the good default values
 For loosely coupled systems, support a sentinel value of 'off', such as `CODENAME_OTHER_SERVICE_URL=off`. (Are there similar existing conventions? If not perhaps there's an opportunity to register the off URI schema with the IANA.) 
 
 ### Assign unique port numbers
-This allows multiple codenames to run concurrently, such as in the `local` developer laptop environment.
+This allows multiple codenames to run concurrently, such as in the `local` developer laptop environment. For easy debugging, use the unique port number as much as possible. For a webserver, this probably means using it both inside and outside the container, only proxying from/to 443 at the TLS-terminating load balancer.
+
+### Clearly differentiate between Internet and Intranet
+Allow people to tell at a glance whether a system is supposed to be Internet-accessible by its DNS domain or subdomain.
+
+This can be blended with additional subdomain organizational approaches such as:
+* Physical location like `.rdu` for Raleigh-DUrham and `.sfo` for San FranciscO
+* Type of IP address like `.ten` for the 10.x.y.z class A private range or `.c` for the 192.168.x.y class C private range
+
+### Only cancel, never delete
+In operational data systems, do not delete. Set a status field to `canceled` instead. To avoid unchecked growth, graduating data from availability through operational systems to availability through warehouse/archive systems seems reasonable, following steps such as:
+1. Expand (copy)
+2. Check correctness and completeness
+3. Contract (delete)
 
 ## See Also
 * https://12factor.net/

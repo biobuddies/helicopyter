@@ -13,7 +13,7 @@ def synth(stack: HeliStack) -> None:
     """
     NullResource = stack.load('null_resource')  # noqa: N806
 
-    stack.Local('code', stack.code)
+    stack.Local('cona', stack.cona)
     stack.Local('envi', '${terraform.workspace}')
 
     NullResource(

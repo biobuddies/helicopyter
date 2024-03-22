@@ -1,5 +1,8 @@
 # shellcheck shell=bash
 
+# TODO check for bash
+set -o vi
+
 OS=$(uname -s)
 
 case $OS in
