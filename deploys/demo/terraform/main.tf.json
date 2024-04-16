@@ -15,7 +15,7 @@
         }
     },
     "locals": {
-        "code": "demo",
+        "cona": "demo",
         "envi": "${terraform.workspace}"
     },
     "output": {
@@ -35,9 +35,9 @@
                 "provisioner": [
                     {
                         "local-exec": {
-                            "command": "echo $ENVI",
+                            "command": "echo $envi",
                             "environment": {
-                                "ENVI": "${local.envi}"
+                                "envi": "${local.envi}"
                             }
                         }
                     }

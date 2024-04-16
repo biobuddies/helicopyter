@@ -13,14 +13,14 @@ def synth(stack: HeliStack) -> None:
     """
     NullResource = stack.load('null_resource')  # noqa: N806
 
-    stack.Local('code', stack.code)
+    stack.Local('cona', stack.cona)
     stack.Local('envi', '${terraform.workspace}')
 
     NullResource(
         'main',
         provisioners=[
             LocalExecProvisioner(
-                command='echo $ENVI', environment={'ENVI': '${local.envi}'}, type='local-exec'
+                command='echo $envi', environment={'envi': '${local.envi}'}, type='local-exec'
             )
         ],
     )

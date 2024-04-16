@@ -44,7 +44,13 @@ ignore = [
     'EM102',
     'INP001',
     'ISC001',
+    'Q000', # ruff format will single quote
+    'Q001', # ruff format will single quote
+    'Q003', # ruff format will single quote
     # N806 tries to lowercase classes; currently ignored on a line-by-line basis
+    'TD002', # The git log records who wrote a TODO line
+    'TD003', # Don't require issue links
+    'TD004', # A colon takes up space without really improving readability
     'TD002', # The git log records who wrote a TODO line
     'TD003', # Don't require issue links
     'TD004', # A colon takes up space without really improving readability
@@ -54,9 +60,10 @@ ignore = [
 ]
 select = ['ALL']
 
-[tool.ruff.lint.flake8-quotes]
-inline-quotes = 'single'
-multiline-quotes = 'single'
+[tool.ruff.lint.per-file-ignores]
+'test_*' = [
+    'S101', # assert is good for tests
+]
 
 [tool.ruff.lint.isort]
 split-on-trailing-comma = false
