@@ -111,6 +111,8 @@ publication==0.0.3
     #   jsii
 pure-eval==0.2.2
     # via stack-data
+pycparser==2.22
+    # via cffi
 pygments==2.17.2
     # via
     #   ipython
