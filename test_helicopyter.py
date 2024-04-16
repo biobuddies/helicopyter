@@ -1,6 +1,5 @@
 """Test the helicopyter module."""
 
-
 from unittest import TestCase
 
 import pytest
