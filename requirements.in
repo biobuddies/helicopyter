@@ -2,6 +2,7 @@
 ipython
 mypy
 pre-commit
+pytest
 ruff
 shellcheck-py
 twine

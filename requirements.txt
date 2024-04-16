@@ -13,8 +13,6 @@ cdktf==0.20.0
 cdktf-cdktf-provider-null==10.0.0
 certifi==2023.11.17
     # via requests
-cffi==1.16.0
-    # via cryptography
 cfgv==3.4.0
     # via pre-commit
 charset-normalizer==3.3.2
@@ -23,8 +21,6 @@ constructs==10.3.0
     # via
     #   cdktf
     #   cdktf-cdktf-provider-null
-cryptography==42.0.5
-    # via secretstorage
 decorator==5.1.1
     # via ipython
 distlib==0.3.8
@@ -47,15 +43,13 @@ importlib-metadata==7.0.1
     # via twine
 importlib-resources==6.1.1
     # via jsii
+iniconfig==2.0.0
+    # via pytest
 ipython==8.20.0
 jaraco-classes==3.3.0
     # via keyring
 jedi==0.19.1
     # via ipython
-jeepney==0.8.0
-    # via
-    #   keyring
-    #   secretstorage
 jsii==1.94.0
     # via
     #   cdktf
@@ -81,7 +75,9 @@ nh3==0.2.15
 nodeenv==1.8.0
     # via pre-commit
 packaging==24.0
-    # via validate-pyproject
+    # via
+    #   pytest
+    #   validate-pyproject
 parso==0.8.3
     # via jedi
 pathspec==0.12.1
@@ -92,6 +88,8 @@ pkginfo==1.9.6
     # via twine
 platformdirs==4.1.0
     # via virtualenv
+pluggy==1.4.0
+    # via pytest
 pre-commit==3.6.0
 prompt-toolkit==3.0.43
     # via ipython
@@ -105,13 +103,12 @@ publication==0.0.3
     #   jsii
 pure-eval==0.2.2
     # via stack-data
-pycparser==2.21
-    # via cffi
 pygments==2.17.2
     # via
     #   ipython
     #   readme-renderer
     #   rich
+pytest==8.1.1
 python-dateutil==2.8.2
     # via jsii
 pyyaml==6.0.1
@@ -131,8 +128,6 @@ rfc3986==2.0.0
 rich==13.7.0
     # via twine
 ruff==0.3.3
-secretstorage==3.3.3
-    # via keyring
 setuptools==69.2.0
     # via nodeenv
 shellcheck-py==0.9.0.6

@@ -11,6 +11,8 @@ def synth(stack: HeliStack) -> None:
 
     Also infer the ENVIronment (ENVI) from the workspace and echo it to standard output.
     """
+    stack.provide('null')
+
     NullResource = stack.load('null_resource')  # noqa: N806
 
     stack.Local('cona', stack.cona)
