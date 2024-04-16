@@ -1,3 +1,12 @@
+## Version control, manual review, automated checks
+Use version control, code review, and automated tests/checks for most changes. Exceptions to consider:
+
+- URLs and other environment variables https://12factor.net/config
+- Some deploys/$cona/terraform/main.tf.json files are omitted from this public repository because of
+  account-specific values. Checking in generated JSON into internal repositories is recommended.
+  Doing so keeps the files ready for commands like `terraform plan` and `terraform apply` and allows
+  `git bisect` to help solve JSON level issues (hopefully rare).
+
 ## Formatting
 ### Indent by four spaces
 This aligns with PEP-8. Consistent indentation across file types makes editor configuration easier.
@@ -8,7 +17,7 @@ A maximized gnome-terminal window on a ThinkPad X1 Carbon Gen 9 running Ubuntu 2
 Using 100 characters allows two side-by-side files to be displayed with tmux, etc.
 
 ### Prefer single quotes
-This reduces visual noise. Black made the wrong choice; double-quote-fixer can help.
+Double quotes are visually noisier than single quotes. Black made the wrong choice; double-quote-fixer from pre-commit or `ruff format` can help.
 
 ## Settings
 ### Standard environment variables
@@ -20,6 +29,10 @@ This reduces visual noise. Black made the wrong choice; double-quote-fixer can h
 
 ### Begin as you mean to go on (people edition)
 Choose default values that will work, out-of-the-box, for most people, most of the time. Even if the machines outnumber the people, reconfiguring the development systems of people is probably harder than reconfiguring many hosted production and pre-production machines (pets versus cattle).
+
+### Single static assignment
+Try not to mutate variables, except in obvious ways like appending an element to a list for each iteration of a for loop.
+Prefer multiple, specific variable names over a general variable name with shifting values.
 
 ### Single static assignment
 Try not to mutate variables, except in obvious ways like appending an element to a list for each iteration of a for loop.
@@ -60,8 +73,9 @@ First, writing usernames and passwords into IaC or state files breaks the indivi
 1. Supply provider credentials via environment variables.
 2. Unless they're encrypted like aws_iam_user passwords, set passwords in resources to a placeholder
    value like `SEE-PASSWORD-MANAGER` and configure lifecycle ignore.
+3. Check git and state files to ensure secrets have not leaked into them.
 
-TODO patch OpenTofu to help with this. TODO find or develop a good approach to securely storing secrets from newly created resources, like `cloudflare_access_service_token`, and rotating secrets.
+TODO patch OpenTofu to help with this. TODO find or develop a good approach to 1. securely storing secrets from newly created resources, like `cloudflare_access_service_token`, and 2. rotating secrets.
 
 ## See Also
 * https://12factor.net/
