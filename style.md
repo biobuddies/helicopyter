@@ -1,13 +1,69 @@
+## As simple as possible
+* Choose good words; differentiate when necessary
+    - Verbs over nouns
+    - Simple and common over fancy and rare
+    - Avoid substring matches
+    - Prefer whole words to abbreviations
+* Three strikes and you refactor
+    - Copy/paste once is okay, preferably with a comment on the duplicatation
+    - Three examples should ease choosing the right abstraction
+    - Avoid overshooting on the journey from specific to generic
+
+Inspired by https://blog.cleancoder.com/uncle-bob/2013/05/27/TheTransformationPriorityPremise.html
+1. No operation: `pass`
+2. Unconditionally executed code
+3. If
+4. While
+
+1. Literal
+2. Variable
+3. Function
+
+1. Scalar: bool, float, int, str
+2. Vector: list, set, tuple
+3. Multidimensional: dict, Counter
+
+## Three strikes and you automate (manual, barely codified, mostly codified)
+1. Processes should usually begin as manual steps
+2. When some repetition is necessary, take a first pass at code/automation
+    * The low hanging fruit steps which are trivial to codify/automate
+    * The most tedious or annoying steps
+    * The most error-prone steps
+    * Only 1% to 33% of the steps should be codified/automated at this point
+3. When continued repetition is evident, take a second pass at code/automation
+    * Prioritize steps similarly
+    * Leave 10% or more of the steps as manual
+        - "Done is better than perfect."
+        - "The perfect is the enemey of the good."
+4. Monitor and make "continuous" improvements
+5. Instigate fire drills of rare "black swan" events
+
 ## Version control, manual review, automated checks
 Use version control, code review, and automated tests/checks for most changes. Exceptions to consider:
 
-- URLs and other environment variables https://12factor.net/config
-- Some deploys/$cona/terraform/main.tf.json files are omitted from this public repository because of
+* URLs and other environment variables https://12factor.net/config
+* Some deploys/$cona/terraform/main.tf.json files are omitted from this public repository because of
   account-specific values. Checking in generated JSON into internal repositories is recommended.
   Doing so keeps the files ready for commands like `terraform plan` and `terraform apply` and allows
   `git bisect` to help solve JSON level issues (hopefully rare).
 
 ## Formatting
+### Dates
+Following ISO 8601/[RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339), join the following fields with a dash `-`:
+1. Four-digit, zero-padded year, starting from 0
+2. Two-digit, zero-padded month, starting from 1
+3. Two-digit, zero-padded day, starting from 1
+
+Appending the timezone abbreviation after a space ` ` is recommended. Prefer `Z` to `UTC`, because of the popularity 
+
+```shell
+$ date +%Y-%m-%d\ %Z | sed s/UTC/Z/
+2024-04-19 EDT
+$ date -u +%Y-%m-%d\ %Z | sed s/UTC/Z/
+2024-04-19 Z
+```
+
+## Code
 ### Indent by four spaces
 This aligns with PEP-8. Consistent indentation across file types makes editor configuration easier.
 
@@ -21,11 +77,11 @@ Double quotes are visually noisier than single quotes. Black made the wrong choi
 
 ## Settings
 ### Standard environment variables
-- `cona`: Unique COdeNAme (or plain language name, but the good ones tend to get used up) to tell deployments apart. Must be set at build time and run time. Should match one main git repository. Should be baked into container images. Not called CODE because that would have a lot of search hits.
-- `envi`: ENVIronment to tell pre-production environments from `prod`. Must be set at run time. Should be set to `prod` if there's only one. Not called ENV to avoid colliding with the `env` shell command. Should not be baked into container images.
-- `gash`: `git describe --abbrev=40 --always --dirty --match=-`. So people can see what version of code is used. Must be set at build time and run time. Should be baked into container images. Not called HASH to avoid colliding with the Python built-in function and to clarify that this is the Git hash, not the Docker image hash.
-- `role`: `web` is a good choice for web servers. Must be set at run time. Different executables should get different `role` values. Not called EXEC for executable to avoid colliding with the shell built-in. Should not be baked into container images.
-- `tabr`: TAg or BRanch `git describe --all --exact-match`. Must be set at run time in `prod`. May be unset or null when running in pre-production, especially `local` development. Should not be baked into a container images. Use this to name preview environments and present nice version numbers to users.
+* `cona`: Unique COdeNAme (or plain language name, but the good ones tend to get used up) to tell deployments apart. Must be set at build time and run time. Should match one main git repository. Should be baked into container images. Not called CODE because that would have a lot of search hits.
+* `envi`: ENVIronment to tell pre-production environments from `prod`. Must be set at run time. Should be set to `prod` if there's only one. Not called ENV to avoid colliding with the `env` shell command. Should not be baked into container images.
+* `gash`: `git describe --abbrev=40 --always --dirty --match=-`. So people can see what version of code is used. Must be set at build time and run time. Should be baked into container images. Not called HASH to avoid colliding with the Python built-in function and to clarify that this is the Git hash, not the Docker image hash.
+* `role`: `web` is a good choice for web servers. Must be set at run time. Different executables should get different `role` values. Not called EXEC for executable to avoid colliding with the shell built-in. Should not be baked into container images.
+* `tabr`: TAg or BRanch `git describe --all --exact-match`. Must be set at run time in `prod`. May be unset or null when running in pre-production, especially `local` development. Should not be baked into a container images. Use this to name preview environments and present nice version numbers to users.
 
 ### Begin as you mean to go on (people edition)
 Choose default values that will work, out-of-the-box, for most people, most of the time. Even if the machines outnumber the people, reconfiguring the development systems of people is probably harder than reconfiguring many hosted production and pre-production machines (pets versus cattle).

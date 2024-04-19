@@ -205,3 +205,8 @@ tabr() {
     echo "${GITHUB_HEAD_REF:-$GITHUB_REF_NAME}"
     # TODO how should people set this locally?
 }
+
+yucount() {
+    : 'v%Y.%U.COUNT version string'
+    date "+%Y.%U.${1:-0}"
+}
