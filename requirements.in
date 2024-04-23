@@ -1,4 +1,6 @@
 # Build time
+cdktf-cdktf-provider-cloudflare
+cdktf-cdktf-provider-null
 ipython
 mypy
 pre-commit
@@ -13,5 +15,4 @@ yamllint
 # Runtime
 # TODO figure out how to install these from pyproject.toml
 cdktf
-cdktf-cdktf-provider-null
 typed-argument-parser
