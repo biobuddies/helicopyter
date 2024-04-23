@@ -9,7 +9,10 @@ attrs==23.2.0
 cattrs==23.2.3
     # via jsii
 cdktf==0.20.0
-    # via cdktf-cdktf-provider-null
+    # via
+    #   cdktf-cdktf-provider-cloudflare
+    #   cdktf-cdktf-provider-null
+cdktf-cdktf-provider-cloudflare==11.8.0
 cdktf-cdktf-provider-null==10.0.0
 certifi==2023.11.17
     # via requests
@@ -22,6 +25,7 @@ charset-normalizer==3.3.2
 constructs==10.3.0
     # via
     #   cdktf
+    #   cdktf-cdktf-provider-cloudflare
     #   cdktf-cdktf-provider-null
 cryptography==42.0.5
     # via secretstorage
@@ -58,9 +62,10 @@ jeepney==0.8.0
     # via
     #   keyring
     #   secretstorage
-jsii==1.94.0
+jsii==1.97.0
     # via
     #   cdktf
+    #   cdktf-cdktf-provider-cloudflare
     #   cdktf-cdktf-provider-null
     #   constructs
 keyring==24.3.0
@@ -106,6 +111,7 @@ ptyprocess==0.7.0
 publication==0.0.3
     # via
     #   cdktf
+    #   cdktf-cdktf-provider-cloudflare
     #   cdktf-cdktf-provider-null
     #   constructs
     #   jsii
@@ -160,6 +166,7 @@ typed-argument-parser==1.9.0
 typeguard==2.13.3
     # via
     #   cdktf
+    #   cdktf-cdktf-provider-cloudflare
     #   cdktf-cdktf-provider-null
     #   constructs
     #   jsii
