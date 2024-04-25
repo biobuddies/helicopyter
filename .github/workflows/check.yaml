@@ -29,7 +29,7 @@ jobs:
             - run: pip install --upgrade pip uv && uv venv && uv pip sync requirements.txt
               env:
                   PIP_PROGRESS_BAR: 'off'
-            - run: >
+            - run: |
                   source includes.sh &&
                   a &&
                   pre-commit try-repo . \
@@ -40,6 +40,10 @@ jobs:
                       --verbose
             - run: terraform -chdir=deploys/demo/terraform init
             - run: terraform -chdir=deploys/demo/terraform validate
+            - run: |
+                  python -m pynsible-playbook -i localhost, deploys/demo/ansible/main.py |
+                      tee pynsible-hello.txt | sed -En 's/.*Hello world!.*/OK/p' ||
+                      cat pynsible-hello.txt
 on: # yamllint disable-line rule:truthy
     pull_request:
     push:

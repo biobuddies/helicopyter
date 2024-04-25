@@ -1,0 +1,5 @@
+# Omitted from this public repository because of the account-specific values. In a private
+# repository, checking in the generated JSON is recommended to:
+# 1. Keep the files ready for commands like `terraform plan` and `terraform apply`
+# 2. Maintain a detailed change history that can help bisect (hopefully rare) JSON level issues
+main.tf.json

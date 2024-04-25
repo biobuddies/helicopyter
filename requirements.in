@@ -14,5 +14,6 @@ yamllint
 
 # Runtime
 # TODO figure out how to install these from pyproject.toml
+ansible
 cdktf
 typed-argument-parser
