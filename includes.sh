@@ -213,3 +213,13 @@ tabr() {
     echo "${GITHUB_HEAD_REF:-$GITHUB_REF_NAME}"
     # TODO how should people set this locally?
 }
+
+yucount() {
+    : '%Y %U COUNT style version string'
+    local yu
+    yu=$(date -u +v%Y.%U.)
+    git fetch --tags
+    local count
+    count=$(git tag --list "$yu*" | sed "s/$yu//" | sort -r | head -1)
+    date -u "+v%Y.%U.${count:-0}"
+}
