@@ -54,8 +54,16 @@ a() {
     cd "$directory" || return 1
 
     [[ $(command -v conda) ]] && conda deactivate
-    [[ $(command -v deactivate) ]] && deactivate
-    # TODO pyenv-virtualenv wants `. deactivate`
+    might_be_file=$(command -v deactivate)
+    if [[ $might_be_file ]]; then
+        if [[ -f $might_be_file ]]; then
+            # .vscode/extensions/ms-python and pyenv-virtualenv want this
+            # shellcheck disable=SC1091
+            source deactivate
+        else
+            deactivate
+        fi
+    fi
 
     if [[ -f .venv/bin/activate ]]; then
         # shellcheck disable=SC1091
@@ -204,4 +212,14 @@ tabr() {
     # https://stackoverflow.com/questions/58033366
     echo "${GITHUB_HEAD_REF:-$GITHUB_REF_NAME}"
     # TODO how should people set this locally?
+}
+
+yucount() {
+    : '%Y %U COUNT style version string'
+    local yu
+    yu=$(date -u +v%Y.%U.)
+    git fetch --tags
+    local count
+    count=$(git tag --list "$yu*" | sed "s/$yu//" | sort -r | head -1)
+    date -u "+v%Y.%U.${count:-0}"
 }

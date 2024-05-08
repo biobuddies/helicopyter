@@ -43,11 +43,21 @@
   name: pip-check
   pass_filenames: false
 
-- id: ruff
-  description: "Run 'ruff' for extremely fast Python linting"
+- id: prettier-write
+  entry: node_modules/.bin/prettier --write
+  language: system
+  name: prettier-write
+  types_or:
+      - json
+      - yaml
+      - toml
+      - ts
+
+- id: ruff-check-fix
+  args:
+      - --fix
   entry: ruff check --force-exclude
   language: system
-  minimum_pre_commit_version: '2.9.2'
   name: ruff
   require_serial: true
   types_or:
@@ -55,10 +65,8 @@
       - pyi
 
 - id: ruff-format
-  description: "Run 'ruff format' for extremely fast Python formatting"
   entry: ruff format --force-exclude
   language: system
-  minimum_pre_commit_version: '2.9.2'
   name: ruff-format
   require_serial: true
   types_or:
@@ -67,7 +75,6 @@
 
 - id: shellcheck
   name: shellcheck
-  description: Test shell scripts with shellcheck
   entry: shellcheck
   language: system
   types:
@@ -75,21 +82,18 @@
   require_serial: true # shellcheck can detect sourcing this way
 
 - id: validate-pyproject
-  description: >
-      Validation library for a simple check on pyproject.toml, including optional dependencies
   entry: validate-pyproject
   files: ^pyproject.toml$
   name: Validate pyproject.toml
   language: system
 
 - id: uv-pip-compile
-  entry: uv pip compile -o requirements.txt
+  entry: uv pip compile -o requirements.txt --python-platform linux
   files: requirements.in
   language: system
   name: uv-pip-compile
 
 - id: yamllint
-  description: This hook runs yamllint.
   entry: yamllint
   language: system
   name: yamllint

@@ -10,7 +10,16 @@ jobs:
         steps:
             - uses: actions/checkout@v4
             - run: source includes.sh && ghas
+
+            - uses: actions/setup-node@v4
+              with:
+                  cache: yarn
+                  node-version-file: .nvmrc
+            - run: npm -g install yarn && yarn
+
             - uses: actions/setup-python@v5
+              with:
+                  python-version-file: .python-version
             - uses: actions/cache@v4
               with:
                   path: ~/.cache/pip
@@ -19,25 +28,32 @@ jobs:
                       ${{ hashFiles('pyproject.toml') }}
                       ${{ hashFiles('requirements.txt') }}
                   restore-keys: ${{ runner.os }}-pip
-            - uses: actions/cache@v4
-              with:
-                  path: ~/.cache/pre-commit
-                  key: |
-                      ${{ runner.os }}-pre-commit
-                      ${{ hashFiles('.pre-commit-config.yaml') }}
-                  restore-keys: ${{ runner.os }}-pre-commit
-            - run: pip install --upgrade pip uv && uv venv && uv pip sync requirements.txt
+
+            - run: pip install --upgrade pip uv
               env:
                   PIP_PROGRESS_BAR: 'off'
-            - run: >
-                  source includes.sh &&
-                  a &&
-                  pre-commit try-repo . \
+
+            - uses: actions/cache/restore@v4
+              id: restore-uv
+              with:
+                  key: |
+                      ${{ runner.os }}-uv
+                      ${{ hashFiles('requirements.txt') }}
+                  path: ~/.cache/uv
+            - run: uv venv && uv pip sync requirements.txt
+            - uses: actions/cache/save@v4
+              with:
+                  key: ${{ steps.restore-uv.outputs.cache-primary-key }}
+                  path: ~/.cache/uv
+
+            - run: |
+                  source includes.sh && a && pre-commit try-repo . \
                       --all-files \
                       --color always \
                       --hook-stage manual \
                       --show-diff-on-failure \
                       --verbose
+
             - run: terraform -chdir=deploys/demo/terraform init
             - run: terraform -chdir=deploys/demo/terraform validate
 on: # yamllint disable-line rule:truthy
