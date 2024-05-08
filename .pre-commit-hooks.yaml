@@ -5,13 +5,13 @@
   language: fail
   name: dot-yaml
 
-- id: gitignore-in
+- id: gitignore-node-python-terraform
   entry: >
-      bash -c 'curl -s
-      https://raw.githubusercontent.com/github/gitignore/main/$(cat .gitignore.in).gitignore >
+      bash -c 'langs={Node,Python,Terraform};
+      curl -s https://raw.githubusercontent.com/github/gitignore/main/$langs.gitignore >
       .gitignore'
   language: system
-  name: gitignore-in
+  name: gitignore-node-python-terraform
   pass_filenames: false
 
 - id: helicopyter-all
