@@ -1,12 +1,7 @@
-#!/bin/bash
+# shellcheck shell=bash
 
-if [[ $0 == *includes.sh ]]; then
-    echo 'ERROR: includes.sh must be sourced, not executed'
-    exit 1
-fi
-
-[[ $0 == *bash ]] || cat <<EOD
-WARNING: includes.sh has only been tested with Bash. You are running $0.
+[[ $BASH ]] || cat <<EOD
+WARNING: includes.sh has only been tested with, and linted for, Bash. You are running $0.
 Run \`chsh -s /bin/bash\` or \`forceready\` to switch.
 EOD
 
@@ -231,25 +226,37 @@ gash() {
 
 hta() {
     : 'Helicopyter synth and Terraform Apply'
-    local cona="$1"
-    shift
+    local cona="${1?:Please provide a code name as the first argument}"
+    local envi="${2?:Please provide an environment as the second argument}"
+    if [[ $envi == default ]]; then
+        echo 'The default workspace behaves inconsistently.'
+        echo 'If you only have one environment, please name it `prod`.'
+        return 1
+    fi
+    shift 2
     python -m helicopyter "$cona"
-    terraform -chdir="deploys/$cona/terraform" apply "$@"
+    TF_WORKSPACE="$envi" terraform -chdir="deploys/$cona/terraform" apply "$@"
 }
 
 hti() {
     : 'Helper for Terraform Init'
-    local cona="$1"
+    local cona="${1?:Please provide a code name as the first argument}"
     shift
     terraform -chdir="deploys/$cona/terraform" init "$@"
 }
 
 htp() {
     : 'Helicopyter synth and Terraform Plan'
-    local cona="$1"
-    shift
+    local cona="${1?:Please provide a code name as the first argument}"
+    local envi="${2?:Please provide an environment as the second argument}"
+    if [[ $envi == default ]]; then
+        echo 'The default workspace behaves inconsistently.'
+        echo 'If you only have one environment, please name it `prod`.'
+        return 1
+    fi
+    shift 2
     python -m helicopyter "$cona"
-    terraform -chdir="deploys/$cona/terraform" plan "$@"
+    TF_WORKSPACE="$envi" terraform -chdir="deploys/$cona/terraform" plan "$@"
 }
 
 pc() {

@@ -1,6 +1,6 @@
 - id: codespell
   entry: codespell --check-filenames --ignore-words-list READYness
-  language: python
+  language: system
   name: codespell
   types:
       - text
@@ -59,7 +59,7 @@
   require_serial: true
 
 - id: mailmap
-  entry: bash -c '. includes.sh check_mailmap'
+  entry: bash includes.sh check_mailmap
   language: system
   name: mailmap
   pass_filenames: false
