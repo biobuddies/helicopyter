@@ -47,7 +47,7 @@ jobs:
                   path: ~/.cache/uv
 
             - run: |
-                  source includes.sh && a && uv pip compile --version && uv pip compile --help && pre-commit try-repo . \
+                  source includes.sh && a && pre-commit try-repo . \
                       --all-files \
                       --color always \
                       --hook-stage manual \
