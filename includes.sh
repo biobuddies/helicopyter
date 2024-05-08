@@ -54,8 +54,16 @@ a() {
     cd "$directory" || return 1
 
     [[ $(command -v conda) ]] && conda deactivate
-    [[ $(command -v deactivate) ]] && deactivate
-    # TODO pyenv-virtualenv wants `. deactivate`
+    might_be_file=$(command -v deactivate)
+    if [[ $might_be_file ]]; then
+        if [[ -f $might_be_file ]]; then
+            # .vscode/extensions/ms-python and pyenv-virtualenv want this
+            # shellcheck disable=SC1091
+            source deactivate
+        else
+            deactivate
+        fi
+    fi
 
     if [[ -f .venv/bin/activate ]]; then
         # shellcheck disable=SC1091
