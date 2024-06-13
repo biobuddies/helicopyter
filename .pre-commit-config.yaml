@@ -1,17 +1,1 @@
-repos:
-    - repo: .
-      rev: HEAD
-      hooks:
-          - id: dot-yaml
-          - id: gitignore-node-python-terraform
-          - id: helicopyter-all
-          - id: helicopyter-codenames
-          - id: mypy
-          - id: pip-check
-          - id: prettier-write
-          - id: ruff-check-fix
-          - id: ruff-format
-          - id: shellcheck
-          - id: validate-pyproject
-          - id: uv-pip-compile
-          - id: yamllint
+# Use pre-commit-try-am function instead
