@@ -37,6 +37,7 @@
   stages:
       - manual
 
+# uv-pip-check recommended instead
 - id: pip-check
   entry: pip check
   language: system
@@ -86,6 +87,12 @@
   files: ^pyproject.toml$
   name: Validate pyproject.toml
   language: system
+
+- id: uv-pip-check
+  always_run: true
+  entry: uv pip check requirements.txt
+  language: system
+  name: uv-pip-check
 
 - id: uv-pip-compile
   entry: uv pip compile -o requirements.txt --python-platform linux

@@ -214,6 +214,11 @@ tabr() {
     # TODO how should people set this locally?
 }
 
+ups() {
+    : 'Uv Pip Sync'
+    uv pip sync requirements.txt
+}
+
 yucount() {
     : '%Y %U COUNT style version string'
     local yu
