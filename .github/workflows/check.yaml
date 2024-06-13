@@ -9,7 +9,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
-            - run: source includes.sh && ghas
+            - run: source includes.sh && summarize
 
             - uses: actions/setup-node@v4
               with:
@@ -40,7 +40,7 @@ jobs:
                       ${{ runner.os }}-uv
                       ${{ hashFiles('requirements.txt') }}
                   path: ~/.cache/uv
-            - run: uv venv && uv pip sync requirements.txt
+            - run: uv venv && source includes.sh && ups
             - uses: actions/cache/save@v4
               with:
                   key: ${{ steps.restore-uv.outputs.cache-primary-key }}

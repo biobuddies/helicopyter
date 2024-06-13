@@ -89,7 +89,7 @@ cona() {
     if [[ $GITHUB_REPOSITORY ]]; then
         echo "${GITHUB_REPOSITORY##*/}"
     else
-        echo "$VIRTUAL_ENV" | sed -E 's,.*/([^/]+)/\.?venv,\1,'
+        echo "${VIRTUAL_ENV:-$PWD}" | sed -E 's,.*/([^/]+)(/\.?venv)?,\1,'
     fi
 }
 
@@ -166,17 +166,6 @@ gash() {
     git describe --abbrev=40 --always --dirty --match=-
 }
 
-ghas() {
-    : 'GitHub Action Summary'
-    cat <<EOD >> "$GITHUB_STEP_SUMMARY"
-| FLAN | Unabbrev.  | Value                                          |
-| -----|----------- | ---------------------------------------------- |
-| cona | COdeNAme   | $(cona) |
-| gash | Git hASH   | $(gash) |
-| tabr | TAg/BRanch | $(tabr) |
-EOD
-}
-
 pc() {
     : 'run Pre-Commit on modified files'
     pre-commit run "$@"
@@ -206,12 +195,26 @@ resourcerun() {
     set +x
 }
 
+summarize() {
+    : 'SUMMARIZE for github actions'
+    cat <<EOD >> "${GITHUB_STEP_SUMMARY:-/dev/stdout}"
+| FLAN | Unabbrev.  | Value                                          |
+| ---- | ---------- | ---------------------------------------------- |
+| cona | COdeNAme   | $(cona) |
+| gash | Git hASH   | $(gash) |
+| tabr | TAg/BRanch | $(tabr) |
+EOD
+}
+
+# Backwards compatibility with GitHub Actions Summary abbreviation
+ghas() { summarize; }
+
 tabr() {
     : 'TAg or BRanch or empty string'
     # GITHUB_HEAD_REF works for Pull Requests, GITHUB_REF_NAME for all the other triggers
     # https://stackoverflow.com/questions/58033366
     echo "${GITHUB_HEAD_REF:-$GITHUB_REF_NAME}"
-    # TODO how should people set this locally?
+    # TODO how should people set this locally? `git describe --tags`?
 }
 
 ups() {
