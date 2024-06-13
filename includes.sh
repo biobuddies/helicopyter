@@ -207,7 +207,7 @@ resourcerun() {
 
 summarize() {
     : 'SUMMARIZE for github actions'
-    cat <<EOD >> "${GITHUB_STEP_SUMMARY:-/dev/stdout}"
+    cat <<EOD | tee "${GITHUB_STEP_SUMMARY:-/dev/null}"
 | FLAN | Unabbrev.  | Value                                          |
 | ---- | ---------- | ---------------------------------------------- |
 | cona | COdeNAme   | $(cona) |
