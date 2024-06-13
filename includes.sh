@@ -186,6 +186,16 @@ pcm() {
     pre-commit run --hook-stage manual "$@"
 }
 
+pre-commit-try-am() {
+    : 'run Pre-Commit Try-repo modified files include Manual stage hooks'
+    pre-commit try-repo . \
+        --all-files \
+        --color always \
+        --hook-stage manual \
+        --show-diff-on-failure \
+        --verbose "$@"
+}
+
 resourcerun() {
     : 'RE-SOURCE this file and RUN the specified function with tracing enabled'
     # shellcheck source=includes.sh

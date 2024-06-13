@@ -46,14 +46,7 @@ jobs:
                   key: ${{ steps.restore-uv.outputs.cache-primary-key }}
                   path: ~/.cache/uv
 
-            - run: |
-                  source includes.sh && a && pre-commit try-repo . \
-                      --all-files \
-                      --color always \
-                      --hook-stage manual \
-                      --show-diff-on-failure \
-                      --verbose
-
+            - run: source includes.sh && a && pre-commit-try-am
             - run: terraform -chdir=deploys/demo/terraform init
             - run: terraform -chdir=deploys/demo/terraform validate
 on: # yamllint disable-line rule:truthy

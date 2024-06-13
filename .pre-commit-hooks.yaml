@@ -89,8 +89,7 @@
   language: system
 
 - id: uv-pip-check
-  always_run: true
-  entry: uv pip check requirements.txt
+  entry: uv pip check
   language: system
   name: uv-pip-check
 
