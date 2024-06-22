@@ -1,6 +1,9 @@
 # shellcheck shell=bash
 
-# TODO check for bash
+[[ $0 == *bash ]] || cat <<EOD
+WARNING: includes.sh has only been tested with Bash.
+Run \`chsh -s /bin/bash\` or \`forceready\` to switch.
+EOD
 set -o vi
 
 OS=$(uname -s)
@@ -15,12 +18,21 @@ case $OS in
         fi
 
         ;;
+    Linux)
+        gsed() {
+            : 'Gnu SED'
+            sed "$@"
+        }
+        open() {
+            : 'OPEN directory, file, or uniform resource locator'
+            xdg-open "$@"
+        }
 esac
 
 if ! [[ -x $(command -v nvm) ]]; then
     NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
     # shellcheck disable=SC1091
-    [[ -s "$NVM_DIR/nvm.sh" ]] && source "$NVM_DIR/nvm.sh" || echo ERROR: nvm missing
+    [[ -s "$NVM_DIR/nvm.sh" ]] && source "$NVM_DIR/nvm.sh" || echo INFO: nvm missing
 fi
 
 # F: no-op for single page, R: color, X: keep text when exiting, i: case insensitive searching
@@ -32,9 +44,20 @@ alias jq='jq --color-output'
 alias ls='ls --color=auto'
 
 pathver() {
-    : 'Print path and version'
-    (type "$1" && "$1" --version) |
-        sed -Ee N -e 's,^[^/(]*,,' -e 's,\((.+)\),\1,' -e "s/\n($1 )?/ /i"
+    : 'print PATH and VERsion; optionally assert version file matches'
+    source=$(type -p "$1")
+    if [[ -z $source ]]; then
+        source=$(type "$1")
+    fi
+    actual_version=$("$1" --version | sed -E "s/($1 )?//i")
+    echo "$source $actual_version"
+    if [[ -f $2 ]]; then
+        expected_version=$(cat "$2")
+        if [[ $actual_version != "$expected_version" ]]; then
+            echo "ERROR: $source version $actual_version does not match $2 $expected_version"
+            return 1
+        fi
+    fi
 }
 
 a() {
@@ -57,7 +80,7 @@ a() {
     might_be_file=$(command -v deactivate)
     if [[ $might_be_file ]]; then
         if [[ -f $might_be_file ]]; then
-            # .vscode/extensions/ms-python and pyenv-virtualenv want this
+            # pyenv-virtualenv wants this
             # shellcheck disable=SC1091
             source deactivate
         else
@@ -68,17 +91,17 @@ a() {
     if [[ -f .venv/bin/activate ]]; then
         # shellcheck disable=SC1091
         source .venv/bin/activate
-        pathver python
+        pathver python .python-version
     elif [[ -d conda ]]; then
         # shellcheck disable=SC1091
         source "$HOME/miniconda3/etc/profile.d/conda.sh"
         conda activate "$(basename "$PWD")"
-        pathver python
+        pathver python .python-version
     fi
 
     if [[ -f .nvmrc ]]; then
         nvm install &>/dev/null && nvm use &>/dev/null
-        pathver node
+        pathver node .nvmrc
     fi
 
     export PS1='\w$ '
@@ -93,12 +116,27 @@ cona() {
     fi
 }
 
+dcb() {
+    : 'Docker Compose Build'
+    docker compose --progress=plain build "$@"
+}
+
+dcs() {
+    : 'Docker Compose Shell'
+    docker compose run "$(cona)" bash "$@"
+}
+
+dcr() {
+    : 'Docker Compose Run'
+    docker compose run "$@"
+}
+
 devready() {
     : 'DEVelopment READYness check'
-    [[ $0 == bash ]] || echo 'ERROR: not running in BASH
+    [[ $0 == *bash ]] || echo 'ERROR: not running in BASH
 Testing multiple shells is a lot of work, and shellcheck does not support zsh.'
-    [[ $(git config --global advice.skipCherryPicks) == true ]] ||
-        echo 'WARNING: git advice.skipCherryPicks != true
+    [[ $(git config --global advice.skipCherryPicks) == false ]] ||
+        echo 'WARNING: git advice.skipCherryPicks != false
 This reduces noise when pull requests are squashed on the server side.'
     [[ $(git config --global core.commentChar) == ';' ]] ||
         echo 'WARNING: git core.commentChar != ;
@@ -135,14 +173,14 @@ Act on "fixup!" and "squash!" commit title prefixes'
 
 forceready() {
     : 'FORCE system to be READY for development, clobbering current settings'
-    if [[ $0 != bash ]]; then
+    if [[ $0 != *bash ]]; then
         chsh -s /bin/bash
         echo 'Shell changed to BASH. Please restart your shell and rerun forceready.'
         # TODO could we run this function with bash?
         return
     fi
 
-    git config --global advice.skipCherryPicks true
+    git config --global advice.skipCherryPicks false
     git config --global core.commentChar ';'
     git config --global diff.colormoved zebra
     ! [[ $INSH_NAME ]] || git config --global user.name "$INSH_NAME"
@@ -186,12 +224,11 @@ pcm() {
     pre-commit run --hook-stage manual "$@"
 }
 
-pre-commit-try-am() {
-    : 'run Pre-Commit Try-repo modified files include Manual stage hooks'
+pre-commit-try-all() {
+    : 'run PRE-COMMIT TRY-repo on ALL Files'
     pre-commit try-repo . \
         --all-files \
         --color always \
-        --hook-stage manual \
         --show-diff-on-failure \
         --verbose "$@"
 }
@@ -210,9 +247,9 @@ summarize() {
     cat <<EOD | tee "${GITHUB_STEP_SUMMARY:-/dev/null}"
 | FLAN | Unabbrev.  | Value                                          |
 | ---- | ---------- | ---------------------------------------------- |
-| cona | COdeNAme   | $(cona) |
-| gash | Git hASH   | $(gash) |
-| tabr | TAg/BRanch | $(tabr) |
+| CONA | COdeNAme   | $(cona) |
+| GASH | Git hASH   | $(gash) |
+| TABR | TAg/BRanch | $(tabr) |
 EOD
 }
 

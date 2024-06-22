@@ -1,16 +1,20 @@
-# Build time
-cdktf-cdktf-provider-cloudflare
-cdktf-cdktf-provider-null
-ipython
+# pre-commit Hooks
+codespell
+git+https://github.com/AleksaC/hadolint-py.git
 mypy
 pre-commit
-pytest
 ruff
 shellcheck-py
-twine
 uv
 validate-pyproject[all]
 yamllint
+
+# Build-Time (Not Part of pre-commit)
+cdktf-cdktf-provider-cloudflare
+cdktf-cdktf-provider-null
+ipython
+pytest
+twine
 
 # Runtime
 # TODO figure out how to install these from pyproject.toml
