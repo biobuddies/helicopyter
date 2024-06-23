@@ -13,7 +13,7 @@ yamllint
 cdktf-cdktf-provider-cloudflare
 cdktf-cdktf-provider-null
 ipython
-pytest
+pytest>=8  # Pin to keep recent
 twine
 
 # Runtime
