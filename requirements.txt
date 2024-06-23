@@ -22,6 +22,7 @@ cfgv==3.4.0
     # via pre-commit
 charset-normalizer==3.3.2
     # via requests
+codespell==2.3.0
 constructs==10.3.0
     # via
     #   cdktf
@@ -43,6 +44,7 @@ fastjsonschema==2.19.1
     # via validate-pyproject
 filelock==3.13.1
     # via virtualenv
+hadolint-py @ git+https://github.com/AleksaC/hadolint-py.git@a54e4d51787678062c8e108b20782f00e707a40e
 identify==2.5.33
     # via pre-commit
 idna==3.6
