@@ -204,6 +204,29 @@ gash() {
     git describe --abbrev=40 --always --dirty --match=-
 }
 
+hta() {
+    : 'Helicopyter synth and Terraform Apply'
+    local cona="$1"
+    shift
+    python -m helicopyter "$cona"
+    terraform -chdir="deploys/$cona/terraform" apply "$@"
+}
+
+hti() {
+    : 'Helper for Terraform Init'
+    local cona="$1"
+    shift
+    terraform -chdir="deploys/$cona/terraform" init "$@"
+}
+
+htp() {
+    : 'Helicopyter synth and Terraform Plan'
+    local cona="$1"
+    shift
+    python -m helicopyter "$cona"
+    terraform -chdir="deploys/$cona/terraform" plan "$@"
+}
+
 pc() {
     : 'run Pre-Commit on modified files'
     pre-commit run "$@"
@@ -266,7 +289,7 @@ tabr() {
 
 ups() {
     : 'Uv Pip Sync'
-    uv pip sync requirements.txt
+    uv pip sync requirements.txt "$@"
 }
 
 yucount() {

@@ -109,7 +109,7 @@ def multisynth(all_or_conas_or_paths: Iterable[str]) -> None:
         print('No codenames specified. Doing nothing.')
         return
 
-    if 'all' in all_or_conas_or_paths:
+    if 'all' in all_or_conas_or_paths or 'helicopyter.py' in all_or_conas_or_paths:
         conas_or_paths = {
             file.parent.parent.name
             for file in (Path(__file__).parent / 'deploys').glob('**/terraform/main.py')
