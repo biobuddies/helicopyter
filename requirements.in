@@ -11,6 +11,7 @@ yamllint
 
 # Build-Time (Not Part of pre-commit)
 cdktf-cdktf-provider-cloudflare
+cdktf-cdktf-provider-github
 cdktf-cdktf-provider-null
 ipython
 pytest>=8  # Pin to keep recent
