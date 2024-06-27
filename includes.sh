@@ -135,8 +135,8 @@ devready() {
     : 'DEVelopment READYness check'
     [[ $0 == *bash ]] || echo 'ERROR: not running in BASH
 Testing multiple shells is a lot of work, and shellcheck does not support zsh.'
-    [[ $(git config --global advice.skipCherryPicks) == false ]] ||
-        echo 'WARNING: git advice.skipCherryPicks != false
+    [[ $(git config --global advice.skippedCherryPicks) == false ]] ||
+        echo 'WARNING: git advice.skippedCherryPicks != false
 This reduces noise when pull requests are squashed on the server side.'
     [[ $(git config --global core.commentChar) == ';' ]] ||
         echo 'WARNING: git core.commentChar != ;
@@ -180,7 +180,7 @@ forceready() {
         return
     fi
 
-    git config --global advice.skipCherryPicks false
+    git config --global advice.skippedCherryPicks false
     git config --global core.commentChar ';'
     git config --global diff.colormoved zebra
     ! [[ $INSH_NAME ]] || git config --global user.name "$INSH_NAME"
