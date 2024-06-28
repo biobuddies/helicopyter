@@ -302,6 +302,6 @@ yucount() {
     date -u "+v%Y.%U.${count:-0}"
 }
 
-if [[ $@ ]]; then
+if [[ $* ]]; then
     "$@"
 fi
