@@ -301,3 +301,7 @@ yucount() {
     count=$(git tag --list "$yu*" | sed "s/$yu//" | sort -r | head -1)
     date -u "+v%Y.%U.${count:-0}"
 }
+
+if [[ $@ ]]; then
+    "$@"
+fi
