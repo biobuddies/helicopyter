@@ -1,7 +1,7 @@
 - id: codespell
-  name: codespell
   entry: codespell --check-filenames --ignore-words-list READYness
   language: python
+  name: codespell
   types:
       - text
 
@@ -63,10 +63,10 @@
   language: system
   name: mypy
   pass_filenames: false
-  types:
-      - python
   stages:
       - manual
+  types:
+      - python
 
 # uv-pip-check recommended instead
 - id: pip-check
@@ -107,18 +107,26 @@
       - pyi
 
 - id: shellcheck
-  name: shellcheck
   entry: shellcheck
   language: system
+  name: shellcheck
+  require_serial: true # shellcheck can detect sourcing this way
   types:
       - shell
-  require_serial: true # shellcheck can detect sourcing this way
+
+- id: shfmt
+  entry: >
+      shfmt --binary-next-line --case-indent --simplify --write --indent 4 --language-dialect bash
+  language: system
+  name: shfmt
+  types:
+      - shell
 
 - id: validate-pyproject
   entry: validate-pyproject
   files: ^pyproject.toml$
-  name: Validate pyproject.toml
   language: system
+  name: Validate pyproject.toml
 
 - id: uv-pip-check
   entry: uv pip check
