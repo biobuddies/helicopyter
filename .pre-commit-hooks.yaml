@@ -42,7 +42,7 @@
       - dockerfile
 
 - id: includes-sh
-  entry: curl -Os https://raw.githubusercontent.com/covracer/helicopyter/main/includes.sh
+  entry: curl -Os https://raw.githubusercontent.com/biobuddies/helicopyter/main/includes.sh
   language: system
   name: includes-sh
   pass_filenames: false
