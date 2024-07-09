@@ -5,6 +5,7 @@ mypy
 pre-commit
 ruff
 shellcheck-py
+shfmt-py
 uv
 validate-pyproject[all]
 yamllint

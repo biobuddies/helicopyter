@@ -27,6 +27,7 @@ case $OS in
             : 'OPEN directory, file, or uniform resource locator'
             xdg-open "$@"
         }
+        ;;
 esac
 
 if ! [[ -x $(command -v nvm) ]]; then
@@ -135,39 +136,39 @@ devready() {
     : 'DEVelopment READYness check'
     [[ $0 == *bash ]] || echo 'ERROR: not running in BASH
 Testing multiple shells is a lot of work, and shellcheck does not support zsh.'
-    [[ $(git config --global advice.skipCherryPicks) == false ]] ||
-        echo 'WARNING: git advice.skipCherryPicks != false
+    [[ $(git config --global advice.skippedCherryPicks) == false ]] \
+        || echo 'WARNING: git advice.skippedCherryPicks != false
 This reduces noise when pull requests are squashed on the server side.'
-    [[ $(git config --global core.commentChar) == ';' ]] ||
-        echo 'WARNING: git core.commentChar != ;
+    [[ $(git config --global core.commentChar) == ';' ]] \
+        || echo 'WARNING: git core.commentChar != ;
 This allows # hash character to be used for Markdown headers'
-    [[ $(git config --global diff.colormoved) == zebra ]] ||
-        echo 'WARNING: git diff.colormoved != zebra
+    [[ $(git config --global diff.colormoved) == zebra ]] \
+        || echo 'WARNING: git diff.colormoved != zebra
 This distinguishes moved lines from added and removed lines'
-    [[ $(git config --global user.name) ]] ||
-        echo 'ERROR: git user.name missing
+    [[ $(git config --global user.name) ]] \
+        || echo 'ERROR: git user.name missing
 Inconsistency breaks reports like git shortlog'
-    [[ $(git config --global user.email) ]] ||
-        echo 'ERROR: git user.email missing
+    [[ $(git config --global user.email) ]] \
+        || echo 'ERROR: git user.email missing
 Inconsistency breaks reports like git shortlog'
-    [[ $(git config --global pull.rebase) == true ]] ||
-        echo 'WARNING: git pull.rebase != true
+    [[ $(git config --global pull.rebase) == true ]] \
+        || echo 'WARNING: git pull.rebase != true
 Always be rebasing'
-    [[ $(git config --global push.default) == current ]] ||
-        echo 'WARNING: git push.default != current
+    [[ $(git config --global push.default) == current ]] \
+        || echo 'WARNING: git push.default != current
 Use feature branches with "GitHub Flow"'
-    [[ $(git config --global rebase.autosquash) == true ]] ||
-        echo 'WARNING: git rebase.autosquash != true
+    [[ $(git config --global rebase.autosquash) == true ]] \
+        || echo 'WARNING: git rebase.autosquash != true
 Act on "fixup!" and "squash!" commit title prefixes'
     if [[ $OS == Darwin ]]; then
-        grep --fixed-strings --no-messages --quiet .DS_Store ~/.config/git/ignore ||
-            echo WARNING: .DS_Store files not globally git ignored
-        [[ $(defaults read NSGlobalDomain ApplePressAndHoldEnabled) == '0' ]] ||
-            echo WARNING: MacOS press and hold enabled
-        [[ $(defaults read NSGlobalDomain NSAutomaticPeriodSubstitutionEnabled) == '0' ]] ||
-            echo WARNING: MacOS period substitution enabled
-        [[ $(defaults read NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled) == '0' ]] ||
-            echo WARNING: MacOS quote substitution enabled
+        grep --fixed-strings --no-messages --quiet .DS_Store ~/.config/git/ignore \
+            || echo WARNING: .DS_Store files not globally git ignored
+        [[ $(defaults read NSGlobalDomain ApplePressAndHoldEnabled) == '0' ]] \
+            || echo WARNING: MacOS press and hold enabled
+        [[ $(defaults read NSGlobalDomain NSAutomaticPeriodSubstitutionEnabled) == '0' ]] \
+            || echo WARNING: MacOS period substitution enabled
+        [[ $(defaults read NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled) == '0' ]] \
+            || echo WARNING: MacOS quote substitution enabled
     fi
 }
 
@@ -180,7 +181,7 @@ forceready() {
         return
     fi
 
-    git config --global advice.skipCherryPicks false
+    git config --global advice.skippedCherryPicks false
     git config --global core.commentChar ';'
     git config --global diff.colormoved zebra
     ! [[ $INSH_NAME ]] || git config --global user.name "$INSH_NAME"
@@ -249,11 +250,13 @@ pcm() {
 
 pre-commit-try-all() {
     : 'run PRE-COMMIT TRY-repo on ALL Files'
-    pre-commit try-repo . \
+    pre-commit try-repo \
         --all-files \
         --color always \
         --show-diff-on-failure \
-        --verbose "$@"
+        --verbose \
+        . \
+        "$@"
 }
 
 resourcerun() {
@@ -290,6 +293,11 @@ tabr() {
 ups() {
     : 'Uv Pip Sync'
     uv pip sync requirements.txt "$@"
+}
+
+uuid() {
+    : 'Universally Unique IDentifier'
+    python -c 'import uuid; print(uuid.uuid4())'
 }
 
 yucount() {
