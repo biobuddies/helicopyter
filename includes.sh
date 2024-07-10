@@ -1,9 +1,15 @@
-# shellcheck shell=bash
+#!/bin/bash
+
+if [[ $0 == *includes.sh ]]; then
+    echo 'ERROR: includes.sh must be sourced, not executed'
+    exit 1
+fi
 
 [[ $0 == *bash ]] || cat <<EOD
-WARNING: includes.sh has only been tested with Bash.
+WARNING: includes.sh has only been tested with Bash. You are running $0.
 Run \`chsh -s /bin/bash\` or \`forceready\` to switch.
 EOD
+
 set -o vi
 
 OS=$(uname -s)
@@ -50,7 +56,7 @@ pathver() {
     if [[ -z $source ]]; then
         source=$(type "$1")
     fi
-    actual_version=$("$1" --version | sed -E "s/($1 )?//i")
+    actual_version=$("$1" --version | gsed -E "s/($1 )?//i")
     echo "$source $actual_version"
     if [[ -f $2 ]]; then
         expected_version=$(cat "$2")
@@ -112,9 +118,27 @@ cona() {
     : 'CodeNAme'
     if [[ $GITHUB_REPOSITORY ]]; then
         echo "${GITHUB_REPOSITORY##*/}"
+    elif [[ $VIRTUAL_ENV ]]; then
+        basename "${VIRTUAL_ENV%/.venv}"
     else
-        echo "${VIRTUAL_ENV:-$PWD}" | sed -E 's,.*/([^/]+)(/\.?venv)?,\1,'
+        basename "$PWD"
     fi
+}
+
+check_mailmap() {
+    : 'CHECK for missing MAILMAP entries by surfacing different names for the same email'
+    # Could be expanded to optionally require ALLOWEDFLARE_PRIVATE_DOMAIN.
+    # Could be expanded to warn about same name, different email.
+    local return_code=0
+    local emails_names
+    emails_names=$(git log --format='%aE	%aN' --use-mailmap | sort --unique)
+    for repeat in $(echo "$emails_names" | cut -f 1 | uniq --repeated); do
+        echo "$emails_names" | grep "$repeat"
+        echo
+        return_code=1
+    done
+    [[ $return_code == 0 ]] || echo 'Multiple names are associated with the same email address.'
+    return $return_code
 }
 
 dcb() {
@@ -248,11 +272,28 @@ pcm() {
     pre-commit run --hook-stage manual "$@"
 }
 
-pre-commit-try-all() {
-    : 'run PRE-COMMIT TRY-repo on ALL Files'
+pcta() {
+    : 'run Pre-Commit Try-repo on All files'
     pre-commit try-repo \
         --all-files \
         --color always \
+        --show-diff-on-failure \
+        --verbose \
+        . \
+        "$@"
+}
+
+pctam() {
+    : 'run Pre-Commit Try-repo on All files including Manual stage hooks'
+    if [[ -z $* ]]; then
+        echo 'Please specify a specific hook to run, such as mypy.'
+        echo 'The gitignore hooks conflict with each other; includes-sh hook will revert changes.'
+        return 1
+    fi
+    pre-commit try-repo \
+        --all-files \
+        --color always \
+        --hook-stage manual \
         --show-diff-on-failure \
         --verbose \
         . \
@@ -306,7 +347,7 @@ yucount() {
     yu=$(date -u +v%Y.%U.)
     git fetch --tags
     local count
-    count=$(git tag --list "$yu*" | sed "s/$yu//" | sort -r | head -1)
+    count=$(git tag --list "$yu*" | gsed "s/$yu//" | sort -r | head -1)
     date -u "+v%Y.%U.${count:-0}"
 }
 
