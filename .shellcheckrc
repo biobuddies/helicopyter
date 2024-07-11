@@ -1,0 +1,1 @@
+disable=SC2016  # Backticks in single quotes are probably emphasis not subshell

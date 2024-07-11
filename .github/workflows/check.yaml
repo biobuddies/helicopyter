@@ -9,46 +9,32 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
-            - run: source includes.sh && summarize
+            - run: source includes.sh summarize
 
             - uses: actions/setup-node@v4
               with:
                   cache: yarn
                   node-version-file: .nvmrc
-            - run: npm -g install yarn && yarn
+            - run: yarn install --frozen-lockfile
 
             - uses: actions/setup-python@v5
               with:
                   python-version-file: .python-version
-            - uses: actions/cache@v4
-              with:
-                  path: ~/.cache/pip
-                  key: |
-                      ${{ runner.os }}-pip
-                      ${{ hashFiles('pyproject.toml') }}
-                      ${{ hashFiles('requirements.txt') }}
-                  restore-keys: ${{ runner.os }}-pip
 
-            - run: pip install --upgrade pip setuptools uv wheel
+            - run: pip install --upgrade pip setuptools uv
               env:
                   PIP_PROGRESS_BAR: 'off'
 
-            - uses: actions/cache/restore@v4
-              id: restore-uv
-              with:
-                  key: |
-                      ${{ runner.os }}-uv
-                      ${{ hashFiles('requirements.txt') }}
-                  path: ~/.cache/uv
-            - run: uv venv && source includes.sh && ups
-            - uses: actions/cache/save@v4
-              with:
-                  key: ${{ steps.restore-uv.outputs.cache-primary-key }}
-                  path: ~/.cache/uv
+            - run: uv venv && source includes.sh ups
 
-            - run: source includes.sh && a && pre-commit-try-all
-            - run: terraform -chdir=deploys/demo/terraform init
-            - run: terraform -chdir=deploys/demo/terraform validate
+            - run: >
+                  source includes.sh
+                  && a
+                  && pcta
+                  && pctam mypy
+                  && pctam gitignore-node-python-terraform
+            - run: source includes.sh hti demo && terraform -chdir=deploys/demo/terraform validate
+
 on: # yamllint disable-line rule:truthy
     pull_request:
     push:

@@ -1,6 +1,6 @@
 - id: codespell
   entry: codespell --check-filenames --ignore-words-list READYness
-  language: python
+  language: system
   name: codespell
   types:
       - text
@@ -57,6 +57,12 @@
   # Without this, there can be a useless run with specific deploys/*/terraform/main.py files,
   # followed by the run for all deploys/*/terraform/main.py files (triggered by helicopyter.py)
   require_serial: true
+
+- id: mailmap
+  entry: bash includes.sh check_mailmap
+  language: system
+  name: mailmap
+  pass_filenames: false
 
 - id: mypy
   entry: mypy .
