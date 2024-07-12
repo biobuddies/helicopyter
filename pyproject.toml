@@ -68,4 +68,4 @@ split-on-trailing-comma = false
 convention = 'pep257'
 
 [tool.setuptools.packages]
-find = {namespaces = false}
+find = { namespaces = false }
