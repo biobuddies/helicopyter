@@ -355,7 +355,7 @@ yucount() {
     git fetch --tags
     local count
     count=$(git tag --list "$yu*" | gsed "s/$yu//" | sort -r | head -1)
-    date -u "+v%Y.%U.${count:-0}"
+    date -u "+v%Y.%U.$((${count:-0} + 1))"
 }
 
 if [[ $* ]]; then
