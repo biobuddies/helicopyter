@@ -69,3 +69,5 @@ convention = 'pep257'
 
 [tool.setuptools.packages]
 find = { namespaces = false }
+
+[tool.setuptools_scm]
