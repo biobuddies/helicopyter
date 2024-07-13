@@ -6,6 +6,7 @@ from helicopyter import HeliStack
 
 buddies = {
     'christopher.covington': ('covracer', 'admin'),
+    'darren.pham': ('darpham', 'admin'),
     'duncan.tormey': ('DuncanTormey', 'admin'),
     'james.braza': ('jamesbraza', 'admin'),
     'matt.fowler': ('mattefowler', 'admin'),
