@@ -6,6 +6,7 @@ attrs==23.2.0
     # via
     #   cattrs
     #   jsii
+build==1.2.1
 cattrs==23.2.3
     # via jsii
 cdktf==0.20.0
@@ -95,6 +96,7 @@ nodeenv==1.8.0
     # via pre-commit
 packaging==24.0
     # via
+    #   build
     #   pytest
     #   validate-pyproject
 parso==0.8.3
@@ -131,6 +133,8 @@ pygments==2.17.2
     #   ipython
     #   readme-renderer
     #   rich
+pyproject-hooks==1.1.0
+    # via build
 pytest==8.1.1
 python-dateutil==2.8.2
     # via jsii

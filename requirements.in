@@ -11,6 +11,7 @@ validate-pyproject[all]
 yamllint
 
 # Build-Time (Not Part of pre-commit)
+build
 cdktf-cdktf-provider-cloudflare
 cdktf-cdktf-provider-github
 cdktf-cdktf-provider-null

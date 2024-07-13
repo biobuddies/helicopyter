@@ -25,6 +25,16 @@
                 "role": "admin",
                 "username": "covracer"
             },
+            "darren_pham": {
+                "//": {
+                    "metadata": {
+                        "path": "buddies/cdktf_cdktf_provider_github.membership/darren_pham",
+                        "uniqueId": "darren_pham"
+                    }
+                },
+                "role": "admin",
+                "username": "darpham"
+            },
             "duncan_tormey": {
                 "//": {
                     "metadata": {
