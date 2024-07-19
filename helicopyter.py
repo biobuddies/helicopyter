@@ -98,7 +98,7 @@ class HeliStack(TerraformStack):
         element = Element(self.scopes(Element.__module__), id_, *args, **kwargs)
         if import_id:
             self.imports[
-                f'{Element.__module__.replace('cdktf_cdktf_provider_', '').replace('.', '_')}.{id_}'
+                f"{Element.__module__.replace('cdktf_cdktf_provider_', '').replace('.', '_')}.{id_}"
             ] = import_id
         return element
 
