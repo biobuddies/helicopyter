@@ -71,6 +71,6 @@ convention = 'pep257'
 py-modules = ['helicopyter']
 
 [tool.setuptools.packages.find]
-exclude = ['deploys*']  # Applies to wheel but not sdist
+exclude = ['deploys*'] # Applies to wheel but not sdist
 
 [tool.setuptools_scm]
