@@ -47,7 +47,7 @@ alias ls='ls --color=auto'
 
 # Function naming philosophy:
 # * Few characters (usually an abbreviation) if frequently typed
-# * Descriptive snake_case for everything else (PEP8/Bashate style)
+# * Descriptive snake_case, just like PEP8, for everything else
 
 pathver() {
     : 'print PATH and VERsion; optionally assert version file matches'
