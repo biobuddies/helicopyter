@@ -45,6 +45,10 @@ export LESS
 alias jq='jq --color-output'
 alias ls='ls --color=auto'
 
+# Function naming philosophy:
+# * Few characters (usually an abbreviation) if frequently typed
+# * Descriptive snake_case for everything else (PEP8/Bashate style)
+
 pathver() {
     : 'print PATH and VERsion; optionally assert version file matches'
     source=$(type -p "$1")
@@ -239,6 +243,12 @@ forceready() {
         defaults write NSGlobalDomain NSAutomaticPeriodSubstitutionEnabled -bool false
         defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
     fi
+}
+
+functions() {
+    : 'list FUNCTIONS defined by includes.sh'
+    gsed -En 's/^ *([^(]+)\(\) \{$/\1/; T; N; s/\n +: /\t\t/; p' "${BASH_SOURCE[0]}"
+    echo -e "\nRun \`type function_name\` to display details."
 }
 
 gash() {
