@@ -24,7 +24,7 @@ jobs:
             - run: pip install --upgrade pip setuptools uv
               env:
                   PIP_PROGRESS_BAR: 'off'
-            - run: uv venv && source includes.sh ups
+            - run: uv venv && source includes.sh && a && ups
 
             - run: >
                   source includes.sh
@@ -35,7 +35,7 @@ jobs:
 
             - run: source includes.sh hti demo && terraform -chdir=deploys/demo/terraform validate
 
-            - run: source includes.sh a && python -m build
+            - run: source includes.sh && a && python -m build
 
 on: # yamllint disable-line rule:truthy
     pull_request:
