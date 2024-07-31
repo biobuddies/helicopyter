@@ -24,7 +24,6 @@ jobs:
             - run: pip install --upgrade pip setuptools uv
               env:
                   PIP_PROGRESS_BAR: 'off'
-
             - run: uv venv && source includes.sh ups
 
             - run: >
@@ -33,7 +32,9 @@ jobs:
                   && pcta
                   && pctam mypy
                   && pctam gitignore-node-python-terraform
+
             - run: source includes.sh hti demo && terraform -chdir=deploys/demo/terraform validate
+
             - run: source includes.sh a && python -m build
 
 on: # yamllint disable-line rule:truthy
