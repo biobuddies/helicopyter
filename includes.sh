@@ -45,6 +45,10 @@ export LESS
 alias jq='jq --color-output'
 alias ls='ls --color=auto'
 
+# Function naming philosophy:
+# * Few characters (usually an abbreviation) if frequently typed
+# * Descriptive snake_case, just like PEP8, for everything else
+
 pathver() {
     : 'print PATH and VERsion; optionally assert version file matches'
     source=$(type -p "$1")
@@ -105,8 +109,20 @@ a() {
         nvm install &>/dev/null && nvm use &>/dev/null
         pathver node .nvmrc
     fi
+}
 
-    export PS1='\w$ '
+build_twine() {
+    : 'clean, BUILD, and upload python package with TWINE'
+    if [[ $(git describe --exact --tags) != v20* ]]; then
+        echo 'ERROR: Please tag in the gvcount or yucount format'
+        return 1
+    fi
+    if [[ $TWINE_USERNAME != '__token__' || -z $TWINE_PASSWORD ]]; then
+        echo 'ERROR: Please set TWINE_USERNAME=__token__ and TWINE_PASSWORD=...'
+        return 1
+    fi
+    [[ -d dist ]] || mkdir dist
+    rm -r dist && python -m build && twine upload dist/*
 }
 
 cona() {
@@ -141,14 +157,24 @@ dcb() {
     docker compose --progress=plain build "$@"
 }
 
+dcp() {
+    : 'Docker Compose Push'
+    docker compose push --quiet "$@"
+}
+
+dcr() {
+    : 'Docker Compose Run, respecting docker-compose.yaml port definitions'
+    docker compose run --quiet-pull --service-ports "$@"
+}
+
 dcs() {
     : 'Docker Compose Shell'
     docker compose run "$(cona)" bash "$@"
 }
 
-dcr() {
-    : 'Docker Compose Run'
-    docker compose run "$@"
+dcu() {
+    : 'Docker Compose Up'
+    docker compose up "$@"
 }
 
 devready() {
@@ -219,9 +245,25 @@ forceready() {
     fi
 }
 
+functions() {
+    : 'list FUNCTIONS defined by includes.sh'
+    gsed -En 's/^ *([^(]+)\(\) \{$/\1/; T; N; s/\n +: /\t\t/; p' "${BASH_SOURCE[0]}"
+    echo -e "\nRun \`type function_name\` to display details."
+}
+
 gash() {
     : 'Git hASH'
     git describe --abbrev=40 --always --dirty --match=-
+}
+
+gvcount() {
+    : '%G %V COUNT style version string; see also: yucount'
+    local gv
+    gv=$(date -u +v%G.%V.)
+    git fetch --tags
+    local count
+    count=$(git tag --list "$gv*" | gsed "s/$gv//" | sort -r | head -1)
+    echo "$gv$((${count:-0} + 1))"
 }
 
 hta() {
@@ -307,24 +349,22 @@ pctam() {
         "$@"
 }
 
-resourcerun() {
-    : 'RE-SOURCE this file and RUN the specified function with tracing enabled'
-    # shellcheck source=includes.sh
-    source "${BASH_SOURCE[0]}"
-    set -x
-    "$@"
-    set +x
-}
-
 summarize() {
     : 'SUMMARIZE for github actions'
+    local CONA GASH TABR
+    CONA=$(cona)
+    GASH=$(gash)
+    TABR=$(tabr)
     cat <<EOD | tee "${GITHUB_STEP_SUMMARY:-/dev/null}"
 | FLAN | Unabbrev.  | Value                                          |
 | ---- | ---------- | ---------------------------------------------- |
-| CONA | COdeNAme   | $(cona) |
-| GASH | Git hASH   | $(gash) |
-| TABR | TAg/BRanch | $(tabr) |
+| CONA | COdeNAme   | $CONA |
+| GASH | Git hASH   | $GASH |
+| TABR | TAg/BRanch | $TABR |
 EOD
+    if [[ $GITHUB_ENV ]]; then
+        echo -e "CONA=$CONA\nGASH=$GASH\nTABR=$TABR" >>"$GITHUB_ENV"
+    fi
 }
 
 # Backwards compatibility with GitHub Actions Summary abbreviation
@@ -334,13 +374,35 @@ tabr() {
     : 'TAg or BRanch or empty string'
     # GITHUB_HEAD_REF works for Pull Requests, GITHUB_REF_NAME for all the other triggers
     # https://stackoverflow.com/questions/58033366
-    echo "${GITHUB_HEAD_REF:-$GITHUB_REF_NAME}"
-    # TODO how should people set this locally? `git describe --tags`?
+    # In contrast to the git metadata, the GitHub Actions environment variables are available before
+    # git checkout, and may be less ambiguous.
+    if [[ $GITHUB_HEAD_REF ]]; then
+        echo "$GITHUB_HEAD_REF"
+    elif [[ $GITHUB_REF_NAME ]]; then
+        echo "$GITHUB_REF_NAME"
+    else
+        local tabr
+        tabr=$(git describe --all --exact-match 2>/dev/null)
+        echo "${tabr#*/}"
+    fi
+}
+
+upc() {
+    : 'Uv Pip Compile'
+    uv pip compile -o requirements.txt --python-platform linux requirements.in
+    if [[ $OS == Darwin ]]; then
+        local appnope
+        appnope=$(uv pip freeze | grep appnope)
+        [[ $appnope ]] && echo "$appnope" >requirements-macos.txt
+    fi
 }
 
 ups() {
-    : 'Uv Pip Sync'
-    uv pip sync requirements.txt "$@"
+    : 'Uv Pip Sync, with MacOS workaround for appnope'
+    # shellcheck disable=SC2046
+    uv pip sync "$@" requirements.txt $(
+        [[ $OS == Darwin && -f requirements-macos.txt ]] && echo requirements-macos.txt
+    )
 }
 
 uuid() {
@@ -349,15 +411,22 @@ uuid() {
 }
 
 yucount() {
-    : '%Y %U COUNT style version string'
+    : '%Y %U COUNT style version string; see also: gvcount'
     local yu
     yu=$(date -u +v%Y.%U.)
     git fetch --tags
     local count
     count=$(git tag --list "$yu*" | gsed "s/$yu//" | sort -r | head -1)
-    date -u "+v%Y.%U.$((${count:-0} + 1))"
+    echo "$yu$((${count:-0} + 1))"
 }
 
 if [[ $* ]]; then
-    "$@"
+    if [[ $INSH_TRACE == 'off' ]]; then
+        "$@"
+    else
+        (
+            set -x
+            "$@"
+        )
+    fi
 fi
