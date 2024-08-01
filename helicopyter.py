@@ -1,21 +1,13 @@
 """Generate JSON which Terraform can use from Python."""
 
-from collections.abc import Callable, Iterable
-from functools import partial
+from collections.abc import Iterable
 from importlib import import_module
 from json import dump
 from pathlib import Path
 from subprocess import check_output
 from typing import Any, TypeVar
 
-from cdktf import (
-    App,
-    TerraformElement,
-    TerraformLocal,
-    TerraformOutput,
-    TerraformStack,
-    TerraformVariable,
-)
+from cdktf import App, TerraformElement, TerraformStack
 from constructs import Construct, Node
 from tap import Tap
 
@@ -25,11 +17,8 @@ class HeliStack(TerraformStack):
         # Something is automatically creating outdir, which is cdktf.out by default
         super().__init__(App(outdir='.'), cona)
 
-        self.Local = partial(TerraformLocal, Construct(self, 'local'))
-        self.Output = partial(TerraformOutput, Construct(self, 'output'))
-        self.Variable = partial(TerraformVariable, Construct(self, 'variable'))
         self.cona = cona
-        self.imports: dict[str, str] = {}  # {to: id}
+        self.imports: dict[str, str] = {}  # {to_0: id_0, to_1, id_1, ...}
         self._scopes: dict[str, Construct] = {}
 
     def _allocate_logical_id(self, element: Node | TerraformElement) -> str:
@@ -37,33 +26,6 @@ class HeliStack(TerraformStack):
             # Mostly for mypy. Patches to support AWS CDK welcome.
             raise TypeError('AWS CDK unsupported; please use CDKTF')
         return element.node.id
-
-    def scopes(self, module_name: str) -> Construct:
-        """Get or create a Construct for module_name for scoping purposes."""
-        if module_name not in self._scopes:
-            self._scopes[module_name] = Construct(self, module_name)
-        return self._scopes[module_name]
-
-    def load(self, label: str) -> Callable[..., type[TerraformElement]]:
-        """
-        Return a Data or Resource class given a substring of the module/package name.
-
-        Example usage:
-        AccessApplication = stack.load('cloudflare_access_application')
-
-        In contrast to HeliStack.push, this method is more concise but obscures type annotations.
-        """
-        provider, _, snake_case_element = label.partition('_')
-        module = import_module(f'cdktf_cdktf_provider_{provider}.{snake_case_element}')
-        if snake_case_element == 'provider':
-            camel_case_element = f'{provider.title()}Provider'
-        else:
-            camel_case_element = ''.join(part.title() for part in snake_case_element.split('_'))
-        element_class = getattr(module, camel_case_element)
-        if issubclass(element_class, TerraformElement):
-            print(f'Loading {module.__name__}')
-            return partial(element_class, self.scopes(module.__name__))
-        raise Exception(f'{camel_case_element} is not a TerraformElement')
 
     def provide(self, name: str) -> type[TerraformElement]:
         """
@@ -91,12 +53,16 @@ class HeliStack(TerraformStack):
         Example usage:
         from cdktf_cdktf_provider_cloudflare.access_application import AccessApplication
         stack.push(AccessApplication, 'mydomain-wildcard', domain='*.mydomain.com')
-
-        In contrast to HeliStack.load, this method preserves type annotations at the cost of
-        verbose imports.
         """
-        print(f'Pushing {id_} to {Element.__module__}')
-        element = Element(self.scopes(Element.__module__), id_, *args, **kwargs)
+        if Element.__module__ == 'cdktf':
+            scope_name = Element.__name__.lower().replace('terraform', '')
+        else:
+            scope_name = Element.__module__.replace('cdktf_cdktf_provider_', '').replace('.', '_')
+        if scope_name not in self._scopes:
+            self._scopes[scope_name] = Construct(self, scope_name)
+
+        print(f'Pushing {scope_name}.{id_}')
+        element = Element(self._scopes[scope_name], id_, *args, **kwargs)
         if import_id:
             self.imports[
                 f"{Element.__module__.replace('cdktf_cdktf_provider_', '').replace('.', '_')}.{id_}"

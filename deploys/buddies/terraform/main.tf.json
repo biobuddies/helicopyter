@@ -18,7 +18,7 @@
             "christopher_covington": {
                 "//": {
                     "metadata": {
-                        "path": "buddies/cdktf_cdktf_provider_github.membership/christopher_covington",
+                        "path": "buddies/github_membership/christopher_covington",
                         "uniqueId": "christopher_covington"
                     }
                 },
@@ -28,7 +28,7 @@
             "darren_pham": {
                 "//": {
                     "metadata": {
-                        "path": "buddies/cdktf_cdktf_provider_github.membership/darren_pham",
+                        "path": "buddies/github_membership/darren_pham",
                         "uniqueId": "darren_pham"
                     }
                 },
@@ -38,7 +38,7 @@
             "duncan_tormey": {
                 "//": {
                     "metadata": {
-                        "path": "buddies/cdktf_cdktf_provider_github.membership/duncan_tormey",
+                        "path": "buddies/github_membership/duncan_tormey",
                         "uniqueId": "duncan_tormey"
                     }
                 },
@@ -48,7 +48,7 @@
             "james_braza": {
                 "//": {
                     "metadata": {
-                        "path": "buddies/cdktf_cdktf_provider_github.membership/james_braza",
+                        "path": "buddies/github_membership/james_braza",
                         "uniqueId": "james_braza"
                     }
                 },
@@ -58,7 +58,7 @@
             "matt_fowler": {
                 "//": {
                     "metadata": {
-                        "path": "buddies/cdktf_cdktf_provider_github.membership/matt_fowler",
+                        "path": "buddies/github_membership/matt_fowler",
                         "uniqueId": "matt_fowler"
                     }
                 },

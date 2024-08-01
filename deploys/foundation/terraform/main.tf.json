@@ -32,7 +32,7 @@
             "airdjang": {
                 "//": {
                     "metadata": {
-                        "path": "foundation/cdktf_cdktf_provider_github.repository/airdjang",
+                        "path": "foundation/github_repository/airdjang",
                         "uniqueId": "airdjang"
                     }
                 },
@@ -61,7 +61,7 @@
             "allowedflare": {
                 "//": {
                     "metadata": {
-                        "path": "foundation/cdktf_cdktf_provider_github.repository/allowedflare",
+                        "path": "foundation/github_repository/allowedflare",
                         "uniqueId": "allowedflare"
                     }
                 },
@@ -89,7 +89,7 @@
             "helicopyter": {
                 "//": {
                     "metadata": {
-                        "path": "foundation/cdktf_cdktf_provider_github.repository/helicopyter",
+                        "path": "foundation/github_repository/helicopyter",
                         "uniqueId": "helicopyter"
                     }
                 },
