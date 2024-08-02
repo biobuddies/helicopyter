@@ -1,41 +1,38 @@
 """Test the helicopyter module."""
 
-from unittest import TestCase
-
-import pytest
-from cdktf_cdktf_provider_null.resource import Resource
+from cdktf import TerraformLocal, TerraformOutput, TerraformVariable
+from cdktf_cdktf_provider_null.resource import Resource as NullResource
+from pytest import raises
 
 from helicopyter import HeliStack
 
 
-class TestHeliStack(TestCase):
-    def test_load(self) -> None:
-        """Multiple calls should work if and only if the id_ string is unique."""
-        stack = HeliStack('foo')
-        NullResource = stack.load('null_resource')  # noqa: N806
-        my_first_null = NullResource('bar')
-        assert isinstance(my_first_null, Resource)
+def test_helistack() -> None:
+    """The class must instantiate and provide the cona attribute and provide and push methods."""
+    stack = HeliStack('foo')
+    assert stack.cona == 'foo'
+    assert callable(stack.provide)
+    assert callable(stack.push)
 
-        my_second_null = NullResource('baz')
-        assert isinstance(my_second_null, Resource)
 
-        with pytest.raises(RuntimeError):
-            NullResource('bar')
+def test_push_id() -> None:
+    """Within a given Element such as the NullResource, the id_ must be unique."""
+    stack = HeliStack('foo')
+    my_first_null = stack.push(NullResource, 'bar')
+    assert isinstance(my_first_null, NullResource)
 
-        with pytest.raises(RuntimeError):
-            stack.push(Resource, 'bar')
+    my_second_null = stack.push(NullResource, 'baz')
+    assert isinstance(my_second_null, NullResource)
 
-    def test_push(self) -> None:
-        """Multiple calls should work if and only if the id_ string is unique."""
-        stack = HeliStack('foo')
-        my_first_null = stack.push(Resource, 'bar')
-        assert isinstance(my_first_null, Resource)
+    with raises(RuntimeError):
+        stack.push(NullResource, 'bar')
 
-        my_second_null = stack.push(Resource, 'baz')
-        assert isinstance(my_second_null, Resource)
 
-        with pytest.raises(RuntimeError):
-            stack.push(Resource, 'bar')
-
-        with pytest.raises(RuntimeError):
-            stack.load('null_resource')('bar')
+def test_push_provider() -> None:
+    """The same id_ must be allowed for different Elements."""
+    stack = HeliStack('foo')
+    stack.push(NullResource, 'bar')
+    stack.push(TerraformLocal, 'bar', 'bar')
+    stack.push(TerraformOutput, 'bar', value='bar')
+    stack.push(TerraformVariable, 'bar')
+    stack.to_terraform()

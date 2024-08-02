@@ -25,11 +25,11 @@
     },
     "resource": {
         "null_resource": {
-            "main": {
+            "this": {
                 "//": {
                     "metadata": {
-                        "path": "demo/cdktf_cdktf_provider_null.resource/main",
-                        "uniqueId": "main"
+                        "path": "demo/null_resource/this",
+                        "uniqueId": "this"
                     }
                 },
                 "provisioner": [
