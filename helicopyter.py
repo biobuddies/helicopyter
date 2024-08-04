@@ -48,7 +48,10 @@ class HeliStack(TerraformStack):
         **kwargs: Any,  # noqa: ANN401
     ) -> E:
         """
-        Add Data or a Resource to the stack and return it.
+        Return new instance of Element (data, local, output, resource, or variable).
+
+        In contrast to running Element(...) standalone, the new instance will be named in the
+        traditional Terraform style.
 
         Example usage:
         from cdktf_cdktf_provider_cloudflare.access_application import AccessApplication
@@ -102,9 +105,15 @@ def multisynth(
             f'deploys/{cona}/terraform/main.tf{"" if hashicorp_configuration_language else ".json"}'
         )
         print(f'Generating {relative_path}')
-        module = import_module(f'deploys.{cona}.terraform.main')
-        stack = HeliStack(cona)
-        module.synth(stack)
+        try:
+            module_path = f'deploys.{cona}.terraform.main'
+            main = import_module(module_path)
+            stack = main.synth.__annotations__['stack'](cona)
+            main.synth(stack)
+        except (AttributeError, ImportError, KeyError, TypeError):
+            python_file = module_path.replace('.', '/') + '.py'
+            print(f'`def synth(stack: HeliStack):` appears to be missing from {python_file}')
+            raise
         if hashicorp_configuration_language:
             unformatted = stack.to_hcl_terraform()['hcl'].encode()
             formatted = check_output(['terraform', 'fmt', '-'], input=unformatted).decode()  # noqa: S603
