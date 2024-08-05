@@ -1,5 +1,5 @@
-from cdktf_cdktf_provider_docker.image import Image
 from cdktf_cdktf_provider_docker.container import Container
+from cdktf_cdktf_provider_docker.image import Image
 
 from helicopyter import HeliStack
 

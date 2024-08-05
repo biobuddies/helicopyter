@@ -1,8 +1,8 @@
-from constructs import Construct
 from cdktf import App, TerraformStack
-from cdktf_cdktf_provider_docker.image import Image
 from cdktf_cdktf_provider_docker.container import Container
+from cdktf_cdktf_provider_docker.image import Image
 from cdktf_cdktf_provider_docker.provider import DockerProvider
+from constructs import Construct
 
 
 class MyStack(TerraformStack):
