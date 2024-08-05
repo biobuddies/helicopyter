@@ -26,5 +26,5 @@ class NewStack(HeliStack):
         self.push(TerraformOutput, 'gash', value=gash.to_string())
 
 
-def synth(_stack: NewStack) -> None:
+def synth(stack: NewStack) -> None:  # noqa: ARG001
     pass
