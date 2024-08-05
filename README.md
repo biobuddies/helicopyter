@@ -25,14 +25,14 @@ Helicopyter uses [CDKTF](https://github.com/hashicorp/terraform-cdk) and is insp
       subclass only to instantiate one instance of it is more complicated than instantiating the
       base class and modifying the instance.
 ```diff
---- documentation/learn_cdktf_docker/cdktf.py   2024-08-05 08:47:30
-+++ documentation/learn_cdktf_docker/helicopyter.py     2024-08-05 08:47:25
+--- documentation/learn_cdktf_docker.py   2024-08-05 08:47:30
++++ documentation/learn_helicopyter_docker.py     2024-08-05 08:47:25
 @@ -1,28 +1,18 @@
--from constructs import Construct
 -from cdktf import App, TerraformStack
- from cdktf_cdktf_provider_docker.image import Image
  from cdktf_cdktf_provider_docker.container import Container
+ from cdktf_cdktf_provider_docker.image import Image
 -from cdktf_cdktf_provider_docker.provider import DockerProvider
+-from constructs import Construct
 +from helicopyter import HeliStack
  
 -class MyStack(TerraformStack):
