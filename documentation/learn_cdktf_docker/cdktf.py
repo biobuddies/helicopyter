@@ -1,3 +1,5 @@
+"""Upstream CDKTF example to compare with Helicopyter."""
+
 from cdktf import App, TerraformStack
 from cdktf_cdktf_provider_docker.container import Container
 from cdktf_cdktf_provider_docker.image import Image
@@ -6,7 +8,7 @@ from constructs import Construct
 
 
 class MyStack(TerraformStack):
-    def __init__(self, scope: Construct, ns: str):
+    def __init__(self, scope: Construct, ns: str) -> None:
         super().__init__(scope, ns)
 
         DockerProvider(self, 'docker')
