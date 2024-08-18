@@ -349,6 +349,17 @@ pctam() {
         "$@"
 }
 
+release() {
+    local prefix
+    prefix=$(date -u "+v${INSH_RELEASE_PREFIX:-%Y.%U.}")
+    git fetch --tags
+    local count
+    count=$(git tag --list "$prefix*" | gsed "s/$prefix//" | sort -r | head -1)
+    gh release create "$prefix$((${count:-0} + 1))" --generate-notes
+    git fetch --tags
+    [[ $* == build ]] && build_twine
+}
+
 summarize() {
     : 'SUMMARIZE for github actions'
     local CONA GASH TABR

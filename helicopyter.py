@@ -75,13 +75,16 @@ class HeliStack(TerraformStack):
 
 # ruff: noqa: T201
 def multisynth(
-    all_or_conas_or_paths: Iterable[str], *, hashicorp_configuration_language: bool = False
+    all_or_conas_or_paths: Iterable[str],
+    *,
+    change_directory: Path | None = None,
+    hashicorp_configuration_language: bool = False,
 ) -> None:
     if not all_or_conas_or_paths:
         print('No codenames specified. Doing nothing.')
         return
 
-    top_directory = Path(__file__).parent
+    top_directory = change_directory if change_directory else Path.cwd()
 
     if 'all' in all_or_conas_or_paths or 'helicopyter.py' in all_or_conas_or_paths:
         conas_or_paths = {
@@ -135,12 +138,18 @@ def multisynth(
 
 class Parameters(Tap):
     conas: list[str]  # space-separated COdeNAmes
+    directory: Path | None = None
     hashicorp_configuration_language: bool = False
 
     def configure(self) -> None:  # noqa: D102
-        self.add_argument('conas')  # Make this a positional argument
+        self.add_argument('conas')  # Positional argument
+        self.add_argument('-C', '--directory')  # Like make and tar
 
 
 if __name__ == '__main__':
     args = Parameters().parse_args()
-    multisynth(args.conas, hashicorp_configuration_language=args.hashicorp_configuration_language)
+    multisynth(
+        args.conas,
+        change_directory=args.directory,
+        hashicorp_configuration_language=args.hashicorp_configuration_language,
+    )
