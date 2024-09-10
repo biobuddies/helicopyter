@@ -31,15 +31,21 @@ case $OS in
         ;;
 esac
 
-if ! [[ -x $(command -v nvm) ]]; then
-    NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
+if [[ -f $HOME/code/asdf/asdf.sh ]]; then
     # shellcheck disable=SC1091
-    [[ -s "$NVM_DIR/nvm.sh" ]] && source "$NVM_DIR/nvm.sh" || echo INFO: nvm missing
+    source "$HOME/code/asdf/asdf.sh" \
+        && source "$HOME/code/asdf/completions/asdf.bash"
+else
+    echo "Please run
+git clone https://github.com/asdf-vm/asdf.git ~/code/asdf"
 fi
 
 # F: no-op for single page, R: color, X: keep text when exiting, i: case insensitive searching
 LESS='-FRXi'
 export LESS
+
+PACKAGES="bind9-host curl fping git less tmux"
+export PACKAGES
 
 # Aliases only work in interactive shells
 alias jq='jq --color-output'
@@ -106,7 +112,6 @@ a() {
     fi
 
     if [[ -f .nvmrc ]]; then
-        nvm install &>/dev/null && nvm use &>/dev/null
         pathver node .nvmrc
     fi
 }
@@ -126,7 +131,7 @@ build_twine() {
 }
 
 cona() {
-    : 'CodeNAme'
+    : 'print CodeNAme, a four letter acronym'
     if [[ $GITHUB_REPOSITORY ]]; then
         echo "${GITHUB_REPOSITORY##*/}"
     elif [[ $VIRTUAL_ENV ]]; then
@@ -181,9 +186,22 @@ devready() {
     : 'DEVelopment READYness check'
     [[ $0 == *bash ]] || echo 'ERROR: not running in BASH
 Testing multiple shells is a lot of work, and shellcheck does not support zsh.'
+
+    grep -qE 'legacy_version_file.*=.*yes' ~/.asdfrc 2>/dev/null \
+        || echo 'WARNING: legacy_version_file != yes
+Files like .python-version will be ignored'
+    local installed
+    installed=$(asdf plugin list 2>/dev/null)
+    [[ $installed == *nodejs* ]] \
+        || echo 'WARNING: nodejs plugin for asdf not added'
+    [[ $installed == *tenv* ]] \
+        || echo 'WARNING: tenv plugin for asdf not added'
+    [[ $installed == *uv* ]] \
+        || echo 'WARNING: uv plugin for asdf not added'
+
     [[ $(git config --global advice.skippedCherryPicks) == false ]] \
         || echo 'WARNING: git advice.skippedCherryPicks != false
-This reduces noise when pull requests are squashed on the server side.'
+This reduces noise when pull requests are squashed on the server side'
     [[ $(git config --global core.commentChar) == ';' ]] \
         || echo 'WARNING: git core.commentChar != ;
 This allows # hash character to be used for Markdown headers'
@@ -226,6 +244,15 @@ forceready() {
         return
     fi
 
+    grep -qE 'legacy_version_file.*=.*yes' ~/.asdfrc 2>/dev/null \
+        || echo 'legacy_version_file = yes' >>~/.asdfrc
+    local installed
+    installed=$(asdf plugin list 2>/dev/null)
+    [[ $installed == *nodejs* ]] || asdf plugin add nodejs
+    [[ $installed == *tenv* ]] \
+        || asdf plugin add tenv https://github.com/tofuutils/asdf-tenv
+    [[ $installed == *uv* ]] || asdf plugin add uv
+
     git config --global advice.skippedCherryPicks false
     git config --global core.commentChar ';'
     git config --global diff.colormoved zebra
@@ -245,6 +272,17 @@ forceready() {
     fi
 }
 
+envi() {
+    : 'print ENVIronment, a four letter acronym'
+    if [[ $ENVI ]]; then
+        echo "$ENVI"
+    elif [[ $GITHUB_ACTIONS ]]; then
+        echo githubactions
+    else
+        echo local
+    fi
+}
+
 functions() {
     : 'list FUNCTIONS defined by includes.sh'
     gsed -En 's/^ *([^(]+)\(\) \{$/\1/; T; N; s/\n +: /\t\t/; p' "${BASH_SOURCE[0]}"
@@ -252,7 +290,7 @@ functions() {
 }
 
 gash() {
-    : 'Git hASH'
+    : 'print Git hASH, a four letter acronym'
     git describe --abbrev=40 --always --dirty --match=-
 }
 
@@ -350,6 +388,7 @@ pctam() {
 }
 
 release() {
+    : 'create a github RELEASE, and optionally also run build and twine upload'
     local prefix
     prefix=$(date -u "+v${INSH_RELEASE_PREFIX:-%Y.%U.}")
     git fetch --tags
@@ -361,17 +400,20 @@ release() {
 }
 
 summarize() {
-    : 'SUMMARIZE for github actions'
+    : 'SUMMARIZE environment by displaying four letter acronyms'
     local CONA GASH TABR
     CONA=$(cona)
+    ENVI=$(envi)
     GASH=$(gash)
     TABR=$(tabr)
     cat <<EOD | tee "${GITHUB_STEP_SUMMARY:-/dev/null}"
-| FLAN | Unabbrev.  | Value                                          |
-| ---- | ---------- | ---------------------------------------------- |
-| CONA | COdeNAme   | $CONA |
-| GASH | Git hASH   | $GASH |
-| TABR | TAg/BRanch | $TABR |
+| FLAN | Unabbrevia. | Value                                          |
+| ---- | ----------- | ---------------------------------------------- |
+| CONA | COdeNAme    | $CONA |
+| ENVI | ENVIronment | $ENVI |
+| GASH | Git hASH    | $GASH |
+| ROLE | ROLE        | $ROLE |
+| TABR | TAg/BRanch  | $TABR |
 EOD
     if [[ $GITHUB_ENV ]]; then
         echo -e "CONA=$CONA\nGASH=$GASH\nTABR=$TABR" >>"$GITHUB_ENV"
@@ -382,7 +424,7 @@ EOD
 ghas() { summarize; }
 
 tabr() {
-    : 'TAg or BRanch or empty string'
+    : 'print TAg or BRanch or empty string, a four letter acronym'
     # GITHUB_HEAD_REF works for Pull Requests, GITHUB_REF_NAME for all the other triggers
     # https://stackoverflow.com/questions/58033366
     # In contrast to the git metadata, the GitHub Actions environment variables are available before
@@ -392,9 +434,9 @@ tabr() {
     elif [[ $GITHUB_REF_NAME ]]; then
         echo "$GITHUB_REF_NAME"
     else
-        local tabr
-        tabr=$(git describe --all --exact-match 2>/dev/null)
-        echo "${tabr#*/}"
+        local description
+        description=$(git describe --all --dirty --exact-match 2>/dev/null)
+        [[ $description == *-dirty ]] || echo "${description#*/}"
     fi
 }
 
