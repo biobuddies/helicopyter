@@ -9,6 +9,10 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
+            - uses: actions/checkout@v4
+              with:
+                  path: asdf
+                  repository: asdf-vm/asdf
             - run: source includes.sh summarize
 
             - uses: actions/setup-node@v4

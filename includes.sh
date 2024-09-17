@@ -31,20 +31,28 @@ case $OS in
         ;;
 esac
 
-if [[ -f $HOME/code/asdf/asdf.sh ]]; then
-    # shellcheck disable=SC1091
-    source "$HOME/code/asdf/asdf.sh" \
-        && source "$HOME/code/asdf/completions/asdf.bash"
-else
-    echo "Please run
+# Accept any kind of installation, such as Homebrew
+if ! [[ $(command -v asdf) ]]; then
+    if [[ -f $HOME/code/asdf/asdf.sh ]]; then
+        # Automate git installation configuration
+        # shellcheck disable=SC1091
+        source "$HOME/code/asdf/asdf.sh" \
+            && source "$HOME/code/asdf/completions/asdf.bash"
+    else
+        # Recommend git installation
+        echo "Please run
 git clone https://github.com/asdf-vm/asdf.git ~/code/asdf"
+    fi
 fi
+
+CLICOLOR_FORCE=1 # For `tree`; might also color `ls` on FreeBSD and Darwin
+export CLICOLOR_FORCE
 
 # F: no-op for single page, R: color, X: keep text when exiting, i: case insensitive searching
 LESS='-FRXi'
 export LESS
 
-PACKAGES="bind9-host curl fping git less tmux"
+PACKAGES="bind9-host curl fping git less tmux tree"
 export PACKAGES
 
 # Aliases only work in interactive shells
