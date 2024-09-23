@@ -12,6 +12,7 @@ yamllint
 
 # Build-Time (Not Part of pre-commit)
 build
+cdktf-cdktf-provider-aws
 cdktf-cdktf-provider-cloudflare
 cdktf-cdktf-provider-docker
 cdktf-cdktf-provider-github

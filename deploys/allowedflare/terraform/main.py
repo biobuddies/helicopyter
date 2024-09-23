@@ -8,10 +8,10 @@ from cdktf_cdktf_provider_cloudflare.access_identity_provider import AccessIdent
 from cdktf_cdktf_provider_cloudflare.access_policy import AccessPolicy, AccessPolicyInclude
 from cdktf_cdktf_provider_cloudflare.worker_route import WorkerRoute
 
-from helicopyter import HeliStack
+from stacks.base import BaseStack
 
 
-def synth(stack: HeliStack) -> None:
+def synth(stack: BaseStack) -> None:
     stack.provide('cloudflare')
 
     # If this was a private repository, I'd probably set these variables using string literals
