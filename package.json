@@ -5,5 +5,8 @@
     },
     "scripts": {
         "prettier": "prettier --write"
+    },
+    "dependencies": {
+        "cdk8s-cli": "^2.198.227"
     }
 }

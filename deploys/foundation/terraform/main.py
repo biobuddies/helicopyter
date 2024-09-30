@@ -8,6 +8,7 @@ repositories = {
     'airdjang': ('Airflow + Django', ['airflow', 'django', 'python']),
     'allowedflare': ('Intranet connectivity for Django and more', ['django', 'python']),
     'helicopyter': ('Python-defined infrastructure', ['ansible', 'cdktf', 'python', 'terraform']),
+    'wellplated': ('Python Django models for liquid handling', ['django', 'python']),
 }
 
 

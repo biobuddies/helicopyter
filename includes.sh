@@ -322,15 +322,15 @@ hta() {
         return 1
     fi
     shift 2
-    python -m helicopyter "$cona"
-    TF_WORKSPACE="$envi" terraform -chdir="deploys/$cona/terraform" apply "$@"
+    python -m helicopyter --format_with="${INSH_TF:-terraform}" "$cona"
+    TF_WORKSPACE="$envi" ${INSH_TF:-terraform} -chdir="deploys/$cona/terraform" apply "$@"
 }
 
 hti() {
     : 'Helper for Terraform Init'
     local cona="${1?:Please provide a code name as the first argument}"
     shift
-    terraform -chdir="deploys/$cona/terraform" init "$@"
+    ${INSH_TF:-terraform} -chdir="deploys/$cona/terraform" init "$@"
 }
 
 htp() {
@@ -343,8 +343,8 @@ htp() {
         return 1
     fi
     shift 2
-    python -m helicopyter "$cona"
-    TF_WORKSPACE="$envi" terraform -chdir="deploys/$cona/terraform" plan "$@"
+    python -m helicopyter --format_with="${INSH_TF:-terraform}" "$cona"
+    TF_WORKSPACE="$envi" ${INSH_TF:-terraform} -chdir="deploys/$cona/terraform" plan "$@"
 }
 
 pc() {

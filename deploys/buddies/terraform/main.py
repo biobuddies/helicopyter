@@ -10,6 +10,7 @@ buddies = {
     'duncan.tormey': ('DuncanTormey', 'admin'),
     'james.braza': ('jamesbraza', 'admin'),
     'matt.fowler': ('mattefowler', 'admin'),
+    'nadia.wallace': ('16NWallace', 'admin'),
 }
 
 

@@ -7,9 +7,8 @@ less like the AWS Cloud Development Kit (CDK) and more like Terraform.
 
 ## Background
 Helicopyter uses [CDKTF](https://github.com/hashicorp/terraform-cdk) and is inspired by
-[Configerator](https://research.facebook.com/file/877841159827226/holistic-configuration-management-at-facebook.pdf),
-[Terraformpy](https://github.com/NerdWalletOSS/terraformpy), and
-[Terraform JSON configuration syntax](https://developer.hashicorp.com/terraform/language/syntax/json).
+[Configerator](https://research.facebook.com/file/877841159827226/holistic-configuration-management-at-facebook.pdf) and
+[Terraformpy](https://github.com/NerdWalletOSS/terraformpy).
 
 ## What Helicopyter does (goals)
 - Name in the resource-prefix Terraform style, instead of the hash-suffix CDK style. This makes
@@ -67,7 +66,7 @@ Helicopyter uses [CDKTF](https://github.com/hashicorp/terraform-cdk) and is insp
 -
 -app.synth()
 ```
-- Enable hand-written Hashicorp Configuration Language (HCL) files and auto-generated HCL/JSON to
+- Enable hand-written and auto-generated Hashicorp Configuration Language (HCL) files to
   co-exist, allowing incremental adoption.
 - Separate object instantiation from synthesis, allowing Python script to import the objects/data
   and do completely different things with them.
@@ -76,7 +75,7 @@ Helicopyter uses [CDKTF](https://github.com/hashicorp/terraform-cdk) and is insp
 
 ## What Helicopyter will probably never do (non-goals)
 - Support languages other than Python
-- Make use of the CDKTF's command line interface. Integration with it is untested and not recommended.
+- Make use of CDKTF's command line interface. Integration with it is untested and not recommended.
 
 ## What Helicopyter might do in the future
 - Support multiple backend configurations per codename
@@ -88,4 +87,4 @@ Helicopyter uses [CDKTF](https://github.com/hashicorp/terraform-cdk) and is insp
 - Why do we need a Node.js server? Can we build dataclasses or Pydantic models out of the type annotations already being
   generated?
 - Provide helper classes or functions for useful but annoyingly verbose patterns such as local-exec provisioner command
-- Backend / state file linter: prod must exist, and region/bucket/workspace_key_prefix/key must follow pattern
+- Backend / state file linter, such as prod must exist, and region/bucket/workspace_key_prefix/key must follow pattern
