@@ -285,7 +285,7 @@ envi() {
     if [[ $ENVI ]]; then
         echo "$ENVI"
     elif [[ $GITHUB_ACTIONS ]]; then
-        echo githubactions
+        echo github
     else
         echo local
     fi
@@ -294,7 +294,13 @@ envi() {
 functions() {
     : 'list FUNCTIONS defined by includes.sh'
     gsed -En 's/^ *([^(]+)\(\) \{$/\1/; T; N; s/\n +: /\t\t/; p' "${BASH_SOURCE[0]}"
-    echo -e "\nRun \`type function_name\` to display details."
+    echo -e "\nRun \`type function_name\` to display details.\n"
+    echo Environment Variables
+    echo -e "INSH_TRACE\t\tSet to 'off' to skip \`set -x\`"
+    echo -e "INSH_NAME\t\tgit user.name"
+    echo -e "INSH_EMAIL\t\tgit user.email"
+    echo -e "INSH_RELEASE_PREFIX\tSet to '-%G.%V.' for ISO year and week. Default is '-%Y.%U.'"
+    echo -e "INSH_TF\t\t\tSet to 'tofu' where appropriate. Default is 'terraform'"
 }
 
 gash() {
@@ -322,15 +328,15 @@ hta() {
         return 1
     fi
     shift 2
-    python -m helicopyter "$cona"
-    TF_WORKSPACE="$envi" terraform -chdir="deploys/$cona/terraform" apply "$@"
+    python -m helicopyter --format_with="${INSH_TF:-terraform}" "$cona" \
+        && TF_WORKSPACE="$envi" ${INSH_TF:-terraform} -chdir="deploys/$cona/terraform" apply "$@"
 }
 
 hti() {
     : 'Helper for Terraform Init'
     local cona="${1?:Please provide a code name as the first argument}"
     shift
-    terraform -chdir="deploys/$cona/terraform" init "$@"
+    ${INSH_TF:-terraform} -chdir="deploys/$cona/terraform" init "$@"
 }
 
 htp() {
@@ -343,8 +349,8 @@ htp() {
         return 1
     fi
     shift 2
-    python -m helicopyter "$cona"
-    TF_WORKSPACE="$envi" terraform -chdir="deploys/$cona/terraform" plan "$@"
+    python -m helicopyter --format_with="${INSH_TF:-terraform}" "$cona" \
+        && TF_WORKSPACE="$envi" ${INSH_TF:-terraform} -chdir="deploys/$cona/terraform" plan "$@"
 }
 
 pc() {

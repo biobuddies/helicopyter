@@ -1,4 +1,4 @@
-"""Generate JSON which Terraform can use from Python."""
+"""Generate Hashicorp Configuration Language (HCL) or JSON from Python."""
 
 from collections.abc import Iterable
 from importlib import import_module
@@ -7,9 +7,16 @@ from pathlib import Path
 from subprocess import check_output
 from typing import Any, TypeVar
 
+from cdk8s import Chart
 from cdktf import App, TerraformElement, TerraformStack
 from constructs import Construct, Node
 from tap import Tap
+
+
+class HeliChart(Chart):
+    def __init__(self, cona: str) -> None:
+        super().__init__(App(), cona)
+        self.cona = cona
 
 
 class HeliStack(TerraformStack):
@@ -77,9 +84,9 @@ class HeliStack(TerraformStack):
 def multisynth(
     all_or_conas_or_paths: Iterable[str],
     *,
-    change_directory: Path | None = None,
-    hashicorp_configuration_language: bool = True,
-    format_with: str = 'terraform',
+    change_directory: Path | None,
+    hashicorp_configuration_language: bool,
+    format_with: str,
 ) -> None:
     if not all_or_conas_or_paths:
         print('No codenames specified. Doing nothing.')
@@ -146,17 +153,9 @@ def multisynth(
 class Parameters(Tap):
     conas: list[str]  # space-separated COdeNAmes
     directory: Path | None = None
+    format_with: str = 'terraform'
     hashicorp_configuration_language: bool = True
 
     def configure(self) -> None:  # noqa: D102
         self.add_argument('conas')  # Positional argument
         self.add_argument('-C', '--directory')  # Like make and tar
-
-
-if __name__ == '__main__':
-    args = Parameters().parse_args()
-    multisynth(
-        args.conas,
-        change_directory=args.directory,
-        hashicorp_configuration_language=args.hashicorp_configuration_language,
-    )

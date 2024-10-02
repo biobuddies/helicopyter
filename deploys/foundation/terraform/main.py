@@ -2,16 +2,17 @@
 
 from cdktf_cdktf_provider_github.repository import Repository
 
-from helicopyter import HeliStack
+from stacks.base import BaseStack
 
 repositories = {
     'airdjang': ('Airflow + Django', ['airflow', 'django', 'python']),
     'allowedflare': ('Intranet connectivity for Django and more', ['django', 'python']),
     'helicopyter': ('Python-defined infrastructure', ['ansible', 'cdktf', 'python', 'terraform']),
+    'wellplated': ('Python Django models for liquid handling', ['django', 'python']),
 }
 
 
-def synth(stack: HeliStack) -> None:
+def synth(stack: BaseStack) -> None:
     stack.provide('github')
 
     for name, (description, topics) in repositories.items():

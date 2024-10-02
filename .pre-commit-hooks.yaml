@@ -2,6 +2,10 @@
   entry: codespell --check-filenames --ignore-words-list READYness
   language: system
   name: codespell
+  exclude: |
+      (?x)^(
+          yarn\.lock
+      )$
   types:
       - text
 

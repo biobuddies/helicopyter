@@ -9,6 +9,7 @@ attrs==23.2.0
 build==1.2.1
 cattrs==23.2.3
     # via jsii
+cdk8s==2.69.6
 cdktf==0.20.0
     # via
     #   cdktf-cdktf-provider-aws
@@ -32,6 +33,7 @@ charset-normalizer==3.3.2
 codespell==2.3.0
 constructs==10.3.0
     # via
+    #   cdk8s
     #   cdktf
     #   cdktf-cdktf-provider-aws
     #   cdktf-cdktf-provider-cloudflare
@@ -76,6 +78,7 @@ jeepney==0.8.0
     #   secretstorage
 jsii==1.103.1
     # via
+    #   cdk8s
     #   cdktf
     #   cdktf-cdktf-provider-aws
     #   cdktf-cdktf-provider-cloudflare
@@ -126,6 +129,7 @@ ptyprocess==0.7.0
     # via pexpect
 publication==0.0.3
     # via
+    #   cdk8s
     #   cdktf
     #   cdktf-cdktf-provider-aws
     #   cdktf-cdktf-provider-cloudflare
@@ -187,6 +191,7 @@ twine==4.0.2
 typed-argument-parser==1.9.0
 typeguard==2.13.3
     # via
+    #   cdk8s
     #   cdktf
     #   cdktf-cdktf-provider-aws
     #   cdktf-cdktf-provider-cloudflare

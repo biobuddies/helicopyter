@@ -11,7 +11,7 @@ classifiers = [
     'Topic :: System :: Installation/Setup',
 ]
 description = 'Python Terraform JSON configuration generator'
-dependencies = ['cdktf', 'cdktf-cdktf-provider-null', 'typed-argument-parser']
+dependencies = ['cdk8s', 'cdktf', 'cdktf-cdktf-provider-null', 'typed-argument-parser']
 dynamic = ['version']
 name = 'helicopyter'
 readme = 'README.md'
