@@ -329,7 +329,7 @@ hta() {
     fi
     shift 2
     python -m helicopyter --format_with="${INSH_TF:-terraform}" "$cona" \
-    && TF_WORKSPACE="$envi" ${INSH_TF:-terraform} -chdir="deploys/$cona/terraform" apply "$@"
+        && TF_WORKSPACE="$envi" ${INSH_TF:-terraform} -chdir="deploys/$cona/terraform" apply "$@"
 }
 
 hti() {
@@ -350,7 +350,7 @@ htp() {
     fi
     shift 2
     python -m helicopyter --format_with="${INSH_TF:-terraform}" "$cona" \
-    && TF_WORKSPACE="$envi" ${INSH_TF:-terraform} -chdir="deploys/$cona/terraform" plan "$@"
+        && TF_WORKSPACE="$envi" ${INSH_TF:-terraform} -chdir="deploys/$cona/terraform" plan "$@"
 }
 
 pc() {

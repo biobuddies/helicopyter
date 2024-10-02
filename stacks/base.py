@@ -26,12 +26,12 @@ class BaseStack(HeliStack):
             workspace_key_prefix=cona,
         )
         # Sadly `attribute=True` above was resulting in `attribute = undefined` in the HCL
-        for attribute in {
+        for attribute in (
             'skip_credentials_validation',
             'skip_metadata_api_check',
             'skip_region_validation',
             'skip_requesting_account_id',
             'skip_s3_checksum',
             'use_path_style',
-        }:
+        ):
             backend.add_override(attribute, 'true')
