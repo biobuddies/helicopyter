@@ -87,4 +87,4 @@ Helicopyter uses [CDKTF](https://github.com/hashicorp/terraform-cdk) and is insp
 - Why do we need a Node.js server? Can we build dataclasses or Pydantic models out of the type annotations already being
   generated?
 - Provide helper classes or functions for useful but annoyingly verbose patterns such as local-exec provisioner command
-- Backend / state file linter, such as prod must exist, and region/bucket/workspace_key_prefix/key must follow pattern
+- Backend / state file linter such as: prod must exist, and region/bucket/workspace_key_prefix/key must follow pattern
