@@ -12,16 +12,17 @@ yamllint
 
 # Build-Time (Not Part of pre-commit)
 build
-cdktf-cdktf-provider-aws
-cdktf-cdktf-provider-cloudflare
-cdktf-cdktf-provider-docker
-cdktf-cdktf-provider-github
-cdktf-cdktf-provider-null
 ipython
 pytest>=8  # Pin to keep recent
 twine
 
 # Runtime
 # TODO figure out how to install these from pyproject.toml
+cdk8s
 cdktf
+cdktf-cdktf-provider-aws
+cdktf-cdktf-provider-cloudflare
+cdktf-cdktf-provider-docker
+cdktf-cdktf-provider-github
+cdktf-cdktf-provider-null
 typed-argument-parser
