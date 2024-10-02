@@ -15,7 +15,7 @@ from tap import Tap
 
 class HeliChart(Chart):
     def __init__(self, cona: str) -> None:
-        super().__init__(App(outdir='.'), cona)
+        super().__init__(App(), cona)
         self.cona = cona
 
 
