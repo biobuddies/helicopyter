@@ -11,22 +11,27 @@ class BaseStack(HeliStack):
 
     AWS_ACCESS_KEY_ID     - R2 token
     AWS_SECRET_ACCESS_KEY - R2 secret
-    #=AWS_ENDPOINT_URL_S3   - R2 location: https://ACCOUNT_ID.r2.cloudflarestorage.com
+    AWS_ENDPOINT_URL_S3   - R2 location: https://ACCOUNT_ID.r2.cloudflarestorage.com
     """
 
     def __init__(self, cona: str) -> None:
         super().__init__(cona)
-        S3Backend(
+        # Organize state files as: {cona}/{envi}/{cona}.tfstate
+        backend = S3Backend(
             self,
             bucket='terraform',
             # Just in case somebody uses the default environment for two different codenames
             key=f'{cona}.tfstate',
             region='auto',
-            skip_credentials_validation=True,
-            skip_metadata_api_check=True,
-            skip_region_validation=True,
-            skip_requesting_account_id=True,
-            skip_s3_checksum=True,
-            use_path_style=True,
             workspace_key_prefix=cona,
         )
+        # Sadly `attribute=True` above was resulting in `attribute = undefined` in the HCL
+        for attribute in {
+            'skip_credentials_validation',
+            'skip_metadata_api_check',
+            'skip_region_validation',
+            'skip_requesting_account_id',
+            'skip_s3_checksum',
+            'use_path_style',
+        }:
+            backend.add_override(attribute, 'true')

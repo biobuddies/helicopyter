@@ -7,6 +7,18 @@ terraform {
       source  = "integrations/github"
     }
   }
+  backend "s3" {
+    bucket                      = "terraform"
+    key                         = "foundation.tfstate"
+    region                      = "auto"
+    workspace_key_prefix        = "foundation"
+    skip_requesting_account_id  = "true"
+    skip_s3_checksum            = "true"
+    skip_metadata_api_check     = "true"
+    use_path_style              = "true"
+    skip_region_validation      = "true"
+    skip_credentials_validation = "true"
+  }
 }
 
 provider "github" {
@@ -81,5 +93,28 @@ resource "github_repository" "helicopyter" {
     "cdktf",
     "python",
     "terraform"
+  ]
+}
+
+resource "github_repository" "wellplated" {
+  allow_auto_merge            = true
+  allow_merge_commit          = false
+  allow_rebase_merge          = true
+  allow_squash_merge          = true
+  allow_update_branch         = true
+  delete_branch_on_merge      = true
+  description                 = "Python Django models for liquid handling"
+  has_downloads               = false
+  has_issues                  = true
+  has_projects                = false
+  has_wiki                    = false
+  merge_commit_message        = "PR_BODY"
+  merge_commit_title          = "PR_TITLE"
+  name                        = "wellplated"
+  squash_merge_commit_message = "PR_BODY"
+  squash_merge_commit_title   = "PR_TITLE"
+  topics = [
+    "django",
+    "python"
   ]
 }
