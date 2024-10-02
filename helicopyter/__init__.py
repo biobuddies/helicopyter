@@ -158,13 +158,3 @@ class Parameters(Tap):
     def configure(self) -> None:  # noqa: D102
         self.add_argument('conas')  # Positional argument
         self.add_argument('-C', '--directory')  # Like make and tar
-
-
-if __name__ == '__main__':
-    args = Parameters().parse_args()
-    multisynth(
-        args.conas,
-        change_directory=args.directory,
-        format_with=args.format_with,
-        hashicorp_configuration_language=args.hashicorp_configuration_language,
-    )
