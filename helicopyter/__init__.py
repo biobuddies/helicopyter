@@ -1,4 +1,4 @@
-"""Generate JSON which Terraform can use from Python."""
+"""Generate Hashicorp Configuration Language (HCL) or JSON from Python."""
 
 from collections.abc import Iterable
 from importlib import import_module
@@ -17,6 +17,7 @@ class HeliChart(Chart):
     def __init__(self, cona: str) -> None:
         super().__init__(App(outdir='.'), cona)
         self.cona = cona
+
 
 class HeliStack(TerraformStack):
     def __init__(self, cona: str) -> None:

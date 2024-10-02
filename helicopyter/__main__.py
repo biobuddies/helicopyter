@@ -1,3 +1,5 @@
+"""Generate Hashicorp Configuration Language (HCL) or JSON from Python."""
+
 from helicopyter import Parameters, multisynth
 
 args = Parameters().parse_args()
