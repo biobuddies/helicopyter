@@ -4,7 +4,8 @@
   name: codespell
   exclude: |
       (?x)^(
-          yarn\.lock
+          yarn\.lock|
+          package-lock\.json
       )$
   types:
       - text
