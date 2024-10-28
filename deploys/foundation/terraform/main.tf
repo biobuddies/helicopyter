@@ -12,12 +12,12 @@ terraform {
     key                         = "foundation.tfstate"
     region                      = "auto"
     workspace_key_prefix        = "foundation"
+    skip_credentials_validation = "true"
+    skip_metadata_api_check     = "true"
+    skip_region_validation      = "true"
     skip_requesting_account_id  = "true"
     skip_s3_checksum            = "true"
-    skip_metadata_api_check     = "true"
     use_path_style              = "true"
-    skip_region_validation      = "true"
-    skip_credentials_validation = "true"
   }
 }
 
