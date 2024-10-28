@@ -69,7 +69,7 @@ pathver() {
     if [[ -z $source ]]; then
         source=$(type "$1")
     fi
-    actual_version=$("$1" --version | gsed -E "s/($1 )?//i")
+    actual_version=$("$1" --version 2>&1 | gsed -En 's/(.+ )?(v?[0-9]+\.[0-9]+\.[^ ]+).*/\2/p')
     echo "$source $actual_version"
     if [[ -f $2 ]]; then
         expected_version=$(cat "$2")

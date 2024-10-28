@@ -3,7 +3,6 @@ env:
     ALLOWEDFLARE_PRIVATE_DOMAIN: organization.example
     CLOUDFLARE_ACCOUNT_ID: 0123456789abcdef0123456789abcdef00
     CLOUDFLARE_ZONE_ID: 0123456789abcdef0123456789abcdef01
-name: Check
 jobs:
     check:
         runs-on: ubuntu-latest
