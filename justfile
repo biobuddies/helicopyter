@@ -54,7 +54,7 @@ pathver command version_file="":
     if [[ -z $source ]]; then
         source=$(type "{{command}}")
     fi
-    actual_version=$("{{command}}" --version | sed -E "s/({{command}} )?//i")
+    actual_version=$("{{command}}" --version 2>&1 | gsed -En 's/(.+ )?(v?[0-9]+\.[0-9]+\.[^ ]+).*/\2/p')
     echo "$source $actual_version"
     if [[ -f "{{version_file}}" ]]; then
         expected_version=$(cat "{{version_file}}")
