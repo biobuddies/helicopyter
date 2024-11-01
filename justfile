@@ -186,8 +186,8 @@ pc *ARGS:
     pre-commit run {{ARGS}}
 
 # run Pre-Commit on All files
-pca *ARGS:
-    pre-commit run --all-files {{ARGS}}
+pca *args:
+    pre-commit run --all-files {{args}}
 
 # run Pre-Commit on All files including Manual stage hooks
 pcam *ARGS:
