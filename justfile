@@ -65,8 +65,8 @@ pathver command version_file="":
     fi
 
 # Docker Compose Build
-dcb *ARGS:
-    docker compose --progress=plain build {{ARGS}}
+dcb *args:
+    docker compose --progress=plain build {{args}}
 
 # Docker Compose Push
 dcp *ARGS:
