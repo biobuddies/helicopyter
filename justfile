@@ -2,9 +2,6 @@
 # set shell := ["bash", "-uc"]
 
 # Environment Variables
-export BASH_SILENCE_DEPRECATION_WARNING := "1"
-export CLICOLOR_FORCE := "1"  # For `tree`
-export LESS := "-FRXi"        # F: no-op single page, R: color, X: keep text when exiting, i: case insensitive
 export PACKAGES := "bind9-host curl fping git less tmux tree"
 
 # Get operating system
