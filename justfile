@@ -23,7 +23,7 @@ _ensure-homebrew:
 # Activate virtual environment after changing directory
 a:
     #!/usr/bin/env bash
-    echo $SHELL
+    echo $SHELL $BASH_VERSION
     check_conda=$(command -v conda)
     echo $check_conda
     [[ $(command -v conda) ]] && conda deactivate
