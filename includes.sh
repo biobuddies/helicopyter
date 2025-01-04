@@ -459,19 +459,12 @@ tabr() {
 upc() {
     : 'Uv Pip Compile'
     uv pip compile -o requirements.txt --python-platform linux requirements.in
-    if [[ $OS == Darwin ]]; then
-        local appnope
-        appnope=$(uv pip freeze | grep appnope)
-        [[ $appnope ]] && echo "$appnope" >requirements-macos.txt
-    fi
 }
 
 ups() {
     : 'Uv Pip Sync, with MacOS workaround for appnope'
     # shellcheck disable=SC2046
-    uv pip sync "$@" requirements.txt $(
-        [[ $OS == Darwin && -f requirements-macos.txt ]] && echo requirements-macos.txt
-    )
+    uv pip sync "$@" requirements.txt 
 }
 
 uuid() {
