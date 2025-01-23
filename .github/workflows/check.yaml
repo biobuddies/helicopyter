@@ -33,7 +33,7 @@ jobs:
             - run: |
                   source includes.sh \
                   && a \
-                  && asdf plugin-add tenv \
+                  && asdf plugin-add tenv https://github.com/tofuutils/asdf-tenv \
                   && asdf install tenv latest \
                   && asdf global tenv latest \
                   && tenv tofu install
