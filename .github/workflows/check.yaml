@@ -12,6 +12,7 @@ jobs:
               with:
                   path: asdf
                   repository: asdf-vm/asdf
+            - run: mkdir $HOME/code && ln -s asdf $HOME/code/asdf
 
             - uses: actions/setup-node@v4
               with:
@@ -28,14 +29,22 @@ jobs:
                   PIP_PROGRESS_BAR: 'off'
             - run: uv venv && source includes.sh && a && ups
 
+            - run: |
+                  source includes.sh \
+                  && a \
+                  && asdf plugin-add tenv \
+                  && asdf install tenv latest \
+                  && asdf global tenv latest \
+                  && tenv tofu install
+
             - run: >
                   source includes.sh
                   && a
-                  && pcta
+                  && INSF_TF=tofu pcta
                   && pctam mypy
                   && pctam gitignore-node-python-terraform
 
-            - run: source includes.sh hti demo && terraform -chdir=deploys/demo/terraform validate
+            - run: source includes.sh hti demo && tofu -chdir=deploys/demo/terraform validate
 
             - run: source includes.sh && a && python -m build
     summarize:
