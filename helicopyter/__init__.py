@@ -128,7 +128,8 @@ def multisynth(
         if hashicorp_configuration_language:
             unformatted = stack.to_hcl_terraform()['hcl']
             autoformatted = check_output(
-                [format_with, 'fmt', '-'], input=unformatted.encode()
+                [format_with, 'fmt', '-'],  # noqa: S603
+                input=unformatted.encode()
             ).decode()
             formatted = autoformatted.replace('}\n\n\n}', '}\n}').replace(
                 '}\nresource', '}\n\nresource'
