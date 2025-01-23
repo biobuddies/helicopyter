@@ -2,9 +2,6 @@
 
 locals {
   cona = "demo"
-}
-
-locals {
   envi = terraform.workspace
 }
 
@@ -17,10 +14,10 @@ resource "null_resource" "this" {
   }
 }
 
-variable "gash" {
+variable "giha" {
   type = string
 }
 
-output "gash" {
-  value = var.gash
+output "giha" {
+  value = var.giha
 }
