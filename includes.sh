@@ -31,10 +31,13 @@ esac
 # Accept any kind of installation, such as Homebrew
 if ! [[ $(command -v asdf) ]]; then
     if [[ -f $HOME/code/asdf/asdf.sh ]]; then
-        # Automate git installation configuration
-        # shellcheck disable=SC1091
-        source "$HOME/code/asdf/asdf.sh" \
-            && source "$HOME/code/asdf/completions/asdf.bash"
+        # Automate git installation configuration for old and new paths
+        for suffix in asdf.sh completions/asdf.bash internal/completions/asdf.bash; do
+            if [[ -f $HOME/code/asdf/$suffix ]]; then
+                # shellcheck disable=SC1091
+                source "$HOME/code/asdf/$suffix"
+            fi
+        done
     else
         # Recommend git installation
         echo "Please run
