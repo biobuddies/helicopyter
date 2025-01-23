@@ -12,7 +12,6 @@ jobs:
               with:
                   path: asdf
                   repository: asdf-vm/asdf
-            # Should devready create $HOME/code?nm 
             - run: mkdir $HOME/code && ln -s $(realpath asdf) $HOME/code/asdf
 
             - uses: actions/setup-node@v4
