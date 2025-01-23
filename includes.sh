@@ -309,6 +309,12 @@ gash() {
     giha
 }
 
+hs() {
+    : 'Helicopyter Synth'
+    local cona="${1:-all}"
+    python -m helicopyter --format_with="${INSH_TF:-terraform}" "$cona"
+}
+
 hta() {
     : 'Helicopyter synth and Terraform Apply'
     local cona="${1?:Please provide a code name as the first argument}"
@@ -319,15 +325,16 @@ hta() {
         return 1
     fi
     shift 2
-    python -m helicopyter --format_with="${INSH_TF:-terraform}" "$cona" \
+    hs "$cona" \
         && TF_WORKSPACE="$envi" ${INSH_TF:-terraform} -chdir="deploys/$cona/terraform" apply "$@"
 }
 
 hti() {
-    : 'Helper for Terraform Init'
+    : 'Helper for Terraform Init and synth'
     local cona="${1?:Please provide a code name as the first argument}"
     shift
-    ${INSH_TF:-terraform} -chdir="deploys/$cona/terraform" init "$@"
+    ${INSH_TF:-terraform} -chdir="deploys/$cona/terraform" init "$@" \
+        && hs "$cona"
 }
 
 htp() {
@@ -340,7 +347,7 @@ htp() {
         return 1
     fi
     shift 2
-    python -m helicopyter --format_with="${INSH_TF:-terraform}" "$cona" \
+    hs "$cona" \
         && TF_WORKSPACE="$envi" ${INSH_TF:-terraform} -chdir="deploys/$cona/terraform" plan "$@"
 }
 

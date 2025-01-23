@@ -55,7 +55,7 @@
       - manual
 
 - id: helicopyter
-  entry: python -m helicopyter
+  entry: bash includes.sh hs
   files: ^(helicopyter\.py|deploys/.+/terraform/main\.py)$
   language: system
   name: helicopyter
