@@ -190,6 +190,8 @@ rich==13.9.4
     # via twine
 ruff==0.8.5
     # via -r requirements.in
+rust-just==1.39.0
+    # via -r requirements.in
 secretstorage==3.3.3
     # via keyring
 shellcheck-py==0.10.0.1

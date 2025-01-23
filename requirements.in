@@ -4,6 +4,7 @@ git+https://github.com/AleksaC/hadolint-py.git
 mypy
 pre-commit
 ruff
+rust-just
 shellcheck-py
 shfmt-py
 uv
