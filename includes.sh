@@ -410,7 +410,7 @@ release() {
     git fetch --tags
     local count
     count=$(git tag --list "$prefix*" | gsed "s/$prefix//" | sort -r | head -1)
-    gh release create "$prefix$((${count:-0} + 1))" --generate-notes
+    gh release create "$prefix$(printf '%02d' $(( ${count:-0}+1 )))" --generate-notes
     git fetch --tags
     [[ $* == build ]] && build_twine
 }
