@@ -1,23 +1,20 @@
 # shellcheck shell=bash
 
-[[ $BASH ]] || cat <<EOD
-WARNING: includes.sh has only been tested with, and linted for, Bash. You are running $0.
+shell=$(ps -p $$ -o 'comm=')
+[[ $shell == *bash ]] || cat <<EOD
+WARNING: includes.sh has only been tested with, and linted for, BASH. You are running $shell.
+Testing multiple shells is a lot of work, and shellcheck does not support zsh.
 Run \`chsh -s /bin/bash\` or \`forceready\` to switch.
 EOD
 
 set -o vi
 
 OS=$(uname -s)
+export OS
 
 case $OS in
     Darwin)
         export BASH_SILENCE_DEPRECATION_WARNING=1
-
-        if ! [[ -x $(command -v brew) ]]; then
-            [[ -d /opt/homebrew/bin ]] && export PATH="/opt/homebrew/bin:$PATH"
-            [[ -x $(command -v brew) ]] || echo ERROR: homebrew missing
-        fi
-
         ;;
     Linux)
         gsed() {
@@ -52,7 +49,7 @@ export CLICOLOR_FORCE
 LESS='-FRXi'
 export LESS
 
-PACKAGES="bind9-host curl fping git less tmux tree"
+PACKAGES='bind9-host curl fping git less tmux tree'
 export PACKAGES
 
 # Aliases only work in interactive shells
@@ -194,9 +191,6 @@ dcu() {
 
 devready() {
     : 'DEVelopment READYness check'
-    [[ $0 == *bash ]] || echo 'ERROR: not running in BASH
-Testing multiple shells is a lot of work, and shellcheck does not support zsh.'
-
     grep -qE 'legacy_version_file.*=.*yes' ~/.asdfrc 2>/dev/null \
         || echo 'WARNING: legacy_version_file != yes
 Files like .python-version will be ignored'
@@ -305,19 +299,14 @@ functions() {
     echo -e "INSH_TF\t\t\tSet to 'tofu' where appropriate. Default is 'terraform'"
 }
 
-gash() {
-    : 'print Git hASH, a four letter acronym'
+giha() {
+    : 'print GIt HAsh, a four letter acronym'
     git describe --abbrev=40 --always --dirty --match=-
 }
 
-gvcount() {
-    : '%G %V COUNT style version string; see also: yucount'
-    local gv
-    gv=$(date -u +v%G.%V.)
-    git fetch --tags
-    local count
-    count=$(git tag --list "$gv*" | gsed "s/$gv//" | sort -r | head -1)
-    echo "$gv$((${count:-0} + 1))"
+gash() {
+    : 'backwards compatibility wrapper around giha'
+    giha
 }
 
 hta() {
@@ -410,29 +399,28 @@ release() {
     git fetch --tags
     local count
     count=$(git tag --list "$prefix*" | gsed "s/$prefix//" | sort -r | head -1)
-    gh release create "$prefix$(printf '%02d' $(( ${count:-0}+1 )))" --generate-notes
+    gh release create "$prefix$(printf '%02d' $((${count:-0} + 1)))" --generate-notes
     git fetch --tags
     [[ $* == build ]] && build_twine
 }
 
 summarize() {
-    : 'SUMMARIZE environment by displaying four letter acronyms'
-    local CONA GASH TABR
+    : 'SUMMARIZE environment by setting and displaying four letter acronyms'
     CONA=$(cona)
     ENVI=$(envi)
-    GASH=$(gash)
+    GIHA=$(giha)
     TABR=$(tabr)
     cat <<EOD | tee "${GITHUB_STEP_SUMMARY:-/dev/null}"
-| FLAN | Unabbrevia. | Value                                          |
-| ---- | ----------- | ---------------------------------------------- |
-| CONA | COdeNAme    | $CONA |
-| ENVI | ENVIronment | $ENVI |
-| GASH | Git hASH    | $GASH |
-| ROLE | ROLE        | $ROLE |
-| TABR | TAg/BRanch  | $TABR |
+| Unabbrevia. | FLAN | Value                                          |
+| ----------- | ---- | ---------------------------------------------- |
+| COdeNAme    | CONA | $CONA |
+| ENVIronment | ENVI | $ENVI |
+| GIt HAsH    | GIHA | $GIHA |
+| ROLE        | ROLE | $ROLE |
+| TAg/BRanch  | TABR | $TABR |
 EOD
     if [[ $GITHUB_ENV ]]; then
-        echo -e "CONA=$CONA\nGASH=$GASH\nTABR=$TABR" >>"$GITHUB_ENV"
+        echo -e "CONA=$CONA\nENVI=$ENVI\nGIHA=$GIHA\nROLE=$ROLE\nTABR=$TABR" >>"$GITHUB_ENV"
     fi
 }
 
@@ -464,22 +452,12 @@ upc() {
 ups() {
     : 'Uv Pip Sync, with MacOS workaround for appnope'
     # shellcheck disable=SC2046
-    uv pip sync "$@" requirements.txt 
+    uv pip sync "$@" requirements.txt
 }
 
 uuid() {
     : 'Universally Unique IDentifier'
     python -c 'import uuid; print(uuid.uuid4())'
-}
-
-yucount() {
-    : '%Y %U COUNT style version string; see also: gvcount'
-    local yu
-    yu=$(date -u +v%Y.%U.)
-    git fetch --tags
-    local count
-    count=$(git tag --list "$yu*" | gsed "s/$yu//" | sort -r | head -1)
-    echo "$yu$((${count:-0} + 1))"
 }
 
 if [[ $* ]]; then

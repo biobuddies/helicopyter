@@ -1,21 +1,25 @@
-## As simple as possible
+## Principles
 * Choose good words; differentiate when necessary
     - Verbs over nouns
     - Simple and common over fancy and rare
     - Avoid substring matches
     - Prefer whole words to abbreviations
+    - Elements of Style, On Writing Well
 * Three strikes and you refactor
     - Copy/paste once is okay, preferably with a comment on the duplicatation
     - Three examples should ease choosing the right abstraction
     - Avoid overshooting on the journey from specific to generic
+* Composition over inheritance
 
+## As Simple as Possible
 Inspired by https://blog.cleancoder.com/uncle-bob/2013/05/27/TheTransformationPriorityPremise.html
 1. No operation: `pass`
 2. Unconditionally executed code
-3. If
-4. While
+3. If without else
+4. If with else
+5. While
 
-1. Literal
+1. Literal (explanatory comments encouraged)
 2. Variable
 3. Function
 
@@ -42,19 +46,23 @@ Inspired by https://blog.cleancoder.com/uncle-bob/2013/05/27/TheTransformationPr
 Use version control, code review, and automated tests/checks for most changes. Exceptions to consider:
 
 * URLs and other environment variables https://12factor.net/config
-* Some deploys/$cona/terraform/main.tf.json files are omitted from this public repository because of
+* Some deploys/$cona/terraform/main.tf files are omitted from this public repository because of
   account-specific values. Checking in generated JSON into internal repositories is recommended.
   Doing so keeps the files ready for commands like `terraform plan` and `terraform apply` and allows
   `git bisect` to help solve JSON level issues (hopefully rare).
 
 ## Formatting
 ### Dates
-Following ISO 8601/[RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339), join the following fields with a dash `-`:
+Following ISO 8601,
+[RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339),
+[W3C](https://www.w3.org/TR/NOTE-datetime),
+join the following fields with a dash `-`:
 1. Four-digit, zero-padded year, starting from 0
 2. Two-digit, zero-padded month, starting from 1
 3. Two-digit, zero-padded day, starting from 1
 
-Appending the timezone abbreviation after a space ` ` is recommended. Prefer `Z` to `UTC`, because of the popularity 
+Appending the timezone abbreviation (with or without a space ` `) is recommended.
+Prefer `Z` to `UTC` to align with aviation, RFC 3339, W3C conventions, and for brevity.
 
 ```shell
 $ date +%Y-%m-%d\ %Z | sed s/UTC/Z/
@@ -76,19 +84,15 @@ Using 100 characters allows two side-by-side files to be displayed with tmux, et
 Double quotes are visually noisier than single quotes. Black made the wrong choice; double-quote-fixer from pre-commit or `ruff format` can help.
 
 ## Settings
-### Standard environment variables
-* `cona`: Unique COdeNAme (or plain language name, but the good ones tend to get used up) to tell deployments apart. Must be set at build time and run time. Should match one main git repository. Should be baked into container images. Not called CODE because that would have a lot of search hits.
-* `envi`: ENVIronment to tell pre-production environments from `prod`. Must be set at run time. Should be set to `prod` if there's only one. Not called ENV to avoid colliding with the `env` shell command. Should not be baked into container images.
-* `gash`: `git describe --abbrev=40 --always --dirty --match=-`. So people can see what version of code is used. Must be set at build time and run time. Should be baked into container images. Not called HASH to avoid colliding with the Python built-in function and to clarify that this is the Git hash, not the Docker image hash.
-* `role`: `web` is a good choice for web servers. Must be set at run time. Different executables should get different `role` values. Not called EXEC for executable to avoid colliding with the shell built-in. Should not be baked into container images.
-* `tabr`: TAg or BRanch `git describe --all --exact-match`. Must be set at run time in `prod`. May be unset or null when running in pre-production, especially `local` development. Should not be baked into a container images. Use this to name preview environments and present nice version numbers to users.
+### Four Letter AbbreviatioNs (FLANs)
+* `CONA`: Unique COdeNAme (or plain language name, but the good ones tend to get used up) to tell deployments apart. Must be set at build time and run time. Should match one main git repository. Should be baked into container images. Not called CODE because that would have a lot of search hits.
+* `ENVI`: ENVIronment to tell pre-production environments from `prod`. Must be set at run time. Should be set to `prod` if there's only one. Not called ENV to avoid colliding with the `env` shell command. Should not be baked into container images.
+* `GIHA`: `git describe --abbrev=40 --always --dirty --match=-`. So people can see what version of code is used. Must be set at build time and run time. Should be baked into container images. Not called HASH to avoid colliding with the Python built-in function and to clarify that this is the Git hash, not the Docker image hash. Previously abbreviated as GASH but changed to sound more fun and less painful.
+* `ROLE`: `web` is a good choice for web servers. Must be set at run time. Different executables should get different `role` values. Not called EXEC for executable to avoid colliding with the shell built-in. Should not be baked into container images.
+* `TABR`: TAg or BRanch `git describe --all --exact-match`. Must be set at run time in `prod`. May be unset or null when running in pre-production, especially `local` development. Should not be baked into a container images. Use this to name preview environments and present nice version numbers to users.
 
 ### Begin as you mean to go on (people edition)
 Choose default values that will work, out-of-the-box, for most people, most of the time. Even if the machines outnumber the people, reconfiguring the development systems of people is probably harder than reconfiguring many hosted production and pre-production machines (pets versus cattle).
-
-### Single static assignment
-Try not to mutate variables, except in obvious ways like appending an element to a list for each iteration of a for loop.
-Prefer multiple, specific variable names over a general variable name with shifting values.
 
 ### Single static assignment
 Try not to mutate variables, except in obvious ways like appending an element to a list for each iteration of a for loop.

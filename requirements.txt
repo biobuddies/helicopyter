@@ -7,21 +7,29 @@ attrs==24.3.0
     #   cattrs
     #   jsii
 build==1.2.2.post1
+    # via -r requirements.in
 cattrs==24.1.2
     # via jsii
 cdk8s==2.69.29
+    # via -r requirements.in
 cdktf==0.20.10
     # via
+    #   -r requirements.in
     #   cdktf-cdktf-provider-aws
     #   cdktf-cdktf-provider-cloudflare
     #   cdktf-cdktf-provider-docker
     #   cdktf-cdktf-provider-github
     #   cdktf-cdktf-provider-null
 cdktf-cdktf-provider-aws==19.48.1
+    # via -r requirements.in
 cdktf-cdktf-provider-cloudflare==11.27.1
+    # via -r requirements.in
 cdktf-cdktf-provider-docker==11.0.0
+    # via -r requirements.in
 cdktf-cdktf-provider-github==14.4.0
+    # via -r requirements.in
 cdktf-cdktf-provider-null==10.0.1
+    # via -r requirements.in
 certifi==2024.12.14
     # via requests
 cffi==1.17.1
@@ -31,6 +39,7 @@ cfgv==3.4.0
 charset-normalizer==3.4.1
     # via requests
 codespell==2.3.0
+    # via -r requirements.in
 constructs==10.4.2
     # via
     #   cdk8s
@@ -57,6 +66,7 @@ fastjsonschema==2.21.1
 filelock==3.16.1
     # via virtualenv
 hadolint-py @ git+https://github.com/AleksaC/hadolint-py.git@a54e4d51787678062c8e108b20782f00e707a40e
+    # via -r requirements.in
 identify==2.6.4
     # via pre-commit
 idna==3.10
@@ -66,6 +76,7 @@ importlib-resources==6.5.2
 iniconfig==2.0.0
     # via pytest
 ipython==8.31.0
+    # via -r requirements.in
 jaraco-classes==3.4.0
     # via keyring
 jaraco-context==6.0.1
@@ -101,6 +112,7 @@ more-itertools==10.5.0
     #   jaraco-classes
     #   jaraco-functools
 mypy==1.14.1
+    # via -r requirements.in
 mypy-extensions==1.0.0
     # via
     #   mypy
@@ -129,6 +141,7 @@ platformdirs==4.3.6
 pluggy==1.5.0
     # via pytest
 pre-commit==4.0.1
+    # via -r requirements.in
 prompt-toolkit==3.0.48
     # via ipython
 ptyprocess==0.7.0
@@ -156,6 +169,7 @@ pygments==2.18.0
 pyproject-hooks==1.2.0
     # via build
 pytest==8.3.4
+    # via -r requirements.in
 python-dateutil==2.9.0.post0
     # via jsii
 pyyaml==6.0.2
@@ -175,10 +189,13 @@ rfc3986==2.0.0
 rich==13.9.4
     # via twine
 ruff==0.8.5
+    # via -r requirements.in
 secretstorage==3.3.3
     # via keyring
 shellcheck-py==0.10.0.1
+    # via -r requirements.in
 shfmt-py==3.7.0.1
+    # via -r requirements.in
 six==1.17.0
     # via python-dateutil
 stack-data==0.6.3
@@ -190,7 +207,9 @@ traitlets==5.14.3
 trove-classifiers==2024.10.21.16
     # via validate-pyproject
 twine==6.0.1
+    # via -r requirements.in
 typed-argument-parser==1.10.1
+    # via -r requirements.in
 typeguard==2.13.3
     # via
     #   cdk8s
@@ -214,9 +233,12 @@ urllib3==2.3.0
     #   requests
     #   twine
 uv==0.5.14
+    # via -r requirements.in
 validate-pyproject==0.23
+    # via -r requirements.in
 virtualenv==20.28.1
     # via pre-commit
 wcwidth==0.2.13
     # via prompt-toolkit
 yamllint==1.35.1
+    # via -r requirements.in
