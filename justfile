@@ -131,6 +131,10 @@ upc *args:
 ups *args:
     uv pip sync {{args}} requirements.txt
 
+# Helicopyter Synth
+hs cona='all':
+    python -m helicopyter --format_with=${INSH_TF:-terraform} {{cona}}
+
 # Helicopyter synth and Terraform Apply
 hta cona envi *args:
     #!/usr/bin/env bash
@@ -139,12 +143,13 @@ hta cona envi *args:
         echo 'If you only have one environment, please name it `prod`.'
         exit 1
     fi
-    python -m helicopyter --format_with="${INSH_TF:-terraform}" "{{cona}}" \
-        && TF_WORKSPACE="{{envi}}" ${INSH_TF:-terraform} -chdir="deploys/{{cona}}/terraform" apply {{args}}
+    just hs {{cona}} \
+        && TF_WORKSPACE={{envi}} ${INSH_TF:-terraform} -chdir=deploys/{{cona}}/terraform apply {{args}}
 
-# Helper for Terraform Init
+# Helper for Terraform Init and synth
 hti cona *args:
-    ${INSH_TF:-terraform} -chdir="deploys/{{cona}}/terraform" init {{args}}
+    ${INSH_TF:-terraform} -chdir=deploys/{{cona}}/terraform init {{args}}
+    just hs {{cona}}
 
 # Helicopyter synth and Terraform Plan
 htp cona envi *args:
@@ -154,8 +159,8 @@ htp cona envi *args:
         echo 'If you only have one environment, please name it `prod`.'
         exit 1
     fi
-    python -m helicopyter --format_with="${INSH_TF:-terraform}" "{{cona}}" \
-        && TF_WORKSPACE="{{envi}}" ${INSH_TF:-terraform} -chdir="deploys/{{cona}}/terraform" plan {{args}}
+    just hs {{cona}} \
+        && TF_WORKSPACE={{envi}} ${INSH_TF:-terraform} -chdir=deploys/{{cona}}/terraform plan {{args}}
 
 # Universally Unique IDentifier
 uuid:
