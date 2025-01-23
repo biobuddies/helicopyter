@@ -451,7 +451,6 @@ upc() {
 
 ups() {
     : 'Uv Pip Sync, with MacOS workaround for appnope'
-    # shellcheck disable=SC2046
     uv pip sync "$@" requirements.txt
 }
 
