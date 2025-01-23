@@ -34,7 +34,7 @@ if ! [[ $(command -v asdf) ]]; then
         # Automate git installation configuration for old and new paths
         for suffix in asdf.sh completions/asdf.bash internal/completions/asdf.bash; do
             if [[ -f $HOME/code/asdf/$suffix ]]; then
-                # shellcheck disable=SC1091
+                # shellcheck disable=SC1090,SC1091
                 source "$HOME/code/asdf/$suffix"
             fi
         done
