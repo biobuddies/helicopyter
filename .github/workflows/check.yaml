@@ -13,7 +13,7 @@ jobs:
                   path: asdf
                   repository: asdf-vm/asdf
             - run: mkdir $HOME/code && ln -s asdf $HOME/code/asdf
-            - run: ls -ld $HOME; ls -ld $HOME/code; ls -ld $HOME/code/asdf
+            - run: ls -ld $HOME; ls -ld $HOME/code; ls -ld $HOME/code/asdf; file $HOME/code/asdf/asdf.sh
 
             - uses: actions/setup-node@v4
               with:
