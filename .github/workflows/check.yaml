@@ -12,6 +12,7 @@ jobs:
               with:
                   path: asdf
                   repository: asdf-vm/asdf
+            - run: ls -ld $HOME; ls -ld $HOME/code; ls -ld $HOME/code/asdf; file $HOME/code/asdf/asdf.sh
             - run: mkdir $HOME/code && ln -s $HOME/code/asdf asdf
             - run: ls -ld $HOME; ls -ld $HOME/code; ls -ld $HOME/code/asdf; file $HOME/code/asdf/asdf.sh
 
