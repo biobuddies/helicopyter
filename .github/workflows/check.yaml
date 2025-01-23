@@ -40,7 +40,7 @@ jobs:
             - run: >
                   source includes.sh
                   && a
-                  && INSF_TF=tofu pcta
+                  && INSH_TF=tofu pcta
                   && pctam mypy
                   && pctam gitignore-node-python-terraform
 
