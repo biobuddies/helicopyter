@@ -20,7 +20,7 @@ jobs:
                 && uv pip sync requirements.txt \
                 && echo -e "pre-commit\nshfmt-py\n" > requirements.in \
                 && entry='uv pip compile --verbose -o requirements.txt --python-platform linux' \
-                && $entry \
+                && $entry requirements.in \
                 && echo -e "- id: uv-pip-compile\n  entry: $entry\n  files: requirements.in\n  language: system\n  name: uv-pip-compile" > .pre-commit-hooks.yaml \
                 && pre-commit try-repo --all-files --verbose .
               env:
