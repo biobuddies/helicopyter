@@ -14,8 +14,8 @@ jobs:
                 pip install --upgrade pip setuptools uv \
                 && uv venv \
                 && source .venv/bin/activate \
-                && bash includes.sh pathver python \
-                && bash includes.sh pathver uv \
+                && (type python; python --version) | xargs \
+                && (type uv; uv --version) | xargs \
                 && echo -e "shfmt-py==3.7.0.1\n" > requirements.txt \
                 && uv pip sync requirements.txt \
                 && echo -e "shfmt-py\n" > requirements.in \
