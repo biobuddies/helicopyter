@@ -11,8 +11,7 @@ jobs:
               with:
                   python-version: 3.12.3
             - run: |
-                pip install --upgrade pip setuptools uv \
-                && uv venv \
+                uv venv \
                 && source .venv/bin/activate \
                 && (type python; python --version) | xargs \
                 && (type uv; uv --version) | xargs \
