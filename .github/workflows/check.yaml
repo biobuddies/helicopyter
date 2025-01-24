@@ -23,7 +23,6 @@ jobs:
               env:
                   PIP_PROGRESS_BAR: 'off'
 
-            - run: uv venv && source includes.sh && a && ups
             - uses: actions/checkout@v4
             - uses: actions/checkout@v4
               with:
