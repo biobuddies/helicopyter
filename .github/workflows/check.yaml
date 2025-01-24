@@ -11,14 +11,18 @@ jobs:
               with:
                   python-version: 3.12.3
             - run: |
-                uv venv \
+                pip install --upgrade pip setuptools uv \
+                && uv venv \
                 && source .venv/bin/activate \
                 && (type python; python --version) | xargs \
                 && (type uv; uv --version) | xargs \
-                && echo -e "shfmt-py==3.7.0.1\n" > requirements.txt \
+                && echo -e "pre-commit==4.0.1\nshfmt-py==3.7.0.1\n" > requirements.txt \
                 && uv pip sync requirements.txt \
-                && echo -e "shfmt-py\n" > requirements.in \
-                && uv pip compile -o requirements.txt --python-platform linux requirements.in
+                && echo -e "pre-commit\nshfmt-py\n" > requirements.in \
+                && entry='uv pip compile --verbose -o requirements.txt --python-platform linux' \
+                && $entry \
+                && echo -e "- id: uv-pip-compile\n  entry: $entry\n  files: requirements.in\n  language: system\n  name: uv-pip-compile" > .pre-commit-hooks.yaml \
+                && pre-commit try-repo --all-files --verbose .
               env:
                   PIP_PROGRESS_BAR: 'off'
 

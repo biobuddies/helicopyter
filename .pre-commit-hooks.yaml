@@ -146,7 +146,7 @@
   pass_filenames: false
 
 - id: uv-pip-compile
-  entry: uv pip compile -o requirements.txt --python-platform linux
+  entry: uv pip compile --verbose -o requirements.txt --python-platform linux
   files: requirements.in
   language: system
   name: uv-pip-compile
