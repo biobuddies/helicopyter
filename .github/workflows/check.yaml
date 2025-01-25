@@ -7,25 +7,6 @@ jobs:
     check:
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/setup-python@v5
-              with:
-                  python-version: 3.12.3
-            - run: |
-                pip install --upgrade pip setuptools uv \
-                && uv venv \
-                && source .venv/bin/activate \
-                && (type python; python --version) | xargs \
-                && (type uv; uv --version) | xargs \
-                && echo -e "pre-commit==4.0.1\nshfmt-py==3.7.0.1\n" > requirements.txt \
-                && uv pip sync requirements.txt \
-                && echo -e "pre-commit\nshfmt-py\n" > requirements.in \
-                && entry='uv pip compile --verbose -o requirements.txt --python-platform linux' \
-                && $entry requirements.in \
-                && echo -e "- id: uv-pip-compile\n  entry: $entry\n  files: requirements.in\n  language: system\n  name: uv-pip-compile" > .pre-commit-hooks.yaml \
-                && pre-commit try-repo --all-files --verbose .
-              env:
-                  PIP_PROGRESS_BAR: 'off'
-
             - uses: actions/checkout@v4
             - uses: actions/checkout@v4
               with:
