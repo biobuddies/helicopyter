@@ -8,7 +8,7 @@ from helicopyter import HeliStack
 
 def synth(stack: HeliStack) -> None:
     """
-    Accept the Git hASH (GASH) as a variable and output it.
+    Accept the GIt HAsh (GIHA) as a variable and output it.
 
     Also infer the ENVIronment (ENVI) from the workspace and echo it to standard output.
     """
@@ -24,5 +24,5 @@ def synth(stack: HeliStack) -> None:
             )
         ],
     )
-    gash = stack.push(TerraformVariable, 'gash', type='string')
-    stack.push(TerraformOutput, 'gash', value=gash.to_string())
+    giha = stack.push(TerraformVariable, 'giha', type='string')
+    stack.push(TerraformOutput, 'giha', value=giha.to_string())

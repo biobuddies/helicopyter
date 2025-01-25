@@ -22,9 +22,9 @@ class NewStack(HeliStack):
                 )
             ],
         )
-        gash = self.push(TerraformVariable, 'gash', type='string')
-        self.push(TerraformOutput, 'gash', value=gash.to_string())
+        giha = self.push(TerraformVariable, 'giha', type='string')
+        self.push(TerraformOutput, 'giha', value=giha.to_string())
 
 
-def synth(stack: NewStack) -> None:  # noqa: ARG001
+def synth(stack: NewStack) -> None:
     pass

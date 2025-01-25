@@ -30,7 +30,6 @@ skip-magic-trailing-comma = true
 [tool.ruff.lint]
 fixable = ['ALL']
 ignore = [
-    'ANN101',
     'COM812', # Insists on join([],) over join([])
     'D101',
     'D103',
