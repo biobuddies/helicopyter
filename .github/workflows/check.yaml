@@ -37,11 +37,15 @@ jobs:
                   && asdf global tenv latest \
                   && tenv tofu install
 
-            - run: >
-                  source includes.sh
-                  && a
-                  && INSH_TF=tofu pcta
-                  && pctam mypy
+            - run: |
+                  cookiecutter --config-file .cookiecutter.yaml --no-input --overwrite-if-exists .
+                  git diff-index --quiet HEAD --
+
+            - run: |
+                  source includes.sh \
+                  && a \
+                  && INSH_TF=tofu pcta \
+                  && pctam mypy \
                   && pctam gitignore-node-python-terraform
 
             - run: source includes.sh hti demo && tofu -chdir=deploys/demo/terraform validate
