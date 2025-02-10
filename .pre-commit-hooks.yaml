@@ -24,7 +24,7 @@
   name: cookiecutter
   pass_filenames: false
   stages:
-      - manual  # because Internet
+      - manual # because Internet
 
 - id: dot-yaml
   description: Require four letter suffix http://www.yaml.org/faq.html
