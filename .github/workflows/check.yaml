@@ -12,7 +12,7 @@ jobs:
               with:
                   path: asdf
                   repository: asdf-vm/asdf
-            - run: mkdir $HOME/code && ln -s $(realpath asdf) $HOME/code/asdf
+            - run: mkdir "$HOME/code" && ln -s "$(realpath asdf)" "$HOME/code/asdf"
 
             - uses: actions/setup-node@v4
               with:
