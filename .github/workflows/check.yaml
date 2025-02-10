@@ -38,7 +38,7 @@ jobs:
                   && tenv tofu install
 
             - run: |
-                  cookiecutter --config-file .cookiecutter.yaml --no-input --overwrite-if-exists .
+                  .venv/bin/cookiecutter --config-file .cookiecutter.yaml --no-input --overwrite-if-exists .
                   git diff-index --quiet HEAD --
 
             - run: |
