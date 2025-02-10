@@ -1,5 +1,6 @@
 # pre-commit Hooks
 codespell>=2.3  # For codespell inline ignore comment support
+cookiecutter
 git+https://github.com/AleksaC/hadolint-py.git
 mypy
 pre-commit
