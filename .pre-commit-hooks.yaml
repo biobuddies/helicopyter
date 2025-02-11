@@ -17,7 +17,7 @@
       - text
 
 - id: cookiecutter
-  entry: |
+  entry: >
       cookiecutter --config-file .cookiecutter.yaml --no-input --overwrite-if-exists \
       https://github.com/biobuddies/helicopyter.git
   language: system
