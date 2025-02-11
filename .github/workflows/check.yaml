@@ -1,3 +1,6 @@
+defaults:
+    run:
+        shell: bash --noprofile --norc -euxo pipefail {0}
 env:
     ALLOWEDFLARE_EMAILS: "['person@emailprovider.example']"
     ALLOWEDFLARE_PRIVATE_DOMAIN: organization.example
