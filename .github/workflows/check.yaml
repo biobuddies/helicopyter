@@ -39,14 +39,17 @@ jobs:
 
             - run: |
                   .venv/bin/cookiecutter --config-file .cookiecutter.yaml --no-input --overwrite-if-exists .
-                  git diff-index --quiet HEAD --
+                  if $(git diff-index --quiet HEAD --); then
+                      git diff
+                      echo Running Cookiecutter introduced changes
+                      exit 1
+                  fi
 
             - run: |
                   source includes.sh \
                   && a \
                   && INSH_TF=tofu pcta \
-                  && pctam mypy \
-                  && pctam gitignore-node-python-terraform
+                  && pctam mypy
 
             - run: source includes.sh hti demo && tofu -chdir=deploys/demo/terraform validate
 

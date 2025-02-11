@@ -43,7 +43,7 @@
   name: gitignore-node-python
   pass_filenames: false
   stages:
-      - manual
+      - manual  # Because Internet
 
 # Consider using cookiecutter instead
 - id: gitignore-node-python-terraform
@@ -55,7 +55,7 @@
   name: gitignore-node-python-terraform
   pass_filenames: false
   stages:
-      - manual
+      - manual  # Because Internet
 
 - id: hadolint
   entry: hadolint
@@ -70,7 +70,7 @@
   name: includes-sh
   pass_filenames: false
   stages:
-      - manual
+      - manual  # Because Internet
 
 - id: helicopyter
   entry: bash includes.sh hs
@@ -93,7 +93,7 @@
   name: mypy
   pass_filenames: false
   stages:
-      - manual
+      - manual  # Because slow
   types:
       - python
 
