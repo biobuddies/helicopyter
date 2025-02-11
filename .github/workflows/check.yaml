@@ -20,7 +20,6 @@ jobs:
                   mkdir -p "$HOME/code" \
                   && mv "$GITHUB_WORKSPACE/asdf" "$HOME/code/" \
                   && ln -s "$GITHUB_WORKSPACE" "$HOME/code/"
-                  ls -l "$HOME/code"
 
             - uses: actions/setup-node@v4
               with:
