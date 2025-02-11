@@ -17,8 +17,8 @@
       - text
 
 - id: cookiecutter
-  entry: >
-      cookiecutter --config-file .cookiecutter.yaml --no-input --overwrite-if-exists
+  entry: |
+      cookiecutter --config-file .cookiecutter.yaml --no-input --overwrite-if-exists \
       https://github.com/biobuddies/helicopyter.git
   language: system
   name: cookiecutter
@@ -144,7 +144,7 @@
       - shell
 
 - id: shfmt
-  entry: >
+  entry: |
       shfmt --binary-next-line --case-indent --simplify --write --indent 4 --language-dialect bash
   language: system
   name: shfmt

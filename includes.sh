@@ -96,8 +96,8 @@ a() {
 
     cd "$directory" || return 1
 
-    [[ $CONDA_PREFIX && $(command -v conda) ]] && conda deactivate
-    if [[ $VIRTUAL_ENV ]]; then
+    [[ ${CONDA_PREFIX-} && $(command -v conda) ]] && conda deactivate
+    if [[ ${VIRTUAL_ENV-} ]]; then
         might_be_file=$(command -v deactivate)
         if [[ $might_be_file ]]; then
             if [[ -f $might_be_file ]]; then
