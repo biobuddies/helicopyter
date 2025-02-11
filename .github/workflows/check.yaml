@@ -1,5 +1,6 @@
 defaults:
-    shell: /bin/bash -euxo pipefail
+    run:
+        shell: /bin/bash -euxo pipefail
 env:
     ALLOWEDFLARE_EMAILS: "['person@emailprovider.example']"
     ALLOWEDFLARE_PRIVATE_DOMAIN: organization.example
