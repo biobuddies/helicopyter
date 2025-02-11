@@ -56,7 +56,7 @@ jobs:
                   git -c color.ui=always diff --cached
                   git diff-index --quiet HEAD --
                   .venv/bin/cookiecutter --config-file .cookiecutter.yaml --no-input --overwrite-if-exists .
-                  git diff-index --quiet HEAD --; echo $?
+                  set +e; git diff-index --quiet HEAD --; echo $?
                   git diff-index --quiet HEAD -- || (
                       git status
                       git -c color.ui=always diff
