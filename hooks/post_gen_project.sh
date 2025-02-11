@@ -1,4 +1,4 @@
 #!/bin/bash
 set -euxo pipefail
-
-curl -s https://raw.githubusercontent.com/github/gitignore/main/{Node,Python,Terraform}.gitignore >.gitignore
+{% set suffix = '{' ~ cookiecutter.languages ~ '}.gitignore' %}
+curl -s https://raw.githubusercontent.com/github/gitignore/main/{{ suffix }} >.gitignore
