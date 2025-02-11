@@ -11,11 +11,6 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
-            - run: |
-                git status
-                git -c color.ui=always diff
-                git -c color.ui=always diff --cached
-                git diff-index --quiet HEAD --
             - uses: actions/checkout@v4
               with:
                   path: asdf
@@ -51,13 +46,8 @@ jobs:
                   && tenv tofu install
 
             - run: |
-                  git status
-                  git -c color.ui=always diff
-                  git -c color.ui=always diff --cached
-                  git diff-index --quiet HEAD --
                   .venv/bin/cookiecutter --config-file .cookiecutter.yaml --no-input --overwrite-if-exists .
-                  set +e; git diff-index --quiet HEAD --; echo $?
-                  git diff-index --quiet HEAD -- || (
+                  git diff-index --quiet $(git write-tree) || (
                       git status
                       git -c color.ui=always diff
                       echo Cookiecutter introduced changes
