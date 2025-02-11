@@ -1,6 +1,6 @@
 defaults:
     run:
-        shell: bash --noprofile --norc -euxo pipefail {0}
+        shell: bash -o errexit -o nounset -o pipefail -o xtrace --noprofile --norc {0}
 env:
     ALLOWEDFLARE_EMAILS: "['person@emailprovider.example']"
     ALLOWEDFLARE_PRIVATE_DOMAIN: organization.example
@@ -19,9 +19,13 @@ jobs:
                 git diff-index --quiet HEAD --
             - uses: actions/checkout@v4
               with:
-                  path: ../asdf
+                  path: asdf
                   repository: asdf-vm/asdf
-            - run: ln -s "$(realpath ..)" "$HOME/code"  # Probably /home/runner/code -> /home/runner/work
+            - run: |
+                mkdir -p "$HOME/code" \
+                && mv "$GITHUB_WORKSPACE/asdf" "$HOME/code/" \
+                && ln -s "$GITHUB_WORKSPACE" "$HOME/code/"
+                ls -l "$HOME/code"
 
             - uses: actions/setup-node@v4
               with:
