@@ -83,7 +83,7 @@ pathver() {
 a() {
     : 'Activate virtual environment after changing directory'
 
-    if [[ $1 ]]; then
+    if [[ ${1-} ]]; then
         directory=~/code/$1
     else
         directory=.
