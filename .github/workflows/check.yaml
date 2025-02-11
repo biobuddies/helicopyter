@@ -6,6 +6,7 @@ env:
     ALLOWEDFLARE_PRIVATE_DOMAIN: organization.example
     CLOUDFLARE_ACCOUNT_ID: 0123456789abcdef0123456789abcdef00
     CLOUDFLARE_ZONE_ID: 0123456789abcdef0123456789abcdef01
+    INSH_TF: tofu
 jobs:
     check:
         runs-on: ubuntu-latest
@@ -62,7 +63,7 @@ jobs:
             - run: |
                   source includes.sh \
                   && a \
-                  && INSH_TF=tofu pcta \
+                  && pcta \
                   && pctam mypy
 
             - run: bash includes.sh hti demo && tofu -chdir=deploys/demo/terraform validate
