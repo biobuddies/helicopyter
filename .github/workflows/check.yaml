@@ -67,10 +67,10 @@ jobs:
                   && pctam mypy
 
             - run: |
-                source includes.sh \
-                && a \
-                && hti demo \
-                && tofu -chdir=deploys/demo/terraform validate
+                  source includes.sh \
+                  && a \
+                  && hti demo \
+                  && tofu -chdir=deploys/demo/terraform validate
 
             - run: source includes.sh && a && python -m build
     summarize:
