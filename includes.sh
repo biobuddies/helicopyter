@@ -354,6 +354,15 @@ htp() {
         && TF_WORKSPACE="$envi" ${INSH_TF:-terraform} -chdir="deploys/$cona/terraform" plan "$@"
 }
 
+orgn() {
+    : 'print ORGanizatioN, a four letter acronym'
+    if [[ ${GITHUB_REPOSITORY_OWNER-} ]]; then
+        echo "$GITHUB_REPOSITORY_OWNER"
+    else
+        git remote get-url origin | gsed -E 's,.+github.com/([^/]+).+,\1,'
+    fi
+}
+
 pc() {
     : 'run Pre-Commit on modified files'
     pre-commit run "$@"
@@ -419,18 +428,32 @@ summarize() {
     CONA=$(cona)
     ENVI=$(envi)
     GIHA=$(giha)
+    ORGN=$(orgn)
+    ROLE="${ROLE-}"
     TABR=$(tabr)
     cat <<EOD | tee "${GITHUB_STEP_SUMMARY:-/dev/null}"
-| Unabbrevia. | FLAN | Value                                          |
-| ----------- | ---- | ---------------------------------------------- |
-| COdeNAme    | CONA | $CONA |
-| ENVIronment | ENVI | $ENVI |
-| GIt HAsH    | GIHA | $GIHA |
-| ROLE        | ROLE | $ROLE |
-| TAg/BRanch  | TABR | $TABR |
+| Unabbreviat. | FLAN | Value                                          |
+| ------------ | ---- | ---------------------------------------------- |
+| COdeNAme     | CONA | $CONA |
+| ENVIronment  | ENVI | $ENVI |
+| GIt HAsH     | GIHA | $GIHA |
+| ORGanizatioN | ORGN | $ORGN |
+| ROLE         | ROLE | $ROLE |
+| TAg/BRanch   | TABR | $TABR |
 EOD
     if [[ $GITHUB_ENV ]]; then
-        echo -e "CONA=$CONA\nENVI=$ENVI\nGIHA=$GIHA\nROLE=$ROLE\nTABR=$TABR" >>"$GITHUB_ENV"
+        # For use by later steps
+        cat <<EOD | tee -a "$GITHUB_ENV"
+CONA=$CONA
+ENVI=$ENVI
+GIHA=$GIHA
+ORGN=$ORGN
+ROLE=$ROLE
+TABR=$TABR
+EOD
+        # For use during this step
+        set -o allexport
+        source "$GITHUB_ENV"
     fi
 }
 
