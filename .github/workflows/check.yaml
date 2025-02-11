@@ -1,6 +1,3 @@
-defaults:
-    run:
-        shell: bash -euxo pipefail
 env:
     ALLOWEDFLARE_EMAILS: "['person@emailprovider.example']"
     ALLOWEDFLARE_PRIVATE_DOMAIN: organization.example
@@ -41,6 +38,7 @@ jobs:
                   && tenv tofu install
 
             - run: |
+                  set -x
                   .venv/bin/cookiecutter --config-file .cookiecutter.yaml --no-input --overwrite-if-exists .
                   git diff-index --quiet HEAD -- || (
                       git -c color.ui=always diff
