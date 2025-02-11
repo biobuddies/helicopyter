@@ -1,6 +1,6 @@
 defaults:
     run:
-        shell: bash -o errexit -o nounset -o pipefail -o xtrace --noprofile --norc {0}
+        shell: bash --noprofile --norc -o errexit -o nounset -o pipefail -o xtrace {0}
 env:
     ALLOWEDFLARE_EMAILS: "['person@emailprovider.example']"
     ALLOWEDFLARE_PRIVATE_DOMAIN: organization.example
