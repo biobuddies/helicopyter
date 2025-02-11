@@ -16,10 +16,10 @@ jobs:
                   path: asdf
                   repository: asdf-vm/asdf
             - run: |
-                mkdir -p "$HOME/code" \
-                && mv "$GITHUB_WORKSPACE/asdf" "$HOME/code/" \
-                && ln -s "$GITHUB_WORKSPACE" "$HOME/code/"
-                ls -l "$HOME/code"
+                  mkdir -p "$HOME/code" \
+                  && mv "$GITHUB_WORKSPACE/asdf" "$HOME/code/" \
+                  && ln -s "$GITHUB_WORKSPACE" "$HOME/code/"
+                  ls -l "$HOME/code"
 
             - uses: actions/setup-node@v4
               with:
@@ -48,7 +48,7 @@ jobs:
             - run: |
                   .venv/bin/cookiecutter --config-file .cookiecutter.yaml --no-input --overwrite-if-exists .
                   git update-index --refresh
-                  git diff-index --quiet $(git write-tree) || (
+                  git diff-index --quiet "$(git write-tree)" || (
                       git status
                       git -c color.ui=always diff
                       echo Cookiecutter introduced changes
