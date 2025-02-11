@@ -1,8 +1,12 @@
+defaults:
+    run:
+        shell: bash --noprofile --norc -o errexit -o nounset -o pipefail -o xtrace {0}
 env:
     ALLOWEDFLARE_EMAILS: "['person@emailprovider.example']"
     ALLOWEDFLARE_PRIVATE_DOMAIN: organization.example
     CLOUDFLARE_ACCOUNT_ID: 0123456789abcdef0123456789abcdef00
     CLOUDFLARE_ZONE_ID: 0123456789abcdef0123456789abcdef01
+    INSH_TF: tofu
 jobs:
     check:
         runs-on: ubuntu-latest
@@ -12,7 +16,10 @@ jobs:
               with:
                   path: asdf
                   repository: asdf-vm/asdf
-            - run: mkdir $HOME/code && ln -s $(realpath asdf) $HOME/code/asdf
+            - run: |
+                  mkdir -p "$HOME/code" \
+                  && mv "$GITHUB_WORKSPACE/asdf" "$HOME/code/" \
+                  && ln -s "$GITHUB_WORKSPACE" "$HOME/code/"
 
             - uses: actions/setup-node@v4
               with:
@@ -29,6 +36,7 @@ jobs:
                   PIP_PROGRESS_BAR: 'off'
             - run: uv venv && source includes.sh && a && ups
 
+            # TODO set TENV_GITHUB_TOKEN to avoid rate limiting
             - run: |
                   source includes.sh \
                   && a \
@@ -37,21 +45,38 @@ jobs:
                   && asdf global tenv latest \
                   && tenv tofu install
 
-            - run: >
-                  source includes.sh
-                  && a
-                  && INSH_TF=tofu pcta
-                  && pctam mypy
-                  && pctam gitignore-node-python-terraform
+            - run: |
+                  .venv/bin/cookiecutter \
+                      --config-file .cookiecutter.yaml \
+                      --no-input \
+                      --overwrite-if-exists \
+                      .
+                  git update-index --refresh
+                  git diff-index --quiet "$(git write-tree)" || (
+                      git status
+                      git -c color.ui=always diff
+                      echo Cookiecutter introduced changes
+                      exit 1
+                  )
 
-            - run: source includes.sh hti demo && tofu -chdir=deploys/demo/terraform validate
+            - run: |
+                  source includes.sh \
+                  && a \
+                  && pcta \
+                  && pctam mypy
+
+            - run: |
+                  source includes.sh \
+                  && a \
+                  && hti demo \
+                  && tofu -chdir=deploys/demo/terraform validate
 
             - run: source includes.sh && a && python -m build
     summarize:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
-            - run: source includes.sh summarize
+            - run: bash includes.sh summarize
 
 on: # yamllint disable-line rule:truthy
     pull_request:

@@ -1,3 +1,9 @@
+- id: actionlint
+  entry: actionlint
+  files: ^.github/workflows/
+  language: system
+  name: actionlint
+
 - id: codespell
   entry: codespell --check-filenames --ignore-words-list READYness
   language: system
@@ -10,6 +16,16 @@
   types:
       - text
 
+- id: cookiecutter
+  entry: |
+      cookiecutter --config-file .cookiecutter.yaml --no-input --overwrite-if-exists \
+      https://github.com/biobuddies/helicopyter.git
+  language: system
+  name: cookiecutter
+  pass_filenames: false
+  stages:
+      - manual # because Internet
+
 - id: dot-yaml
   description: Require four letter suffix http://www.yaml.org/faq.html
   entry: dot-yaml
@@ -17,6 +33,7 @@
   language: fail
   name: dot-yaml
 
+# Consider using cookiecutter instead
 - id: gitignore-node-python
   entry: >
       bash -c 'langs={Node,Python};
@@ -26,8 +43,9 @@
   name: gitignore-node-python
   pass_filenames: false
   stages:
-      - manual
+      - manual # Because Internet
 
+# Consider using cookiecutter instead
 - id: gitignore-node-python-terraform
   entry: >
       bash -c 'langs={Node,Python,Terraform};
@@ -37,7 +55,7 @@
   name: gitignore-node-python-terraform
   pass_filenames: false
   stages:
-      - manual
+      - manual # Because Internet
 
 - id: hadolint
   entry: hadolint
@@ -52,7 +70,7 @@
   name: includes-sh
   pass_filenames: false
   stages:
-      - manual
+      - manual # Because Internet
 
 - id: helicopyter
   entry: bash includes.sh hs
@@ -75,7 +93,7 @@
   name: mypy
   pass_filenames: false
   stages:
-      - manual
+      - manual # Because slow
   types:
       - python
 
@@ -126,7 +144,7 @@
       - shell
 
 - id: shfmt
-  entry: >
+  entry: |
       shfmt --binary-next-line --case-indent --simplify --write --indent 4 --language-dialect bash
   language: system
   name: shfmt
@@ -146,7 +164,7 @@
   pass_filenames: false
 
 - id: uv-pip-compile
-  entry: uv pip compile --verbose -o requirements.txt --python-platform linux
+  entry: uv pip compile -o requirements.txt --python-platform linux
   files: requirements.in
   language: system
   name: uv-pip-compile

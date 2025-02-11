@@ -83,7 +83,7 @@ pathver() {
 a() {
     : 'Activate virtual environment after changing directory'
 
-    if [[ $1 ]]; then
+    if [[ ${1-} ]]; then
         directory=~/code/$1
     else
         directory=.
@@ -96,8 +96,8 @@ a() {
 
     cd "$directory" || return 1
 
-    [[ $CONDA_PREFIX && $(command -v conda) ]] && conda deactivate
-    if [[ $VIRTUAL_ENV ]]; then
+    [[ ${CONDA_PREFIX-} && $(command -v conda) ]] && conda deactivate
+    if [[ ${VIRTUAL_ENV-} ]]; then
         might_be_file=$(command -v deactivate)
         if [[ $might_be_file ]]; then
             if [[ -f $might_be_file ]]; then
@@ -142,9 +142,9 @@ build_twine() {
 
 cona() {
     : 'print CodeNAme, a four letter acronym'
-    if [[ $GITHUB_REPOSITORY ]]; then
+    if [[ ${GITHUB_REPOSITORY-} ]]; then
         echo "${GITHUB_REPOSITORY##*/}"
-    elif [[ $VIRTUAL_ENV ]]; then
+    elif [[ ${VIRTUAL_ENV-} ]]; then
         basename "${VIRTUAL_ENV%/.venv}"
     else
         basename "$PWD"
@@ -281,9 +281,9 @@ forceready() {
 
 envi() {
     : 'print ENVIronment, a four letter acronym'
-    if [[ $ENVI ]]; then
+    if [[ ${ENVI-} ]]; then
         echo "$ENVI"
-    elif [[ $GITHUB_ACTIONS ]]; then
+    elif [[ ${GITHUB_ACTIONS-} ]]; then
         echo github
     else
         echo local
@@ -354,6 +354,15 @@ htp() {
         && TF_WORKSPACE="$envi" ${INSH_TF:-terraform} -chdir="deploys/$cona/terraform" plan "$@"
 }
 
+orgn() {
+    : 'print ORGanizatioN, a four letter acronym'
+    if [[ ${GITHUB_REPOSITORY_OWNER-} ]]; then
+        echo "$GITHUB_REPOSITORY_OWNER"
+    else
+        git remote get-url origin | gsed -E 's,.+github.com/([^/]+).+,\1,'
+    fi
+}
+
 pc() {
     : 'run Pre-Commit on modified files'
     pre-commit run "$@"
@@ -419,18 +428,33 @@ summarize() {
     CONA=$(cona)
     ENVI=$(envi)
     GIHA=$(giha)
+    ORGN=$(orgn)
+    ROLE="${ROLE-}"
     TABR=$(tabr)
     cat <<EOD | tee "${GITHUB_STEP_SUMMARY:-/dev/null}"
-| Unabbrevia. | FLAN | Value                                          |
-| ----------- | ---- | ---------------------------------------------- |
-| COdeNAme    | CONA | $CONA |
-| ENVIronment | ENVI | $ENVI |
-| GIt HAsH    | GIHA | $GIHA |
-| ROLE        | ROLE | $ROLE |
-| TAg/BRanch  | TABR | $TABR |
+| Unabbreviat. | FLAN | Value                                          |
+| ------------ | ---- | ---------------------------------------------- |
+| COdeNAme     | CONA | $CONA |
+| ENVIronment  | ENVI | $ENVI |
+| GIt HAsH     | GIHA | $GIHA |
+| ORGanizatioN | ORGN | $ORGN |
+| ROLE         | ROLE | $ROLE |
+| TAg/BRanch   | TABR | $TABR |
 EOD
     if [[ $GITHUB_ENV ]]; then
-        echo -e "CONA=$CONA\nENVI=$ENVI\nGIHA=$GIHA\nROLE=$ROLE\nTABR=$TABR" >>"$GITHUB_ENV"
+        # For use by later steps
+        cat <<EOD | tee -a "$GITHUB_ENV"
+CONA=$CONA
+ENVI=$ENVI
+GIHA=$GIHA
+ORGN=$ORGN
+ROLE=$ROLE
+TABR=$TABR
+EOD
+        # For use during this step
+        set -o allexport
+        # shellcheck disable=SC1090
+        source "$GITHUB_ENV"
     fi
 }
 
@@ -443,9 +467,9 @@ tabr() {
     # https://stackoverflow.com/questions/58033366
     # In contrast to the git metadata, the GitHub Actions environment variables are available before
     # git checkout, and may be less ambiguous.
-    if [[ $GITHUB_HEAD_REF ]]; then
+    if [[ ${GITHUB_HEAD_REF-} ]]; then
         echo "$GITHUB_HEAD_REF"
-    elif [[ $GITHUB_REF_NAME ]]; then
+    elif [[ ${GITHUB_REF_NAME-} ]]; then
         echo "$GITHUB_REF_NAME"
     else
         local description
@@ -470,7 +494,7 @@ uuid() {
 }
 
 if [[ $* ]]; then
-    if [[ $INSH_TRACE == 'off' ]]; then
+    if [[ ${INSH_TRACE-} == 'off' ]]; then
         "$@"
     else
         (
