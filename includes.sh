@@ -470,7 +470,7 @@ uuid() {
 }
 
 if [[ $* ]]; then
-    if [[ $INSH_TRACE == 'off' ]]; then
+    if [[ ${INSH_TRACE-} == 'off' ]]; then
         "$@"
     else
         (
