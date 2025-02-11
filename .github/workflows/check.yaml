@@ -16,9 +16,9 @@ jobs:
                 git diff-index --quiet HEAD --
             - uses: actions/checkout@v4
               with:
-                  path: asdf
+                  path: ../asdf
                   repository: asdf-vm/asdf
-            - run: mkdir "$HOME/code" && ln -s "$(realpath asdf)" "$HOME/code/asdf"
+            - run: ln -s "$(realpath ..)" "$HOME/code"  # Probably /home/runner/code -> /home/runner/work
 
             - uses: actions/setup-node@v4
               with:
