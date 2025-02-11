@@ -12,7 +12,6 @@ jobs:
         steps:
             - uses: actions/checkout@v4
             - run: |
-                set -x
                 git status
                 git -c color.ui=always diff
                 git -c color.ui=always diff --cached
@@ -51,13 +50,13 @@ jobs:
                   && tenv tofu install
 
             - run: |
-                  set -x
                   git status
                   git -c color.ui=always diff
                   git -c color.ui=always diff --cached
                   git diff-index --quiet HEAD --
                   .venv/bin/cookiecutter --config-file .cookiecutter.yaml --no-input --overwrite-if-exists .
                   git diff-index --quiet HEAD -- || (
+                      git status
                       git -c color.ui=always diff
                       echo Cookiecutter introduced changes
                       exit 1
@@ -69,14 +68,14 @@ jobs:
                   && INSH_TF=tofu pcta \
                   && pctam mypy
 
-            - run: source includes.sh hti demo && tofu -chdir=deploys/demo/terraform validate
+            - run: bash includes.sh hti demo && tofu -chdir=deploys/demo/terraform validate
 
             - run: source includes.sh && a && python -m build
     summarize:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
-            - run: source includes.sh summarize
+            - run: bash includes.sh summarize
 
 on: # yamllint disable-line rule:truthy
     pull_request:
