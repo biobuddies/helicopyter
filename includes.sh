@@ -142,9 +142,9 @@ build_twine() {
 
 cona() {
     : 'print CodeNAme, a four letter acronym'
-    if [[ $GITHUB_REPOSITORY ]]; then
+    if [[ ${GITHUB_REPOSITORY-} ]]; then
         echo "${GITHUB_REPOSITORY##*/}"
-    elif [[ $VIRTUAL_ENV ]]; then
+    elif [[ ${VIRTUAL_ENV-} ]]; then
         basename "${VIRTUAL_ENV%/.venv}"
     else
         basename "$PWD"
@@ -281,9 +281,9 @@ forceready() {
 
 envi() {
     : 'print ENVIronment, a four letter acronym'
-    if [[ $ENVI ]]; then
+    if [[ ${ENVI-} ]]; then
         echo "$ENVI"
-    elif [[ $GITHUB_ACTIONS ]]; then
+    elif [[ ${GITHUB_ACTIONS-} ]]; then
         echo github
     else
         echo local
@@ -443,9 +443,9 @@ tabr() {
     # https://stackoverflow.com/questions/58033366
     # In contrast to the git metadata, the GitHub Actions environment variables are available before
     # git checkout, and may be less ambiguous.
-    if [[ $GITHUB_HEAD_REF ]]; then
+    if [[ ${GITHUB_HEAD_REF-} ]]; then
         echo "$GITHUB_HEAD_REF"
-    elif [[ $GITHUB_REF_NAME ]]; then
+    elif [[ ${GITHUB_REF_NAME-} ]]; then
         echo "$GITHUB_REF_NAME"
     else
         local description
