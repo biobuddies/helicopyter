@@ -47,6 +47,7 @@ jobs:
 
             - run: |
                   .venv/bin/cookiecutter --config-file .cookiecutter.yaml --no-input --overwrite-if-exists .
+                  git update-index --refresh
                   git diff-index --quiet $(git write-tree) || (
                       git status
                       git -c color.ui=always diff
