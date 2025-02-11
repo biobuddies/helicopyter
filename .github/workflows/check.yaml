@@ -8,6 +8,18 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
+            - run: |
+                set -x
+                git status
+                git -c color.ui=always diff
+                git -c color.ui=always diff --cached
+                git diff-index --quiet HEAD --
+                .venv/bin/cookiecutter --config-file .cookiecutter.yaml --no-input --overwrite-if-exists .
+                git diff-index --quiet HEAD -- || (
+                    git -c color.ui=always diff
+                    echo Cookiecutter introduced changes
+                    exit 1
+                )
             - uses: actions/checkout@v4
               with:
                   path: asdf
@@ -39,6 +51,10 @@ jobs:
 
             - run: |
                   set -x
+                  git status
+                  git -c color.ui=always diff
+                  git -c color.ui=always diff --cached
+                  git diff-index --quiet HEAD --
                   .venv/bin/cookiecutter --config-file .cookiecutter.yaml --no-input --overwrite-if-exists .
                   git diff-index --quiet HEAD -- || (
                       git -c color.ui=always diff
