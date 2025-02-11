@@ -40,7 +40,7 @@ jobs:
             - run: |
                   .venv/bin/cookiecutter --config-file .cookiecutter.yaml --no-input --overwrite-if-exists .
                   git diff-index --quiet HEAD -- || (
-                      git diff
+                      git -c color.ui=always diff
                       echo Cookiecutter introduced changes
                       exit 1
                   )
