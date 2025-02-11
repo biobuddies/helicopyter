@@ -453,7 +453,7 @@ TABR=$TABR
 EOD
         # For use during this step
         set -o allexport
-        source "$GITHUB_ENV"  # shellcheck disable=SC1090
+        source "$GITHUB_ENV" # shellcheck disable=SC1090
     fi
 }
 
