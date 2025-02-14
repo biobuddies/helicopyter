@@ -480,7 +480,11 @@ tabr() {
 
 upc() {
     : 'Uv Pip Compile'
-    uv pip compile -o requirements.txt --python-platform linux requirements.in
+    uv pip compile \
+        --all-extras \
+        --output-file requirements.txt \
+        --python-platform linux \
+        pyproject.toml requirements.in
 }
 
 ups() {

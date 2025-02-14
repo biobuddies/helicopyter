@@ -11,10 +11,41 @@ classifiers = [
     'Topic :: System :: Installation/Setup',
 ]
 description = 'Python Terraform JSON configuration generator'
-dependencies = ['cdk8s', 'cdktf', 'cdktf-cdktf-provider-null', 'typed-argument-parser']
+dependencies = [
+    'cdk8s',
+    'cdktf',
+    'cdktf-cdktf-provider-aws',
+    'cdktf-cdktf-provider-cloudflare',
+    'cdktf-cdktf-provider-docker',
+    'cdktf-cdktf-provider-github',
+    'cdktf-cdktf-provider-null',
+    'typed-argument-parser',
+]
 dynamic = ['version']
 name = 'helicopyter'
 readme = 'README.md'
+
+[project.optional-dependencies]
+precommit = [
+    'actionlint-py',
+    'codespell>=2.3',  # For codespell inline ignore comment support
+    'cookiecutter',
+    'mypy',
+    'pre-commit',
+    'ruff',
+    'rust-just',
+    'shellcheck-py',
+    'shfmt-py',
+    'uv',
+    'validate-pyproject[all]',
+    'yamllint',
+]
+buildrelease = [
+    'build',
+    'ipython',
+    'pytest>=8',  # Pin to keep recent
+    'twine',
+]
 
 [project.urls]
 Homepage = 'https://github.com/covracer/helicopyter'
