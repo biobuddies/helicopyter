@@ -484,7 +484,7 @@ upc() {
         --all-extras \
         --output-file requirements.txt \
         --python-platform linux \
-        pyproject.toml requirements.in
+        pyproject.toml $([[ -f requirements.in ]] && requirements.in)
 }
 
 ups() {
