@@ -17,12 +17,7 @@ name = 'helicopyter'
 readme = 'README.md'
 
 [project.optional-dependencies]
-buildrelease = [
-    'build',
-    'ipython',
-    'pytest',
-    'twine',
-]
+buildrelease = ['build', 'ipython', 'pytest', 'twine']
 demos = [
     'cdktf-cdktf-provider-aws',
     # prebuilt package 12+ bring provider 5+

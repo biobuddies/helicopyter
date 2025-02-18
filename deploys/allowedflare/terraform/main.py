@@ -3,13 +3,9 @@
 from os import environ
 
 from cdktf_cdktf_provider_cloudflare.workers_route import WorkersRoute
-from cdktf_cdktf_provider_cloudflare.zero_trust_access_application import (
-    ZeroTrustAccessApplication,
-    ZeroTrustAccessApplicationConfig,
-)
+from cdktf_cdktf_provider_cloudflare.zero_trust_access_application import ZeroTrustAccessApplication
 from cdktf_cdktf_provider_cloudflare.zero_trust_access_identity_provider import (
     ZeroTrustAccessIdentityProvider,
-    ZeroTrustAccessIdentityProviderConfigA,
 )
 from cdktf_cdktf_provider_cloudflare.zero_trust_access_policy import (
     ZeroTrustAccessPolicy,
@@ -49,11 +45,7 @@ def synth(stack: BaseStack) -> None:
                 account_id=account_id,
                 name='email-in',
                 decision='allow',
-                include=[
-                    ZeroTrustAccessPolicyInclude(
-                        email=[email],
-                    )
-                ],
+                include=[ZeroTrustAccessPolicyInclude(email=[email])],
             ).id,
             stack.push(
                 ZeroTrustAccessPolicy,
@@ -61,11 +53,7 @@ def synth(stack: BaseStack) -> None:
                 account_id=account_id,
                 name='service-in',
                 decision='non_identity',
-                include=[
-                    ZeroTrustAccessPolicyInclude(
-                        any_valid_service_token=True,
-                    )
-                ],
+                include=[ZeroTrustAccessPolicyInclude(any_valid_service_token=True)],
             ).id,
         ],
     )
