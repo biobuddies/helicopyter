@@ -3,9 +3,9 @@
 from ast import literal_eval
 from os import environ
 
-from cdktf_cdktf_provider_cloudflare.access_application import AccessApplication
-from cdktf_cdktf_provider_cloudflare.access_identity_provider import AccessIdentityProvider
-from cdktf_cdktf_provider_cloudflare.access_policy import AccessPolicy, AccessPolicyInclude
+from cdktf_cdktf_provider_cloudflare.zero_trust_access_application import AccessApplication
+from cdktf_cdktf_provider_cloudflare.zero_trust_access_identity_provider import AccessIdentityProvider
+from cdktf_cdktf_provider_cloudflare.zero_trust_access_policy import AccessPolicy, AccessPolicyInclude
 from cdktf_cdktf_provider_cloudflare.worker_route import WorkerRoute
 
 from stacks.base import BaseStack

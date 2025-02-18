@@ -60,8 +60,10 @@ class HeliStack(TerraformStack):
         In contrast to running Element(...) standalone, the new instance will be named in the
         traditional Terraform style.
 
+        If an import_id is provided, save it to self.imports for use by multisynth().
+
         Example usage:
-        from cdktf_cdktf_provider_cloudflare.access_application import AccessApplication
+        from cdktf_cdktf_provider_cloudflare.zero_trust_access_application import AccessApplication
         stack.push(AccessApplication, 'mydomain-wildcard', domain='*.mydomain.com')
         """
         if Element.__module__ == 'cdktf':
@@ -88,6 +90,11 @@ def multisynth(
     hashicorp_configuration_language: bool,
     format_with: str,
 ) -> None:
+    """
+    Generate Hashicorp Configuration Language (HCL) or JSON.
+
+    An import block will generated for each (key, value) pair in stack.imports.
+    """
     if not all_or_conas_or_paths:
         print('No codenames specified. Doing nothing.')
         return
