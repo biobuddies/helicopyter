@@ -63,8 +63,8 @@ class HeliStack(TerraformStack):
         If an import_id is provided, save it to self.imports for use by multisynth().
 
         Example usage:
-        from cdktf_cdktf_provider_cloudflare.zero_trust_access_application import AccessApplication
-        stack.push(AccessApplication, 'mydomain-wildcard', domain='*.mydomain.com')
+        from cdktf_cdktf_provider_cloudflare.zero_trust_access_application import ZeroTrustAccessApplication
+        stack.push(ZeroTrustAccessApplication, 'mydomain-wildcard', domain='*.mydomain.com')
         """
         if Element.__module__ == 'cdktf':
             scope_name = Element.__name__.lower().replace('terraform', '')

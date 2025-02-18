@@ -3,9 +3,9 @@
 from ast import literal_eval
 from os import environ
 
-from cdktf_cdktf_provider_cloudflare.zero_trust_access_application import AccessApplication
-from cdktf_cdktf_provider_cloudflare.zero_trust_access_identity_provider import AccessIdentityProvider
-from cdktf_cdktf_provider_cloudflare.zero_trust_access_policy import AccessPolicy, AccessPolicyInclude
+from cdktf_cdktf_provider_cloudflare.zero_trust_access_application import ZeroTrustAccessApplication
+from cdktf_cdktf_provider_cloudflare.zero_trust_access_identity_provider import ZeroTrustAccessIdentityProvider
+from cdktf_cdktf_provider_cloudflare.zero_trust_access_policy import ZeroTrustAccessPolicy, ZeroTrustAccessPolicyInclude
 from cdktf_cdktf_provider_cloudflare.worker_route import WorkerRoute
 
 from stacks.base import BaseStack
@@ -21,7 +21,7 @@ def synth(stack: BaseStack) -> None:
     zone_id = environ['CLOUDFLARE_ZONE_ID']
 
     stack.push(
-        AccessIdentityProvider,
+        ZeroTrustAccessIdentityProvider,
         'this',
         account_id=account_id,
         name='One-time PIN',
@@ -29,7 +29,7 @@ def synth(stack: BaseStack) -> None:
     )
 
     application = stack.push(
-        AccessApplication,
+        ZeroTrustAccessApplication,
         'this',
         domain=f'*.{private_domain}',
         session_duration='24h',
@@ -37,23 +37,23 @@ def synth(stack: BaseStack) -> None:
     )
 
     stack.push(
-        AccessPolicy,
+        ZeroTrustAccessPolicy,
         'email-in',
         name='email-in',
         application_id=application.id,
         decision='allow',
         precedence=1,
-        include=[AccessPolicyInclude(email=emails)],
+        include=[ZeroTrustAccessPolicyInclude(email=emails)],
     )
 
     stack.push(
-        AccessPolicy,
+        ZeroTrustAccessPolicy,
         'service-in',
         name='service-in',
         application_id=application.id,
         decision='non_identity',
         precedence=2,
-        include=[AccessPolicyInclude(any_valid_service_token=True)],
+        include=[ZeroTrustAccessPolicyInclude(any_valid_service_token=True)],
     )
 
     stack.push(
