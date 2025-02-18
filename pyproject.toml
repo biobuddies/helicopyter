@@ -14,10 +14,6 @@ description = 'Python Terraform JSON configuration generator'
 dependencies = [
     'cdk8s',
     'cdktf',
-    'cdktf-cdktf-provider-aws',
-    'cdktf-cdktf-provider-cloudflare',
-    'cdktf-cdktf-provider-docker',
-    'cdktf-cdktf-provider-github',
     'cdktf-cdktf-provider-null',
     'typed-argument-parser',
 ]
@@ -26,6 +22,18 @@ name = 'helicopyter'
 readme = 'README.md'
 
 [project.optional-dependencies]
+buildrelease = [
+    'build',
+    'ipython',
+    'pytest>=8',  # Pin to keep recent
+    'twine',
+]
+demos = [
+    'cdktf-cdktf-provider-aws',
+    'cdktf-cdktf-provider-cloudflare',
+    'cdktf-cdktf-provider-docker',
+    'cdktf-cdktf-provider-github',
+]
 precommit = [
     'actionlint-py',
     'codespell>=2.3',  # For codespell inline ignore comment support
@@ -40,12 +48,6 @@ precommit = [
     'uv',
     'validate-pyproject[all]',
     'yamllint',
-]
-buildrelease = [
-    'build',
-    'ipython',
-    'pytest>=8',  # Pin to keep recent
-    'twine',
 ]
 
 [project.urls]
