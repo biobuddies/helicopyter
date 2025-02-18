@@ -61,8 +61,6 @@ def synth(stack: BaseStack) -> None:
                 ).id,
                 precedence=1,
             ),
-            # includes=ZeroTrustAccessApplicationPoliciesInclude(
-            #    email=ZeroTrustAccessApplicationPoliciesIncludeEmail(email=email),
             ZeroTrustAccessApplicationPolicies(
                 id=stack.push(
                     ZeroTrustAccessPolicy,
