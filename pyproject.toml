@@ -20,12 +20,14 @@ readme = 'README.md'
 buildrelease = [
     'build',
     'ipython',
-    'pytest>=8', # Pin to keep recent
+    'pytest',
     'twine',
 ]
 demos = [
     'cdktf-cdktf-provider-aws',
-    'cdktf-cdktf-provider-cloudflare',
+    # prebuilt package 12+ bring provider 5+
+    # https://registry.terraform.io/providers/cloudflare/cloudflare/latest/docs/guides/version-5-upgrade
+    'cdktf-cdktf-provider-cloudflare==11.*',
     'cdktf-cdktf-provider-docker',
     'cdktf-cdktf-provider-github',
 ]

@@ -28,7 +28,7 @@ cdktf==0.20.11
     #   cdktf-cdktf-provider-null
 cdktf-cdktf-provider-aws==19.52.1
     # via helicopyter (pyproject.toml)
-cdktf-cdktf-provider-cloudflare==12.1.0
+cdktf-cdktf-provider-cloudflare==11.30.0
     # via helicopyter (pyproject.toml)
 cdktf-cdktf-provider-docker==11.0.0
     # via helicopyter (pyproject.toml)
