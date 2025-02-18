@@ -6,7 +6,7 @@ from os import environ
 from cdktf_cdktf_provider_cloudflare.zero_trust_access_application import ZeroTrustAccessApplication
 from cdktf_cdktf_provider_cloudflare.zero_trust_access_identity_provider import ZeroTrustAccessIdentityProvider
 from cdktf_cdktf_provider_cloudflare.zero_trust_access_policy import ZeroTrustAccessPolicy, ZeroTrustAccessPolicyInclude
-from cdktf_cdktf_provider_cloudflare.worker_route import WorkerRoute
+from cdktf_cdktf_provider_cloudflare.workers_route import WorkersRoute
 
 from stacks.base import BaseStack
 
@@ -57,7 +57,7 @@ def synth(stack: BaseStack) -> None:
     )
 
     stack.push(
-        WorkerRoute,
+        WorkersRoute,
         'this',
         pattern=f'*.{private_domain}/x/*',
         script_name='allowedflare-proxy',
