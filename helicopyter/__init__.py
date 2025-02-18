@@ -34,6 +34,11 @@ class HeliStack(TerraformStack):
             raise TypeError('AWS CDK unsupported; please use CDKTF')
         return element.node.id
 
+    def override(self, **kwargs: dict) -> None:
+        """Call add_override for each keyword argument."""
+        for key, value in kwargs.items():
+            self.add_override(key, value)
+
     def provide(self, name: str) -> type[TerraformElement]:
         """
         Return a Provider class instance given its short name.
@@ -77,7 +82,7 @@ class HeliStack(TerraformStack):
         element = Element(self._scopes[scope_name], id_, *args, **kwargs)
         if import_id:
             self.imports[
-                f"{Element.__module__.replace('cdktf_cdktf_provider_', '').replace('.', '_')}.{id_}"
+                f'{Element.__module__.replace("cdktf_cdktf_provider_", "").replace(".", "_")}.{id_}'
             ] = import_id
         return element
 
@@ -133,6 +138,7 @@ def multisynth(
             print(f'`def synth(stack: HeliStack):` appears to be missing from {python_file}')
             raise
         if hashicorp_configuration_language:
+            # TODO hcl imports
             unformatted = stack.to_hcl_terraform()['hcl']
             autoformatted = check_output(  # noqa: S603
                 [format_with, 'fmt', '-'], input=unformatted.encode()

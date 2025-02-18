@@ -11,12 +11,7 @@ classifiers = [
     'Topic :: System :: Installation/Setup',
 ]
 description = 'Python Terraform JSON configuration generator'
-dependencies = [
-    'cdk8s',
-    'cdktf',
-    'cdktf-cdktf-provider-null',
-    'typed-argument-parser',
-]
+dependencies = ['cdk8s', 'cdktf', 'cdktf-cdktf-provider-null', 'typed-argument-parser']
 dynamic = ['version']
 name = 'helicopyter'
 readme = 'README.md'
@@ -25,7 +20,7 @@ readme = 'README.md'
 buildrelease = [
     'build',
     'ipython',
-    'pytest>=8',  # Pin to keep recent
+    'pytest>=8', # Pin to keep recent
     'twine',
 ]
 demos = [
@@ -36,7 +31,7 @@ demos = [
 ]
 precommit = [
     'actionlint-py',
-    'codespell>=2.3',  # For codespell inline ignore comment support
+    'codespell>=2.3',                                               # For codespell inline ignore comment support
     'cookiecutter',
     'hadolint-py @ git+https://github.com/AleksaC/hadolint-py.git',
     'mypy',
