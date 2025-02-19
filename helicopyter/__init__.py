@@ -143,7 +143,7 @@ def multisynth(
             if stack.imports:
                 imports = (
                     '\n\n'.join(
-                        'import {\n  to = %s\n  id = "%s"\n}' % (resource, import_id)
+                        'import {\n  to = %s\n  id = "%s"\n}' % (resource, import_id)  # noqa: UP031
                         for resource, import_id in stack.imports.items()
                     )
                     + '\n\n'
