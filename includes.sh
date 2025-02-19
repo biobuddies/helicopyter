@@ -480,6 +480,7 @@ tabr() {
 
 upc() {
     : 'Uv Pip Compile'
+    # shellcheck disable=SC2046
     uv pip compile \
         --all-extras \
         --output-file requirements.txt \
