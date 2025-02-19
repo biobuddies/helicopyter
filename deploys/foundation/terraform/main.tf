@@ -20,26 +20,6 @@ import {
   id = "wellplated"
 }
 
-import {
-  to = github_repository.airdjang
-  id = "airdjang"
-}
-
-import {
-  to = github_repository.allowedflare
-  id = "allowedflare"
-}
-
-import {
-  to = github_repository.helicopyter
-  id = "helicopyter"
-}
-
-import {
-  to = github_repository.wellplated
-  id = "wellplated"
-}
-
 terraform {
   required_providers {
     github = {
