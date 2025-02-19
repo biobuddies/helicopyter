@@ -474,7 +474,6 @@ tabr() {
     elif [[ ${GITHUB_REF_NAME-} ]]; then
         echo "$GITHUB_REF_NAME"
     else
-        local description
         # remotes/origin/mybranch -> mybranch
         # heads/mybranch -> mybranch
         # tags/v2025.02.03 -> v2025.02.03

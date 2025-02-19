@@ -56,9 +56,9 @@ class HeliStack(TerraformStack):
         self,
         Element: type[E],  # noqa: N803
         id_: str,
-        *args: Any,  # noqa: ANN401
+        *args: Any,
         import_id: str = '',
-        **kwargs: Any,  # noqa: ANN401
+        **kwargs: Any,
     ) -> E:
         """
         Return new instance of Element (data, local, output, resource, or variable).

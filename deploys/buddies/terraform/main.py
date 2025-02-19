@@ -18,9 +18,5 @@ def synth(stack: BaseStack) -> None:
     stack.provide('github', owner='biobuddies')
     for firstname_dot_lastname, (username, role) in buddies.items():
         stack.push(
-            Membership,
-            firstname_dot_lastname.replace('.', '_'),
-            import_id=f'biobuddies:{username}',
-            role=role,
-            username=username,
+            Membership, firstname_dot_lastname.replace('.', '_'), role=role, username=username
         )
