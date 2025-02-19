@@ -40,15 +40,15 @@ class HeliStack(TerraformStack):
         for key, value in kwargs.items():
             self.add_override(key, value)
 
-    def provide(self, name: str) -> type[TerraformElement]:
+    def provide(self, name: str, **kwargs: Any) -> type[TerraformElement]:
         """
         Return a Provider class instance given its short name.
 
         Example usage:
-        stack.provide('cloudflare')
+        stack.provide('github', owner='biobuddies')
         """
         module = import_module(f'cdktf_cdktf_provider_{name}.provider')
-        return getattr(module, f'{name.title()}Provider')(self, 'this')
+        return getattr(module, f'{name.title()}Provider')(self, 'this', **kwargs)
 
     E = TypeVar('E', bound=TerraformElement)
 

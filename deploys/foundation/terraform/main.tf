@@ -42,6 +42,7 @@ terraform {
 }
 
 provider "github" {
+  owner = "biobuddies"
 }
 
 resource "github_repository" "airdjang" {

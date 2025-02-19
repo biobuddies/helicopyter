@@ -61,6 +61,8 @@ constructs==10.4.2
     #   cdktf-cdktf-provider-null
 cookiecutter==2.6.0
     # via helicopyter (pyproject.toml)
+coverage==7.6.12
+    # via pytest-cov
 cryptography==44.0.1
     # via secretstorage
 decorator==5.1.1
@@ -185,6 +187,10 @@ pygments==2.19.1
 pyproject-hooks==1.2.0
     # via build
 pytest==8.3.4
+    # via
+    #   helicopyter (pyproject.toml)
+    #   pytest-cov
+pytest-cov==6.0.0
     # via helicopyter (pyproject.toml)
 python-dateutil==2.9.0.post0
     # via

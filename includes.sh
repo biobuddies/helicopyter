@@ -329,7 +329,8 @@ hta() {
     fi
     shift 2
     hs "$cona" \
-        && TF_WORKSPACE="$envi" ${INSH_TF:-terraform} -chdir="deploys/$cona/terraform" apply "$@"
+        && TF_VAR_giha=$(giha) TF_VAR_tabr=$(tabr) TF_WORKSPACE="$envi" \
+            ${INSH_TF:-terraform} -chdir="deploys/$cona/terraform" apply "$@"
 }
 
 hti() {
@@ -351,7 +352,8 @@ htp() {
     fi
     shift 2
     hs "$cona" \
-        && TF_WORKSPACE="$envi" ${INSH_TF:-terraform} -chdir="deploys/$cona/terraform" plan "$@"
+        && TF_VAR_giha=$(giha) TF_VAR_tabr=$(tabr) TF_WORKSPACE="$envi" \
+            ${INSH_TF:-terraform} -chdir="deploys/$cona/terraform" plan "$@"
 }
 
 orgn() {
@@ -473,8 +475,12 @@ tabr() {
         echo "$GITHUB_REF_NAME"
     else
         local description
-        description=$(git describe --all --dirty --exact-match 2>/dev/null)
-        [[ $description == *-dirty ]] || echo "${description#*/}"
+        # remotes/origin/mybranch -> mybranch
+        # heads/mybranch -> mybranch
+        # tags/v2025.02.03 -> v2025.02.03
+        # heads/mybranch-dirty -> '' #empty string
+        git describe --all --dirty --exact-match 2>/dev/null \
+            | gsed -En '/-dirty$/ q; s,(remotes/[^/]+|heads|tags)/,,p'
     fi
 }
 

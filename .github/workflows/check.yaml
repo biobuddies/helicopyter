@@ -71,7 +71,9 @@ jobs:
                   && hti demo \
                   && tofu -chdir=deploys/demo/terraform validate
 
-            - run: source includes.sh && a && python -m build
+            - run: just test
+
+            - run: source includes.sh && a && python -m build && python -m twine check --strict dist/*
     summarize:
         runs-on: ubuntu-latest
         steps:

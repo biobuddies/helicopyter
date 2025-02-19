@@ -13,7 +13,7 @@ repositories = {
 
 
 def synth(stack: BaseStack) -> None:
-    stack.provide('github')
+    stack.provide('github', owner='biobuddies')
 
     for name, (description, topics) in repositories.items():
         stack.push(

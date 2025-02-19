@@ -1,5 +1,5 @@
 set export
-set shell := ["bash", "-euo", "pipefail", "-c"]
+set shell := ['bash', '-euo', 'pipefail', '-c']
 
 OS := `uname -s`
 PACKAGES := "bind9-host curl fping git less tmux tree"
@@ -37,6 +37,7 @@ a:
 # print PATH and VERsion; optionally assert version file matches
 pathver command version_file="":
     #!/usr/bin/env bash
+    # TODO investigate require() instead
     source=$(type -p "{{command}}")
     if [[ -z $source ]]; then
         source=$(type "{{command}}")
@@ -125,7 +126,10 @@ pcm *args:
 
 # Uv Pip Compile
 upc *args:
-    uv pip compile -o requirements.txt --python-platform linux requirements.in {{args}}
+    uv pip compile --all-extras --output-file requirements.txt --python-platform linux \
+        pyproject.toml {{ \
+            if path_exists('requirements.in') == 'true' { 'requirements.in' } else { '' } \
+        }} {{args}}
 
 # Uv Pip Sync
 ups *args:
@@ -164,7 +168,7 @@ htp cona envi *args:
 
 # Universally Unique IDentifier
 uuid:
-    python -c 'import uuid; print(uuid.uuid4())'
+    echo {{uuid()}}
 
 # SUMMARIZE environment by displaying four letter acronyms
 summarize:
@@ -173,14 +177,19 @@ summarize:
 # Alias for summarize (backwards compatibility)
 ghas: summarize
 
+set unstable  # || support
 # print TAg or BRanch or empty string, a four letter acronym
 tabr:
-    #!/usr/bin/env bash
-    if [[ $GITHUB_HEAD_REF ]]; then
-        echo "$GITHUB_HEAD_REF"
-    elif [[ $GITHUB_REF_NAME ]]; then
-        echo "$GITHUB_REF_NAME"
-    else
-        description=$(git describe --all --dirty --exact-match 2>/dev/null)
-        [[ $description == *-dirty ]] || echo "${description#*/}"
-    fi
+    # remotes/origin/mybranch -> mybranch
+    # heads/mybranch -> mybranch
+    # tags/v2025.02.03 -> v2025.02.03
+    # heads/mybranch-dirty -> '' #empty string
+    echo {{ \
+        env('GITHUB_HEAD_REF', '') \
+        || env('GITHUB_REF_NAME', '') \
+        || `git describe --all --dirty --exact-match 2>/dev/null \
+            | sed -En '/-dirty$/ q; s,(remotes/[^/]+|heads|tags)/,,p'` \
+    }}
+
+test:
+    python -m pytest --cov=helicopyter --cov-report=term-missing:skip-covered --verbose

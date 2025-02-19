@@ -17,7 +17,7 @@ name = 'helicopyter'
 readme = 'README.md'
 
 [project.optional-dependencies]
-buildrelease = ['build', 'ipython', 'pytest', 'twine']
+buildrelease = ['build', 'ipython', 'twine']
 demos = [
     'cdktf-cdktf-provider-aws',
     # prebuilt package 12+ bring provider 5+
@@ -33,6 +33,8 @@ precommit = [
     'hadolint-py @ git+https://github.com/AleksaC/hadolint-py.git',
     'mypy',
     'pre-commit',
+    'pytest',
+    'pytest-cov',
     'ruff',
     'rust-just',
     'shellcheck-py',
