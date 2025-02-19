@@ -148,7 +148,8 @@ hta cona envi *args:
         exit 1
     fi
     just hs {{cona}} \
-        && TF_WORKSPACE={{envi}} ${INSH_TF:-terraform} -chdir=deploys/{{cona}}/terraform apply {{args}}
+        && TF_VAR_giha=$(just giha) TF_VAR_tabr=$(just tabr) TF_WORKSPACE={{envi}} \
+            ${INSH_TF:-terraform} -chdir=deploys/{{cona}}/terraform apply {{args}}
 
 # Helper for Terraform Init and synth
 hti cona *args:
@@ -177,19 +178,18 @@ summarize:
 # Alias for summarize (backwards compatibility)
 ghas: summarize
 
-set unstable  # || support
+# TODO test if these special cases can be dropped
+github_reference := env('GITHUB_HEAD_REF', env('GITHUB_REF_NAME', ''))
 # print TAg or BRanch or empty string, a four letter acronym
 tabr:
-    # remotes/origin/mybranch -> mybranch
-    # heads/mybranch -> mybranch
-    # tags/v2025.02.03 -> v2025.02.03
-    # heads/mybranch-dirty -> '' #empty string
-    echo {{ \
-        env('GITHUB_HEAD_REF', '') \
-        || env('GITHUB_REF_NAME', '') \
-        || `git describe --all --dirty --exact-match 2>/dev/null \
+    @# remotes/origin/mybranch -> mybranch
+    @# heads/mybranch -> mybranch
+    @# tags/v2025.02.03 -> v2025.02.03
+    @# heads/mybranch-dirty -> '' #empty string
+    echo {{ if github_reference == '' { \
+        `git describe --all --dirty --exact-match 2>/dev/null \
             | sed -En '/-dirty$/ q; s,(remotes/[^/]+|heads|tags)/,,p'` \
-    }}
+    } else { github_reference } }}
 
 test:
     python -m pytest --cov=helicopyter --cov-report=term-missing:skip-covered --verbose
