@@ -71,7 +71,7 @@ jobs:
                   && hti demo \
                   && tofu -chdir=deploys/demo/terraform validate
 
-            - run: just test
+            - run: .venv/bin/just test
 
             - run: |
                   source includes.sh \
