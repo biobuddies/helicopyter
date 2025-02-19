@@ -186,7 +186,7 @@ tabr:
     @# heads/mybranch -> mybranch
     @# tags/v2025.02.03 -> v2025.02.03
     @# heads/mybranch-dirty -> '' #empty string
-    echo {{ if github_reference == '' { \
+    @echo {{ if github_reference == '' { \
         `git describe --all --dirty --exact-match 2>/dev/null \
             | sed -En '/-dirty$/ q; s,(remotes/[^/]+|heads|tags)/,,p'` \
     } else { github_reference } }}
