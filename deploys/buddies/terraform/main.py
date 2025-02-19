@@ -2,7 +2,7 @@
 
 from cdktf_cdktf_provider_github.membership import Membership
 
-from helicopyter import HeliStack
+from stacks.base import BaseStack
 
 buddies = {
     'christopher.covington': ('covracer', 'admin'),
@@ -14,9 +14,9 @@ buddies = {
 }
 
 
-def synth(stack: HeliStack) -> None:
-    stack.provide('github')
+def synth(stack: BaseStack) -> None:
+    stack.provide('github', owner='biobuddies')
     for firstname_dot_lastname, (username, role) in buddies.items():
         stack.push(
-            Membership, firstname_dot_lastname.replace('.', '_'), username=username, role=role
+            Membership, firstname_dot_lastname.replace('.', '_'), role=role, username=username
         )
