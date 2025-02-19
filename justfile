@@ -169,7 +169,7 @@ htp cona envi *args:
 
 # Universally Unique IDentifier
 uuid:
-    echo {{uuid()}}
+    @echo {{uuid()}}
 
 # SUMMARIZE environment by displaying four letter acronyms
 summarize:

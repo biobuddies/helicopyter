@@ -35,7 +35,7 @@ class HeliStack(TerraformStack):
             raise TypeError('AWS CDK unsupported; please use CDKTF')
         return element.node.id
 
-    def override(self, **kwargs: dict) -> None:
+    def override(self, **kwargs: Any) -> None:
         """Call add_override for each keyword argument."""
         for key, value in kwargs.items():
             self.add_override(key, value)
