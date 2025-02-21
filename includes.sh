@@ -329,7 +329,8 @@ hta() {
     fi
     shift 2
     hs "$cona" \
-        && TF_WORKSPACE="$envi" ${INSH_TF:-terraform} -chdir="deploys/$cona/terraform" apply "$@"
+        && TF_VAR_giha=$(giha) TF_VAR_tabr=$(tabr) TF_WORKSPACE="$envi" \
+            ${INSH_TF:-terraform} -chdir="deploys/$cona/terraform" apply "$@"
 }
 
 hti() {
@@ -351,7 +352,8 @@ htp() {
     fi
     shift 2
     hs "$cona" \
-        && TF_WORKSPACE="$envi" ${INSH_TF:-terraform} -chdir="deploys/$cona/terraform" plan "$@"
+        && TF_VAR_giha=$(giha) TF_VAR_tabr=$(tabr) TF_WORKSPACE="$envi" \
+            ${INSH_TF:-terraform} -chdir="deploys/$cona/terraform" plan "$@"
 }
 
 orgn() {
@@ -472,15 +474,23 @@ tabr() {
     elif [[ ${GITHUB_REF_NAME-} ]]; then
         echo "$GITHUB_REF_NAME"
     else
-        local description
-        description=$(git describe --all --dirty --exact-match 2>/dev/null)
-        [[ $description == *-dirty ]] || echo "${description#*/}"
+        # remotes/origin/mybranch -> mybranch
+        # heads/mybranch -> mybranch
+        # tags/v2025.02.03 -> v2025.02.03
+        # heads/mybranch-dirty -> '' #empty string
+        git describe --all --dirty --exact-match 2>/dev/null \
+            | gsed -En '/-dirty$/ q; s,(remotes/[^/]+|heads|tags)/,,p'
     fi
 }
 
 upc() {
     : 'Uv Pip Compile'
-    uv pip compile -o requirements.txt --python-platform linux requirements.in
+    # shellcheck disable=SC2046
+    uv pip compile \
+        --all-extras \
+        --output-file requirements.txt \
+        --python-platform linux \
+        pyproject.toml $([[ -f requirements.in ]] && echo requirements.in)
 }
 
 ups() {

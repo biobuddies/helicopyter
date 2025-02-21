@@ -16,6 +16,34 @@ dynamic = ['version']
 name = 'helicopyter'
 readme = 'README.md'
 
+[project.optional-dependencies]
+buildrelease = ['build', 'ipython', 'twine']
+demos = [
+    'cdktf-cdktf-provider-aws',
+    # prebuilt package 12+ bring provider 5+
+    # https://registry.terraform.io/providers/cloudflare/cloudflare/latest/docs/guides/version-5-upgrade
+    'cdktf-cdktf-provider-cloudflare==11.*',
+    'cdktf-cdktf-provider-docker',
+    'cdktf-cdktf-provider-github',
+]
+precommit = [
+    'actionlint-py',
+    'codespell>=2.3',                                               # For codespell inline ignore comment support
+    'cookiecutter',
+    'hadolint-py @ git+https://github.com/AleksaC/hadolint-py.git',
+    'mypy',
+    'pre-commit',
+    'pytest',
+    'pytest-cov',
+    'ruff',
+    'rust-just',
+    'shellcheck-py',
+    'shfmt-py',
+    'uv',
+    'validate-pyproject[all]',
+    'yamllint',
+]
+
 [project.urls]
 Homepage = 'https://github.com/covracer/helicopyter'
 
@@ -30,7 +58,8 @@ skip-magic-trailing-comma = true
 [tool.ruff.lint]
 fixable = ['ALL']
 ignore = [
-    'COM812', # Insists on join([],) over join([])
+    'ANN401', # `**kwargs: Any` is reasonable
+    'COM812', # Insists on `join([],)` over `join([])`
     'D101',
     'D103',
     'D104',

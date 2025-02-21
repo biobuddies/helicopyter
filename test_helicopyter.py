@@ -15,6 +15,14 @@ def test_helistack() -> None:
     assert callable(stack.push)
 
 
+def test_override() -> None:
+    stack = HeliStack('foo')
+    stack.override(foo=True, bar=False)
+    output = stack.to_terraform()
+    assert output['foo']
+    assert not output['bar']
+
+
 def test_push_id() -> None:
     """Within a given Element such as the NullResource, the id_ must be unique."""
     stack = HeliStack('foo')

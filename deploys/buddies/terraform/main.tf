@@ -3,13 +3,26 @@
 terraform {
   required_providers {
     github = {
-      version = "6.4.0"
+      version = "6.5.0"
       source  = "integrations/github"
     }
+  }
+  backend "s3" {
+    bucket                      = "terraform"
+    key                         = "buddies.tfstate"
+    region                      = "auto"
+    workspace_key_prefix        = "buddies"
+    skip_credentials_validation = "true"
+    skip_metadata_api_check     = "true"
+    skip_region_validation      = "true"
+    skip_requesting_account_id  = "true"
+    skip_s3_checksum            = "true"
+    use_path_style              = "true"
   }
 }
 
 provider "github" {
+  owner = "biobuddies"
 }
 
 resource "github_membership" "christopher_covington" {

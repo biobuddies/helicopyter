@@ -1,4 +1,7 @@
 {
     "dot": ".",
-    "languages": "Node,Python"
+    "languages": "Node,Python",
+    "pull_request_background_links": "* ",
+    "pull_request_changes_testing": "* For future you and others to re-run the same test or a variation and incrementally automate",
+    "pull_request_questions_followup": "* "
 }

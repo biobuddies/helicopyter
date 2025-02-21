@@ -2,7 +2,7 @@ defaults:
     run:
         shell: bash --noprofile --norc -o errexit -o nounset -o pipefail -o xtrace {0}
 env:
-    ALLOWEDFLARE_EMAILS: "['person@emailprovider.example']"
+    ALLOWEDFLARE_EMAIL: person@emailprovider.example
     ALLOWEDFLARE_PRIVATE_DOMAIN: organization.example
     CLOUDFLARE_ACCOUNT_ID: 0123456789abcdef0123456789abcdef00
     CLOUDFLARE_ZONE_ID: 0123456789abcdef0123456789abcdef01
@@ -71,7 +71,16 @@ jobs:
                   && hti demo \
                   && tofu -chdir=deploys/demo/terraform validate
 
-            - run: source includes.sh && a && python -m build
+            - run: |
+                  source includes.sh \
+                  && a \
+                  && just test
+
+            - run: |
+                  source includes.sh \
+                  && a \
+                  && python -m build \
+                  && python -m twine check --strict dist/*
     summarize:
         runs-on: ubuntu-latest
         steps:

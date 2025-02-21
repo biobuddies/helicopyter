@@ -1,11 +1,8 @@
 ### Background and Links
-* 
+{{ cookiecutter.pull_request_background_links }}
 
 ### Changes and Testing
-* Audiences
-    - Reviewer(s)
-    - Future you re-running the same test or a variation, and codifying it along the way
-    - Other developers running the same test or a variation, and codifying it along the way
+{{ cookiecutter.pull_request_changes_testing }}
 
 ### Questions and Followup
-* 
+{{ cookiecutter.pull_request_questions_followup }}
