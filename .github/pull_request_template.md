@@ -2,10 +2,7 @@
 * 
 
 ### Changes and Testing
-* Audiences
-    - Reviewer(s)
-    - Future you re-running the same test or a variation, and codifying it along the way
-    - Other developers running the same test or a variation, and codifying it along the way
+* For future you and others to re-run the same test or a variation and incrementally automate
 
 ### Questions and Followup
 * 
