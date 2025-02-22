@@ -1,6 +1,7 @@
 [build-system]
 requires = ['setuptools>=61.0', 'setuptools_scm[toml]>=6.2', 'wheel']
-build-backend = 'setuptools.build_meta'
+build-backend = 'pypi_compatible_build'
+backend-path = ['']
 
 [project]
 classifiers = [
@@ -39,6 +40,7 @@ precommit = [
     'rust-just',
     'shellcheck-py',
     'shfmt-py',
+    'types-setuptools',
     'uv',
     'validate-pyproject[all]',
     'yamllint',
@@ -74,6 +76,7 @@ ignore = [
     'Q003',   # ruff format will single quote
     # N806 tries to lowercase classes; currently ignored on a line-by-line basis
     'S607',   # Using $PATH is pretty necessary for nvmrc, pyenv, venv, tfenv
+    'SLF001', # Private member access is probably a last resort
     'TD002',  # The git log records who wrote a TODO line
     'TD003',  # Don't require issue links
     'TD004',  # A colon takes up space without really improving readability

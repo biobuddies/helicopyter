@@ -258,6 +258,8 @@ typeguard==2.13.3
     #   jsii
 types-python-dateutil==2.9.0.20241206
     # via arrow
+types-setuptools==75.8.0.20250210
+    # via helicopyter (pyproject.toml)
 typing-extensions==4.12.2
     # via
     #   jsii
