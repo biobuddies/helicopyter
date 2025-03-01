@@ -34,14 +34,14 @@
       - python
 
 - id: djlint-django
-  entry: djlint --profile=django
+  entry: djlint --profile=django --reformat
   language: system
   name: djlint-django
   types:
       - html
 
 - id: djlint-jinja
-  entry: djlint --profile=jinja
+  entry: djlint --profile=jinja --reformat
   language: system
   name: djlint-jinja
   types:
