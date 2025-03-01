@@ -31,6 +31,8 @@ precommit = [
     'actionlint-py',
     'codespell>=2.3',                                               # For codespell inline ignore comment support
     'cookiecutter',
+    'django-upgrade',
+    'djlint',
     'hadolint-py @ git+https://github.com/AleksaC/hadolint-py.git',
     'mypy',
     'pre-commit',
@@ -47,7 +49,7 @@ precommit = [
 ]
 
 [project.urls]
-Homepage = 'https://github.com/covracer/helicopyter'
+source = 'https://github.com/biobuddies/helicopyter'
 
 [tool.ruff]
 line-length = 100
