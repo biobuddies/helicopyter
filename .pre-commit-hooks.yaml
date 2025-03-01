@@ -185,8 +185,7 @@
   pass_filenames: false
 
 - id: uv-pip-compile
-  entry: uv pip compile -o requirements.txt --python-platform linux
-  files: requirements.in
+  entry: bash includes.sh upc
   language: system
   name: uv-pip-compile
 
