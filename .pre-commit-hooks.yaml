@@ -26,6 +26,27 @@
   stages:
       - manual # because Internet
 
+- id: django-upgrade
+  entry: django-upgrade
+  language: system
+  name: django-upgrade
+  types:
+      - python
+
+- id: djlint-django
+  entry: djlint --profile=django
+  language: system
+  name: djlint-django
+  types:
+      - html
+
+- id: djlint-jinja
+  entry: djlint --profile=jinja
+  language: system
+  name: djlint-jinja
+  types:
+      - jinja
+
 - id: dot-yaml
   description: Require four letter suffix http://www.yaml.org/faq.html
   entry: dot-yaml
