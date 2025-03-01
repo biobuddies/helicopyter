@@ -49,7 +49,7 @@ precommit = [
 ]
 
 [project.urls]
-Homepage = 'https://github.com/covracer/helicopyter'
+source = 'https://github.com/biobuddies/helicopyter'
 
 [tool.ruff]
 line-length = 100
