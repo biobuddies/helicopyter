@@ -2,7 +2,7 @@ set export
 set shell := ['bash', '-euo', 'pipefail', '-c']
 
 OS := `uname -s`
-PACKAGES := "bind9-host curl fping git less tmux tree"
+DEBIAN_PACKAGES := "bind9-host curl file fping git less procps tmux tree"
 
 default:
     @just --list
@@ -108,6 +108,15 @@ giha:
 
 gash: giha  # Backwards compatibility
 
+# print ORGanizatioN, a four letter acronym
+orgn:
+    #!/usr/bin/env bash
+    if [[ -n ${GITHUB_REPOSITORY_OWNER-} ]]; then
+        echo "$GITHUB_REPOSITORY_OWNER";
+    else
+        git remote get-url origin | sed -E 's,.+github.com/([^/]+).+,\1,';
+    fi
+
 # run Pre-Commit on modified files
 pc *args:
     pre-commit run {{args}}
@@ -123,6 +132,10 @@ pcam *args:
 # run Pre-Commit on modified files including Manual stage hooks
 pcm *args:
     pre-commit run --hook-stage manual {{args}}
+
+# git PUSH over https
+push *args:
+    git push https://${GITHUB_TOKEN}@github.com/$(just orgn)/$(just cona) {{args}}
 
 # Uv Pip Compile
 upc *args:
@@ -192,4 +205,4 @@ tabr:
     } else { github_reference } }}
 
 test:
-    python -m pytest --cov=helicopyter --cov-report=term-missing:skip-covered --verbose
+    python -m pytest --cov="$(just cona)" --cov-report=term-missing:skip-covered --verbose
