@@ -323,6 +323,7 @@ forceready() {
             | tar -xzC ~/.local/bin
     fi
     echo $PATH
+    ls -l ~/.local/bin
     command -v asdf
     hash -r
     command -v asdf
