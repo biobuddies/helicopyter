@@ -321,13 +321,8 @@ forceready() {
         sudo apt-get install --no-install-recommends --yes $([[ -z $GITHUB_WORKSPACE ]] || echo --dry-run) $DEBS
         [[ -x ~/.local/bin/asdf ]] || curl --fail --location --show-error --silent $asdf_url \
             | tar -xzC ~/.local/bin
+        asdf --version || return 1
     fi
-    echo $PATH
-    ls -l ~/.local/bin
-    command -v asdf
-    hash -r
-    command -v asdf
-    exit 1
 
     grep -qE 'legacy_version_file.*=.*yes' ~/.asdfrc 2>/dev/null \
         || echo 'legacy_version_file = yes' >>~/.asdfrc
