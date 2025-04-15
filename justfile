@@ -146,6 +146,10 @@ upc *args:
             if path_exists('requirements.in') == 'true' { 'requirements.in' } else { '' } \
         }} {{args}}
 
+# Update asdf .tool-versions
+update:
+    echo -e "glow $(asdf latest glow)\nuv $(asdf latest uv)\ntenv $(asdf latest tenv)" > .tool-versions
+
 # Uv venv and Pip Sync
 ups *args:
     uv venv && uv pip sync {{args}} requirements.txt
