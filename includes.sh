@@ -365,7 +365,7 @@ export INSH_EMAIL=youremail@yourdomain.tld; forceready'
     git config --global rebase.autosquash true
 
     asdf current
-    a
+    # might be nice to show tofu, python terraform, versions
 }
 
 envi() {
