@@ -316,12 +316,17 @@ forceready() {
         defaults write NSGlobalDomain NSAutomaticPeriodSubstitutionEnabled -bool false
         defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
     elif [[ $OPSY == Linux ]]; then
-        sudo apt-get update
+        [[ $GITHUB_WORKSPACE ]] || sudo apt-get update
         # shellcheck disable=SC2086
-        sudo apt-get install --no-install-recommends --yes $DEBS
+        sudo apt-get install --no-install-recommends --yes $([[ -z $GITHUB_WORKSPACE ]] || echo --dry-run) $DEBS
         [[ -x ~/.local/bin/asdf ]] || curl --fail --location --show-error --silent $asdf_url \
             | tar -xzC ~/.local/bin
     fi
+    echo $PATH
+    command -v asdf
+    hash -r
+    command -v asdf
+    exit 1
 
     grep -qE 'legacy_version_file.*=.*yes' ~/.asdfrc 2>/dev/null \
         || echo 'legacy_version_file = yes' >>~/.asdfrc
