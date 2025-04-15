@@ -338,6 +338,9 @@ forceready() {
             )"
         asdf install $plugin
     done
+    # TODO set TENV_GITHUB_TOKEN to avoid rate limiting
+    ! [[ -f .terraform-version ]] || tenv terraform install
+    ! [[ -f .tofu-version ]] || tenv tofu install
 
     git config --global advice.skippedCherryPicks false
     git config --global core.commentChar ';'
@@ -572,8 +575,8 @@ upc() {
 }
 
 ups() {
-    : 'Uv Pip Sync, with MacOS workaround for appnope'
-    uv pip sync "$@" requirements.txt
+    : 'Uv venv and Pip Sync'
+    uv venv && uv pip sync "$@" requirements.txt
 }
 
 uuid() {

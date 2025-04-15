@@ -146,9 +146,9 @@ upc *args:
             if path_exists('requirements.in') == 'true' { 'requirements.in' } else { '' } \
         }} {{args}}
 
-# Uv Pip Sync
+# Uv venv and Pip Sync
 ups *args:
-    uv pip sync {{args}} requirements.txt
+    uv venv && uv pip sync {{args}} requirements.txt
 
 # Helicopyter Synth
 hs cona='all':
