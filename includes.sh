@@ -338,6 +338,10 @@ forceready() {
             )"
         asdf install $plugin
     done
+    asdf current
+    asdf which tenv
+    asdf shimversions tenv
+    command -v tenv
     # TODO set TENV_GITHUB_TOKEN to avoid rate limiting
     ! [[ -f .terraform-version ]] || tenv terraform install
     ! [[ -f .tofu-version ]] || tenv tofu install
