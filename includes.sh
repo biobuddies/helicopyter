@@ -337,9 +337,6 @@ forceready() {
             )"
         asdf install "$plugin"
     done
-    asdf current
-    echo $PATH
-    command -v tenv
     # TODO set TENV_GITHUB_TOKEN to avoid rate limiting
     ! [[ -f .terraform-version ]] || tenv terraform install
     ! [[ -f .tofu-version ]] || tenv opentofu install
@@ -366,6 +363,9 @@ export INSH_EMAIL=youremail@yourdomain.tld; forceready'
     git config --global pull.rebase true
     git config --global push.default current
     git config --global rebase.autosquash true
+
+    asdf current
+    a
 }
 
 envi() {
