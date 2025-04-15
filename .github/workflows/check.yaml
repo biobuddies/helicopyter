@@ -12,15 +12,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
-            - uses: actions/checkout@v4
-              with:
-                  path: asdf
-                  repository: asdf-vm/asdf
-            - run: |
-                  mkdir -p "$HOME/code" \
-                  && mv "$GITHUB_WORKSPACE/asdf" "$HOME/code/" \
-                  && ln -s "$GITHUB_WORKSPACE" "$HOME/code/"
-
+            - run: bash includes.sh forceready
             - uses: actions/setup-node@v4
               with:
                   cache: npm

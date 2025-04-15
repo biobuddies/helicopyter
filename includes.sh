@@ -296,19 +296,10 @@ forceready() {
         return
     fi
 
-    grep -qE 'legacy_version_file.*=.*yes' ~/.asdfrc 2>/dev/null \
-        || echo 'legacy_version_file = yes' >>~/.asdfrc
-    local installed_asdf_plugins
-    installed_asdf_plugins=$(asdf plugin list 2>/dev/null)
-    for plugin in $ASDF_PLUGINS; do
-        [[ $installed_asdf_plugins == *$plugin* ]] \
-            || asdf plugin add "$plugin" "$(
-                echo "$plugin" | sed -n s,tenv,https://github.com/tofuutils/asdf-tenv,p
-            )"
+    for directory in .config/git .local/bin code; do
+        [[ -d ~/$directory ]] || mkdir -p ~/$directory
     done
-
-    [[ -d ~/.config/git ]] || mkdir -p ~/.config/git
-    [[ -d ~/.local/bin ]] || mkdir -p ~/.local/bin
+    [[ -z $GITHUB_WORKSPACE ]] || ln -s "$GITHUB_WORKSPACE" ~/code/
 
     if [[ $OPSY == Darwin ]]; then
         # Should we set NONINTERACTIVE=1 ?
@@ -332,17 +323,32 @@ forceready() {
             | tar -xzC ~/.local/bin
     fi
 
+    grep -qE 'legacy_version_file.*=.*yes' ~/.asdfrc 2>/dev/null \
+        || echo 'legacy_version_file = yes' >>~/.asdfrc
+    local installed_asdf_plugins
+    installed_asdf_plugins=$(asdf plugin list 2>/dev/null)
+    for plugin in $ASDF_PLUGINS; do
+        [[ $installed_asdf_plugins == *$plugin* ]] \
+            || asdf plugin add "$plugin" "$(
+                echo "$plugin" | sed -n s,tenv,https://github.com/tofuutils/asdf-tenv,p
+            )"
+    done
+
     git config --global advice.skippedCherryPicks false
     git config --global core.commentChar ';'
     git config --global diff.colormoved zebra
     if [[ $INSH_NAME ]]; then
         git config --global user.name "$INSH_NAME"
+    elif [[ $GITHUB_WORKSPACE ]]; then
+        :
     else
         echo 'WARNING: Not setting user.name for git. Run:
 export INSH_NAME="Your Name"; forceready'
     fi
     if [[ $INSH_EMAIL ]]; then
         git config --global user.email "$INSH_EMAIL"
+    elif [[ $GITHUB_WORKSPACE ]]; then
+        :
     else
         echo 'WARNING: Not setting user.email for git. Run:
 export INSH_EMAIL=youremail@yourdomain.tld; forceready'
