@@ -23,10 +23,7 @@ jobs:
               with:
                   python-version-file: .python-version
 
-            - run: pip install --upgrade pip setuptools uv
-              env:
-                  PIP_PROGRESS_BAR: 'off'
-            - run: uv venv && source includes.sh && a && ups
+            - run: uv venv && bash includes.sh ups
 
             # TODO set TENV_GITHUB_TOKEN to avoid rate limiting
             - run: |

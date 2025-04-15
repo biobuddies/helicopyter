@@ -336,7 +336,7 @@ forceready() {
             || asdf plugin add "$plugin" "$(
                 echo "$plugin" | sed -n s,tenv,https://github.com/tofuutils/asdf-tenv,p
             )"
-        asdf install $plugin latest
+        asdf install $plugin
     done
 
     git config --global advice.skippedCherryPicks false
