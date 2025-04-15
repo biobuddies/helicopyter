@@ -445,7 +445,12 @@ pc() {
 
 pca() {
     : 'run Pre-Commit on All files'
-    pre-commit run --all-files "$@"
+    if [[ $(cona) == helicopyter ]]; then
+        command=try-repo
+    else
+        command=run
+    fi
+    pre-commit $command --all-files "$@"
 }
 
 pcam() {
@@ -456,17 +461,6 @@ pcam() {
 pcm() {
     : 'run Pre-Commit on modified files including Manual stage hooks'
     pre-commit run --hook-stage manual "$@"
-}
-
-pcta() {
-    : 'run Pre-Commit Try-repo on All files'
-    pre-commit try-repo \
-        --all-files \
-        --color always \
-        --show-diff-on-failure \
-        --verbose \
-        . \
-        "$@"
 }
 
 pctam() {

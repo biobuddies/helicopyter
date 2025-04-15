@@ -62,7 +62,7 @@ jobs:
             - run: |
                   source includes.sh \
                   && a \
-                  && pcta \
+                  && pca --color always --show-diff-on-failure --verbose . \
                   && pctam mypy
 
             - run: |

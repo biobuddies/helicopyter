@@ -123,7 +123,9 @@ pc *args:
 
 # run Pre-Commit on All files
 pca *args:
-    pre-commit run --all-files {{args}}
+    pre-commit {{ \
+        if `just cona` == 'helicopyter' { 'try-repo' } else { 'run' } \
+    }} --all-files {{args}}
 
 # run Pre-Commit on All files including Manual stage hooks
 pcam *args:

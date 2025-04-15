@@ -118,13 +118,6 @@
   types:
       - python
 
-# uv-pip-check recommended instead
-- id: pip-check
-  entry: pip check
-  language: system
-  name: pip-check
-  pass_filenames: false
-
 - id: prettier-write
   entry: node_modules/.bin/prettier --write
   exclude: ^deploys/.+/terraform/main.tf.json$
