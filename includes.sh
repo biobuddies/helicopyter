@@ -11,15 +11,21 @@ set -o vi
 
 BASH_MAJOR_VERSION=$(echo "$BASH_VERSION" | sed -E 's/^([^.]+).+/\1/')
 
-OS=$(uname -s)
-export OS
+OPSY=$(uname -s)
+export OPSY
 
-case $OS in
+case $OPSY in
     Darwin)
         # Apple stopped upgrading BASH, perhaps to avoid GPLv3, and switched to ZSH.
         # https://apple.stackexchange.com/q/371997
         # See devready and forceready for upgrading BASH with Brew.
         [[ $BASH_MAJOR_VERSION -gt 3 ]] || export BASH_SILENCE_DEPRECATION_WARNING=1
+
+        # On Sonoma: pre-installed file, host, and less are new enough. BASH is pre-installed, and
+        # git may have been installed with xcode, but upgrading both with brew is good.
+        BREWS='asdf bash fping git gnu-sed tmux tree'
+        export BREWS
+
         # https://github.com/ansible/ansible/issues/32499
         export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
         [[ ! -x /opt/homebrew/bin/brew ]] || eval "$(/opt/homebrew/bin/brew shellenv)"
@@ -59,16 +65,12 @@ export LESS
 ASDF_PLUGINS='nodejs tenv uv'
 export ASDF_PLUGINS
 
-# On Sonoma: pre-installed file, host, and less are new enough. BASH is pre-installed, and git may
-# have been installed with xcode, but upgrading both with brew is good.
-DARWIN_PACKAGES='asdf bash fping git gnu-sed tmux tree'
-export DARWIN_PACKAGES
+# Defined for all operating systems to support Linux containers from MacOS
+DEBS='bash bind9-host curl file fping git less procps tmux tree'
+export DEBS
 
-DEBIAN_PACKAGES='bash bind9-host curl file fping git less procps tmux tree'
-export DEBIAN_PACKAGES
-
-# We should probably deprecate `PACKAGES` in favor of `${ID_LIKE}_PACKAGES`.
-PACKAGES="$DEBIAN_PACKAGES"
+# We should probably deprecate `PACKAGES` in favor of `DEBS` and `BREWS`.
+PACKAGES="$DEBS"
 export PACKAGES
 
 # Aliases only work in interactive shells
@@ -251,14 +253,16 @@ Use feature branches with "GitHub Flow"'
         || echo 'WARNING: git rebase.autosquash != true
 Act on "fixup!" and "squash!" commit title prefixes'
     if [[ $OS == Darwin ]]; then
-        [[ $(command -v brew) ]] || echo WARNING: Homebrew not installed
-        installed="$(brew list)"
-        # 
-        for package in $DARWIN_PACKAGES; do
-            if [[ $installed != *$package* ]]; then
-                echo "WARNING: Homebrew package $package not installed"
-            fi
-        done
+        if [[ $(command -v brew) ]]; then
+            installed_brews="$(brew list)"
+            for brew in $BREWS; do
+                if [[ $installed_brews != *$brew* ]]; then
+                    echo "WARNING: Homebrew package $brew not installed"
+                fi
+            done
+        else
+            echo WARNING: Homebrew not installed
+        fi
         [[ $BASH_MAJOR_VERSION -gt 3 ]] \
             || echo "WARNING: Very old BASH version $BASH_VERSION"
         grep --fixed-strings --no-messages --quiet .DS_Store ~/.config/git/ignore \
@@ -269,15 +273,15 @@ Act on "fixup!" and "squash!" commit title prefixes'
             || echo WARNING: MacOS period substitution enabled
         [[ $(defaults read NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled) == '0' ]] \
             || echo WARNING: MacOS quote substitution enabled
-    elif [[ $OS == Linux ]]; then
-        installed="$(dpkg-query -W --showformat='${Package}\n')"
-        for package in $DEBIAN_PACKAGES; do
-            if [[ $installed != *$package* ]]; then
-                echo "WARNING: $package not installed"
+    elif [[ $OPSY == Linux ]]; then
+        installed_debs="$(dpkg-query -W --showformat='${Package}\n')"
+        for deb in $DEBS; do
+            if [[ $installed_debs != *$deb* ]]; then
+                echo "WARNING: $deb not installed"
             fi
         done
     else
-        echo 'WARNING: Unknown OS. Please check your environment.'
+        echo "WARNING: Unsupported operating system $OPSY"
     fi
 }
 
@@ -306,7 +310,7 @@ forceready() {
     [[ -d ~/.config/git ]] || mkdir -p ~/.config/git
     [[ -d ~/.local/bin ]] || mkdir -p ~/.local/bin
 
-    if [[ $OS == Darwin ]]; then
+    if [[ $OPSY == Darwin ]]; then
         # Should we set NONINTERACTIVE=1 ?
         [[ $(command -v brew) ]] || /bin/bash -c "$(
             curl --fail --show-error --silent \
@@ -314,16 +318,16 @@ forceready() {
         )"
         eval "$(/opt/homebrew/bin/brew shellenv)"
         # shellcheck disable=SC2086
-        brew install --no-interaction --quiet $DARWIN_PACKAGES
+        brew install --no-interaction --quiet $BREWS
         [[ -f ~/.config/git/ignore ]] || curl --fail --show-error --silent --output ~/.config/git/ignore \
             https://raw.githubusercontent.com/github/gitignore/master/Global/macOS.gitignore
         defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
         defaults write NSGlobalDomain NSAutomaticPeriodSubstitutionEnabled -bool false
         defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
-    elif [[ $OS == Linux ]]; then
+    elif [[ $OPSY == Linux ]]; then
         sudo apt-get update
         # shellcheck disable=SC2086
-        sudo apt-get install --no-install-recommends --yes $DEBIAN_PACKAGES
+        sudo apt-get install --no-install-recommends --yes $DEBS
         [[ -x ~/.local/bin/asdf ]] || curl --fail --location --show-error --silent $asdf_url \
             | tar -xzC ~/.local/bin
     fi

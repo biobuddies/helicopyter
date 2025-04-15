@@ -1,8 +1,8 @@
 set export
 set shell := ['bash', '-euo', 'pipefail', '-c']
 
-OS := `uname -s`
-DEBIAN_PACKAGES := "bind9-host curl file fping git less procps tmux tree"
+OPSY := `uname -s`
+DEBS := "bind9-host curl file fping git less procps tmux tree"
 
 default:
     @just --list
