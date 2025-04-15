@@ -317,11 +317,11 @@ forceready() {
         defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
     elif [[ $OPSY == Linux ]]; then
         [[ $GITHUB_WORKSPACE ]] || sudo apt-get update
-        # shellcheck disable=SC2086
+        # shellcheck disable=SC2046,SC2086
         sudo apt-get install --no-install-recommends --yes $([[ -z $GITHUB_WORKSPACE ]] || echo --dry-run) $DEBS
         [[ -x ~/.local/bin/asdf ]] || curl --fail --location --show-error --silent $asdf_url \
             | tar -xzC ~/.local/bin
-        if ! $(asdf --version >/dev/null); then
+        if ! asdf --version >/dev/null; then
             echo "PATH=$PATH"
             return 1
         fi
@@ -336,7 +336,7 @@ forceready() {
             || asdf plugin add "$plugin" "$(
                 echo "$plugin" | sed -n s,tenv,https://github.com/tofuutils/asdf-tenv,p
             )"
-        asdf install $plugin
+        asdf install "$plugin"
     done
     # TODO set TENV_GITHUB_TOKEN to avoid rate limiting
     ! [[ -f .terraform-version ]] || tenv terraform install
