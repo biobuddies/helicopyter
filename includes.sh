@@ -321,7 +321,10 @@ forceready() {
         sudo apt-get install --no-install-recommends --yes $([[ -z $GITHUB_WORKSPACE ]] || echo --dry-run) $DEBS
         [[ -x ~/.local/bin/asdf ]] || curl --fail --location --show-error --silent $asdf_url \
             | tar -xzC ~/.local/bin
-        asdf --version || return 1
+        if ! $(asdf --version >/dev/null); then
+            echo "PATH=$PATH"
+            return 1
+        fi
     fi
 
     grep -qE 'legacy_version_file.*=.*yes' ~/.asdfrc 2>/dev/null \
@@ -333,6 +336,7 @@ forceready() {
             || asdf plugin add "$plugin" "$(
                 echo "$plugin" | sed -n s,tenv,https://github.com/tofuutils/asdf-tenv,p
             )"
+        asdf install $plugin latest
     done
 
     git config --global advice.skippedCherryPicks false
