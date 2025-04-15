@@ -44,12 +44,11 @@ esac
 
 if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
     PATH="$HOME/.local/bin:$PATH"
-    export PATH
 fi
 
+PATH="$HOME/.asdf/shims:$PATH"
+export PATH
 if [[ $(command -v asdf) ]]; then
-    PATH="$HOME/.asdf/shims:$PATH"
-    export PATH
     # shellcheck disable=SC1090
     source <(asdf completion bash)
     # If this spews "Unknown command: `asdf completion bash`", upgrade asdf
@@ -339,6 +338,7 @@ forceready() {
         asdf install "$plugin"
     done
     asdf current
+    echo $PATH
     command -v tenv
     # TODO set TENV_GITHUB_TOKEN to avoid rate limiting
     ! [[ -f .terraform-version ]] || tenv terraform install
