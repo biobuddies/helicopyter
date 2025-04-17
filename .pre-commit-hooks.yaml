@@ -5,6 +5,8 @@
   name: actionlint
 
 - id: codespell
+  # Hook users will inherit this ignore and be able to define their own in the
+  # `[tool.codespell]` section of their `pyproject.toml`
   entry: codespell --check-filenames --ignore-words-list READYness --write-changes
   language: system
   name: codespell
