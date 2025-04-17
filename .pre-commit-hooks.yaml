@@ -5,7 +5,9 @@
   name: actionlint
 
 - id: codespell
-  entry: codespell --check-filenames --ignore-words-list READYness
+  # Hook users will inherit this ignore and be able to define their own in the
+  # `[tool.codespell]` section of their `pyproject.toml`
+  entry: codespell --check-filenames --ignore-words-list READYness --write-changes
   language: system
   name: codespell
   exclude: |
@@ -117,13 +119,6 @@
       - manual # Because slow
   types:
       - python
-
-# uv-pip-check recommended instead
-- id: pip-check
-  entry: pip check
-  language: system
-  name: pip-check
-  pass_filenames: false
 
 - id: prettier-write
   entry: node_modules/.bin/prettier --write

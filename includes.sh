@@ -9,12 +9,26 @@ EOD
 
 set -o vi
 
-OS=$(uname -s)
-export OS
+BASH_MAJOR_VERSION=$(echo "$BASH_VERSION" | sed -E 's/^([^.]+).+/\1/')
 
-case $OS in
+OPSY=$(uname -s)
+export OPSY
+
+case $OPSY in
     Darwin)
-        export BASH_SILENCE_DEPRECATION_WARNING=1
+        # Apple stopped upgrading BASH, perhaps to avoid GPLv3, and switched to ZSH.
+        # https://apple.stackexchange.com/q/371997
+        # See devready and forceready for upgrading BASH with Brew.
+        [[ $BASH_MAJOR_VERSION -gt 3 ]] || export BASH_SILENCE_DEPRECATION_WARNING=1
+
+        # On Sonoma: pre-installed file, host, and less are new enough. BASH is pre-installed, and
+        # git may have been installed with xcode, but upgrading both with brew is good.
+        BREWS='asdf bash fping git gnu-sed tmux tree'
+        export BREWS
+
+        # https://github.com/ansible/ansible/issues/32499
+        export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
+        [[ ! -x /opt/homebrew/bin/brew ]] || eval "$(/opt/homebrew/bin/brew shellenv)"
         ;;
     Linux)
         gsed() {
@@ -28,21 +42,16 @@ case $OS in
         ;;
 esac
 
-# Accept any kind of installation, such as Homebrew
-if ! [[ $(command -v asdf) ]]; then
-    if [[ -f $HOME/code/asdf/asdf.sh ]]; then
-        # Automate git installation configuration for old and new paths
-        for suffix in asdf.sh completions/asdf.bash internal/completions/asdf.bash; do
-            if [[ -f $HOME/code/asdf/$suffix ]]; then
-                # shellcheck disable=SC1090,SC1091
-                source "$HOME/code/asdf/$suffix"
-            fi
-        done
-    else
-        # Recommend git installation
-        echo "Please run
-git clone https://github.com/asdf-vm/asdf.git ~/code/asdf"
-    fi
+if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
+    PATH="$HOME/.local/bin:$PATH"
+fi
+
+PATH="$HOME/.asdf/shims:$PATH"
+export PATH
+if [[ $(command -v asdf) ]]; then
+    # shellcheck disable=SC1090
+    source <(asdf completion bash)
+    # If this spews "Unknown command: `asdf completion bash`", upgrade asdf
 fi
 
 CLICOLOR_FORCE=1 # For `tree`; might also color `ls` on FreeBSD and Darwin
@@ -52,7 +61,15 @@ export CLICOLOR_FORCE
 LESS='-FRXi'
 export LESS
 
-PACKAGES='bind9-host curl fping git less tmux tree'
+ASDF_PLUGINS='nodejs tenv uv'
+export ASDF_PLUGINS
+
+# Defined for all operating systems to support Linux containers from MacOS
+DEBS='bash bind9-host curl file fping git less procps tmux tree'
+export DEBS
+
+# We should probably deprecate `PACKAGES` in favor of `DEBS` and `BREWS`.
+PACKAGES="$DEBS"
 export PACKAGES
 
 # Aliases only work in interactive shells
@@ -194,17 +211,21 @@ dcu() {
 
 devready() {
     : 'DEVelopment READYness check'
-    grep -qE 'legacy_version_file.*=.*yes' ~/.asdfrc 2>/dev/null \
-        || echo 'WARNING: legacy_version_file != yes
+    if [[ $(command -v asdf) ]]; then
+        grep -qE 'legacy_version_file.*=.*yes' ~/.asdfrc 2>/dev/null \
+            || echo 'WARNING: legacy_version_file != yes
 Files like .python-version will be ignored'
-    local installed
-    installed=$(asdf plugin list 2>/dev/null)
-    [[ $installed == *nodejs* ]] \
-        || echo 'WARNING: nodejs plugin for asdf not added'
-    [[ $installed == *tenv* ]] \
-        || echo 'WARNING: tenv plugin for asdf not added'
-    [[ $installed == *uv* ]] \
-        || echo 'WARNING: uv plugin for asdf not added'
+        local installed_asdf_plugins
+        installed_asdf_plugins=$(asdf plugin list 2>/dev/null)
+        for plugin in $ASDF_PLUGINS; do
+            if [[ $installed_asdf_plugins != *$plugin* ]]; then
+                echo "WARNING: $plugin plugin for asdf not added"
+            fi
+        done
+    else
+        echo 'WARNING: asdf not installed
+asdf is a version manager for node, tenv (terraform, tofu), uv (python), and more'
+    fi
 
     [[ $(git config --global advice.skippedCherryPicks) == false ]] \
         || echo 'WARNING: git advice.skippedCherryPicks != false
@@ -231,6 +252,18 @@ Use feature branches with "GitHub Flow"'
         || echo 'WARNING: git rebase.autosquash != true
 Act on "fixup!" and "squash!" commit title prefixes'
     if [[ $OS == Darwin ]]; then
+        if [[ $(command -v brew) ]]; then
+            installed_brews="$(brew list)"
+            for brew in $BREWS; do
+                if [[ $installed_brews != *$brew* ]]; then
+                    echo "WARNING: Homebrew package $brew not installed"
+                fi
+            done
+        else
+            echo WARNING: Homebrew not installed
+        fi
+        [[ $BASH_MAJOR_VERSION -gt 3 ]] \
+            || echo "WARNING: Very old BASH version $BASH_VERSION"
         grep --fixed-strings --no-messages --quiet .DS_Store ~/.config/git/ignore \
             || echo WARNING: .DS_Store files not globally git ignored
         [[ $(defaults read NSGlobalDomain ApplePressAndHoldEnabled) == '0' ]] \
@@ -239,44 +272,100 @@ Act on "fixup!" and "squash!" commit title prefixes'
             || echo WARNING: MacOS period substitution enabled
         [[ $(defaults read NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled) == '0' ]] \
             || echo WARNING: MacOS quote substitution enabled
+    elif [[ $OPSY == Linux ]]; then
+        installed_debs="$(dpkg-query -W --showformat='${Package}\n')"
+        for deb in $DEBS; do
+            if [[ $installed_debs != *$deb* ]]; then
+                echo "WARNING: $deb not installed"
+            fi
+        done
+    else
+        echo "WARNING: Unsupported operating system $OPSY"
     fi
 }
 
+asdf_url=https://github.com/asdf-vm/asdf/releases/download/v0.16.7/asdf-v0.16.7-linux-amd64.tar.gz
+
 forceready() {
     : 'FORCE system to be READY for development, clobbering current settings'
-    if [[ $0 != *bash ]]; then
+    if [[ $shell != *bash ]]; then
         chsh -s /bin/bash
         echo 'Shell changed to BASH. Please restart your shell and rerun forceready.'
         # TODO could we run this function with bash?
         return
     fi
 
-    grep -qE 'legacy_version_file.*=.*yes' ~/.asdfrc 2>/dev/null \
-        || echo 'legacy_version_file = yes' >>~/.asdfrc
-    local installed
-    installed=$(asdf plugin list 2>/dev/null)
-    [[ $installed == *nodejs* ]] || asdf plugin add nodejs
-    [[ $installed == *tenv* ]] \
-        || asdf plugin add tenv https://github.com/tofuutils/asdf-tenv
-    [[ $installed == *uv* ]] || asdf plugin add uv
+    for directory in .config/git .local/bin code; do
+        [[ -d ~/$directory ]] || mkdir -p ~/$directory
+    done
+    [[ -z $GITHUB_WORKSPACE ]] || ln -s "$GITHUB_WORKSPACE" ~/code/
 
-    git config --global advice.skippedCherryPicks false
-    git config --global core.commentChar ';'
-    git config --global diff.colormoved zebra
-    ! [[ $INSH_NAME ]] || git config --global user.name "$INSH_NAME"
-    ! [[ $INSH_EMAIL ]] || git config --global user.email "$INSH_EMAIL"
-    git config --global pull.rebase true
-    git config --global push.default current
-    git config --global rebase.autosquash true
-    [[ -d ~/.config/git ]] || mkdir -p ~/.config/git
-
-    if [[ $OS == Darwin ]]; then
-        [[ -f ~/.config/git/ignore ]] || curl -so ~/.config/git/ignore \
+    if [[ $OPSY == Darwin ]]; then
+        # Should we set NONINTERACTIVE=1 ?
+        [[ $(command -v brew) ]] || /bin/bash -c "$(
+            curl --fail --show-error --silent \
+                https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh
+        )"
+        eval "$(/opt/homebrew/bin/brew shellenv)"
+        # shellcheck disable=SC2086
+        brew install --no-interaction --quiet $BREWS
+        [[ -f ~/.config/git/ignore ]] || curl --fail --show-error --silent --output ~/.config/git/ignore \
             https://raw.githubusercontent.com/github/gitignore/master/Global/macOS.gitignore
         defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
         defaults write NSGlobalDomain NSAutomaticPeriodSubstitutionEnabled -bool false
         defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
+    elif [[ $OPSY == Linux ]]; then
+        [[ $GITHUB_WORKSPACE ]] || sudo apt-get update
+        # shellcheck disable=SC2046,SC2086
+        sudo apt-get install --no-install-recommends --yes $([[ -z $GITHUB_WORKSPACE ]] || echo --dry-run) $DEBS
+        [[ -x ~/.local/bin/asdf ]] || curl --fail --location --show-error --silent $asdf_url \
+            | tar -xzC ~/.local/bin
+        if ! asdf --version >/dev/null; then
+            echo "PATH=$PATH"
+            return 1
+        fi
     fi
+
+    grep -qE 'legacy_version_file.*=.*yes' ~/.asdfrc 2>/dev/null \
+        || echo 'legacy_version_file = yes' >>~/.asdfrc
+    local installed_asdf_plugins
+    installed_asdf_plugins=$(asdf plugin list 2>/dev/null)
+    for plugin in $ASDF_PLUGINS; do
+        [[ $installed_asdf_plugins == *$plugin* ]] \
+            || asdf plugin add "$plugin" "$(
+                echo "$plugin" | sed -n s,tenv,https://github.com/tofuutils/asdf-tenv,p
+            )"
+        asdf install "$plugin"
+    done
+    # TODO set TENV_GITHUB_TOKEN to avoid rate limiting
+    ! [[ -f .terraform-version ]] || tenv terraform install
+    ! [[ -f .tofu-version ]] || tenv opentofu install
+
+    git config --global advice.skippedCherryPicks false
+    git config --global core.commentChar ';'
+    git config --global diff.colormoved zebra
+    if [[ $INSH_NAME ]]; then
+        git config --global user.name "$INSH_NAME"
+    elif [[ $GITHUB_WORKSPACE ]]; then
+        :
+    else
+        echo 'WARNING: Not setting user.name for git. Run:
+export INSH_NAME="Your Name"; forceready'
+    fi
+    if [[ $INSH_EMAIL ]]; then
+        git config --global user.email "$INSH_EMAIL"
+    elif [[ $GITHUB_WORKSPACE ]]; then
+        :
+    else
+        echo 'WARNING: Not setting user.email for git. Run:
+export INSH_EMAIL=youremail@yourdomain.tld; forceready'
+    fi
+    git config --global pull.rebase true
+    git config --global push.default current
+    git config --global rebase.autosquash true
+
+    asdf current
+    # might be nice to show tofu, python terraform, versions
 }
 
 envi() {
@@ -372,7 +461,12 @@ pc() {
 
 pca() {
     : 'run Pre-Commit on All files'
-    pre-commit run --all-files "$@"
+    if [[ $(cona) == helicopyter ]]; then
+        command=try-repo
+    else
+        command=run
+    fi
+    pre-commit $command --all-files "$@"
 }
 
 pcam() {
@@ -383,17 +477,6 @@ pcam() {
 pcm() {
     : 'run Pre-Commit on modified files including Manual stage hooks'
     pre-commit run --hook-stage manual "$@"
-}
-
-pcta() {
-    : 'run Pre-Commit Try-repo on All files'
-    pre-commit try-repo \
-        --all-files \
-        --color always \
-        --show-diff-on-failure \
-        --verbose \
-        . \
-        "$@"
 }
 
 pctam() {
@@ -494,8 +577,8 @@ upc() {
 }
 
 ups() {
-    : 'Uv Pip Sync, with MacOS workaround for appnope'
-    uv pip sync "$@" requirements.txt
+    : 'Uv venv and Pip Sync'
+    uv venv && uv pip sync "$@" requirements.txt
 }
 
 uuid() {

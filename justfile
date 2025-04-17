@@ -1,8 +1,8 @@
 set export
 set shell := ['bash', '-euo', 'pipefail', '-c']
 
-OS := `uname -s`
-PACKAGES := "bind9-host curl fping git less tmux tree"
+OPSY := `uname -s`
+DEBS := 'bind9-host curl file fping git less procps tmux tree'
 
 default:
     @just --list
@@ -108,13 +108,24 @@ giha:
 
 gash: giha  # Backwards compatibility
 
+# print ORGanizatioN, a four letter acronym
+orgn:
+    #!/usr/bin/env bash
+    if [[ -n ${GITHUB_REPOSITORY_OWNER-} ]]; then
+        echo "$GITHUB_REPOSITORY_OWNER";
+    else
+        git remote get-url origin | sed -E 's,.+github.com/([^/]+).+,\1,';
+    fi
+
 # run Pre-Commit on modified files
 pc *args:
     pre-commit run {{args}}
 
 # run Pre-Commit on All files
 pca *args:
-    pre-commit run --all-files {{args}}
+    pre-commit {{ \
+        if `just cona` == 'helicopyter' { 'try-repo' } else { 'run' } \
+    }} --all-files {{args}}
 
 # run Pre-Commit on All files including Manual stage hooks
 pcam *args:
@@ -124,6 +135,10 @@ pcam *args:
 pcm *args:
     pre-commit run --hook-stage manual {{args}}
 
+# git PUSH over https
+push *args:
+    git push https://${GITHUB_TOKEN}@github.com/$(just orgn)/$(just cona) {{args}}
+
 # Uv Pip Compile
 upc *args:
     uv pip compile --all-extras --output-file requirements.txt --python-platform linux \
@@ -131,9 +146,13 @@ upc *args:
             if path_exists('requirements.in') == 'true' { 'requirements.in' } else { '' } \
         }} {{args}}
 
-# Uv Pip Sync
+# Update asdf .tool-versions
+update:
+    echo -e "glow $(asdf latest glow)\nuv $(asdf latest uv)\ntenv $(asdf latest tenv)" > .tool-versions
+
+# Uv venv and Pip Sync
 ups *args:
-    uv pip sync {{args}} requirements.txt
+    uv venv && uv pip sync {{args}} requirements.txt
 
 # Helicopyter Synth
 hs cona='all':
@@ -192,4 +211,4 @@ tabr:
     } else { github_reference } }}
 
 test:
-    python -m pytest --cov=helicopyter --cov-report=term-missing:skip-covered --verbose
+    python -m pytest --cov="$(just cona)" --cov-report=term-missing:skip-covered --verbose

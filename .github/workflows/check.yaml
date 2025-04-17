@@ -12,38 +12,9 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
-            - uses: actions/checkout@v4
-              with:
-                  path: asdf
-                  repository: asdf-vm/asdf
-            - run: |
-                  mkdir -p "$HOME/code" \
-                  && mv "$GITHUB_WORKSPACE/asdf" "$HOME/code/" \
-                  && ln -s "$GITHUB_WORKSPACE" "$HOME/code/"
-
-            - uses: actions/setup-node@v4
-              with:
-                  cache: npm
-                  node-version-file: .nvmrc
+            - run: bash includes.sh forceready
             - run: npm install --frozen-lockfile
-
-            - uses: actions/setup-python@v5
-              with:
-                  python-version-file: .python-version
-
-            - run: pip install --upgrade pip setuptools uv
-              env:
-                  PIP_PROGRESS_BAR: 'off'
-            - run: uv venv && source includes.sh && a && ups
-
-            # TODO set TENV_GITHUB_TOKEN to avoid rate limiting
-            - run: |
-                  source includes.sh \
-                  && a \
-                  && asdf plugin-add tenv https://github.com/tofuutils/asdf-tenv \
-                  && asdf install tenv latest \
-                  && asdf global tenv latest \
-                  && tenv tofu install
+            - run: bash includes.sh ups
 
             - run: |
                   .venv/bin/cookiecutter \
@@ -62,7 +33,7 @@ jobs:
             - run: |
                   source includes.sh \
                   && a \
-                  && pcta \
+                  && pca --color always --show-diff-on-failure --verbose . \
                   && pctam mypy
 
             - run: |
