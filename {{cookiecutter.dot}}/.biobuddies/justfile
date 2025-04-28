@@ -4,6 +4,7 @@ set shell := ['bash', '-euo', 'pipefail', '-c']
 OPSY := `uname -s`
 DEBS := 'bind9-host curl file fping git less procps tmux tree'
 
+# List all recipes
 default:
     @just --list
 
@@ -106,7 +107,8 @@ envi:
 giha:
     git describe --abbrev=40 --always --dirty --match=-
 
-gash: giha  # Backwards compatibility
+# Backwards compatibility alias for giha
+gash: giha
 
 # print ORGanizatioN, a four letter acronym
 orgn:
@@ -194,7 +196,7 @@ uuid:
 summarize:
     bash includes.sh summarize
 
-# Alias for summarize (backwards compatibility)
+# Backwards compatibility alias for summarize
 ghas: summarize
 
 # TODO test if these special cases can be dropped

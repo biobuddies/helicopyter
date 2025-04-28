@@ -1,1 +1,2 @@
 yml->yaml
+µ->μ  # Greek small mu is the kompatability equivalent of '\xb5' micro sign
