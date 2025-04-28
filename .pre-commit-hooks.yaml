@@ -18,6 +18,22 @@
   types:
       - text
 
+- id: codespell-complete
+  entry: >
+      codespell --builtin clear,en-GB_to_en-US,informal,name,rare,usage --check-filenames
+      --dictionary .biobuddies/dictionary.txt --ignore-words-list READYness --write-changes
+  language: system
+  name: codespell-complete
+  exclude: |
+      (?x)^(
+          \.pre-commit-hooks\.yaml
+          |documentation/self2024-python-defined-infrastructure\.md
+          |package-lock\.json
+          |yarn\.lock
+      )$
+  types:
+      - text
+
 - id: cookiecutter
   entry: >
       cookiecutter --config-file .cookiecutter.yaml --no-input --overwrite-if-exists
@@ -55,30 +71,6 @@
   files: .*\.yml$
   language: fail
   name: dot-yaml
-
-# Consider using cookiecutter instead
-- id: gitignore-node-python
-  entry: >
-      bash -c 'langs={Node,Python};
-      curl -s https://raw.githubusercontent.com/github/gitignore/main/$langs.gitignore >
-      .gitignore'
-  language: system
-  name: gitignore-node-python
-  pass_filenames: false
-  stages:
-      - manual # Because Internet
-
-# Consider using cookiecutter instead
-- id: gitignore-node-python-terraform
-  entry: >
-      bash -c 'langs={Node,Python,Terraform};
-      curl -s https://raw.githubusercontent.com/github/gitignore/main/$langs.gitignore >
-      .gitignore'
-  language: system
-  name: gitignore-node-python-terraform
-  pass_filenames: false
-  stages:
-      - manual # Because Internet
 
 - id: hadolint
   entry: hadolint

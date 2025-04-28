@@ -1,4 +1,5 @@
 {
+    "_copy_without_render": [".biobuddies/justfile"],
     "dot": ".",
     "languages": "Node,Python",
     "pull_request_background_links": "* ",

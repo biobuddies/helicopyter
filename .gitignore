@@ -309,7 +309,7 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 # Local .terraform directories
-**/.terraform/*
+.terraform/
 
 # .tfstate files
 *.tfstate
