@@ -64,12 +64,16 @@ class HeliStack(TerraformStack):
         In contrast to running Element(...) standalone, the new instance will be named in the
         traditional Terraform style.
 
+        Also assigns Element.__str__ to Element.to_string.
+
         Example usage:
         from cdktf_cdktf_provider_cloudflare.zero_trust_access_application import (
             ZeroTrustAccessApplication
         )
         stack.push(ZeroTrustAccessApplication, 'mydomain-wildcard', domain='*.mydomain.com')
         """
+        Element.__str__ = Element.to_string
+
         if Element.__module__ == 'cdktf':
             scope_name = Element.__name__.lower().replace('terraform', '')
         else:
@@ -78,8 +82,7 @@ class HeliStack(TerraformStack):
             self._scopes[scope_name] = Construct(self, scope_name)
 
         print(f'Pushing {scope_name}.{id_}')
-        element = Element(self._scopes[scope_name], id_, *args, **kwargs)
-        return element
+        return Element(self._scopes[scope_name], id_, *args, **kwargs)
 
 
 # ruff: noqa: T201

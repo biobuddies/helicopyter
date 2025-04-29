@@ -112,7 +112,6 @@ snake_case method names.
   directory structure is `f'deploys/{cona}/terraform'`, grouping
     * Primarily by COdeNAme (CONA), which is probably synonymous with application, deployment, and service
     * Secondarily by tool, such as `ansible`, `docker`, `terraform`, `python`
-- `__str__()` for `to_string()`, etc.
 - Why do we need a Node.js server? Can we build dataclasses or Pydantic models out of the type annotations already being
   generated?
 - Provide helper classes or functions for useful but annoyingly verbose patterns such as local-exec provisioner command
