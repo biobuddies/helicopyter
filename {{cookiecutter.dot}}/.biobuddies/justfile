@@ -199,7 +199,6 @@ summarize:
 # Backwards compatibility alias for summarize
 ghas: summarize
 
-# TODO test if these special cases can be dropped
 github_reference := env('GITHUB_HEAD_REF', env('GITHUB_REF_NAME', ''))
 # print TAg or BRanch or empty string, a four letter acronym
 tabr:
