@@ -19,7 +19,6 @@ def synth(stack: BaseStack) -> None:
         stack.push(
             Repository,
             name,
-            import_id=name,
             allow_auto_merge=True,
             allow_merge_commit=False,
             allow_rebase_merge=True,
@@ -42,4 +41,4 @@ def synth(stack: BaseStack) -> None:
             squash_merge_commit_message='PR_BODY',
             squash_merge_commit_title='PR_TITLE',
             topics=topics,
-        )
+        ).import_from(name)

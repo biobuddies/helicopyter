@@ -70,12 +70,41 @@ Helicopyter uses [CDKTF](https://github.com/hashicorp/terraform-cdk) and is insp
   co-exist, allowing incremental adoption.
 - Separate object instantiation from synthesis, allowing Python script to import the objects/data
   and do completely different things with them.
-- Golang Terraform has a pretty good command line interface. The `ht[aip]` functions in
-  `includes.sh` try to wrap it very lightly.
+- Golang Terraform has a pretty good command line interface. The `ht[aip]` recipes in
+  `.biobuddies/justfile` try to wrap it very lightly.
+
+### Importing and Renaming
+Out of ignorance, early versions of Helicopyter carried custom support for generating `import`
+blocks. The upstream CDKTF project [added support in fall of 2023](
+https://www.hashicorp.com/en/blog/cdktf-0-19-adds-support-for-config-driven-import-and-refactoring
+), although the documentation [1](
+https://developer.hashicorp.com/terraform/cdktf/concepts/resources#refactoring-renaming-resources
+) [2](
+https://developer.hashicorp.com/terraform/cdktf/examples-and-guides/refactoring#moving-renaming-resources-within-a-stack
+) unfortunately focuses on Javascript and its camelCase function names rather than Python and its
+snake_case method names.
+
+## Import Existing Resource Into Terraform State
+```python
+    stack.push(
+        Resource,
+        'new_name',
+        ...,
+    ).import_from('provider_resource.old_name')
+```
+
+## Rename or Move Within Terraform State
+```python
+    stack.push(
+        Resource,
+        'new_name',
+        ...
+    ).move_from_id('provider_resource.old_name')
+```
 
 ## What Helicopyter will probably never do (non-goals)
 - Support languages other than Python
-- Make use of CDKTF's command line interface. Integration with it is untested and not recommended.
+- Use CDKTF's command line interface. Integration with it is untested and not recommended.
 
 ## What Helicopyter might do in the future
 - Support multiple backend configurations per codename
