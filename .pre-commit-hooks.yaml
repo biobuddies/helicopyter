@@ -13,6 +13,7 @@
   exclude: |
       (?x)^(
           package-lock\.json
+          |documentation/self2024-python-defined-infrastructure\.md
           |yarn\.lock
       )$
   types:
