@@ -18,6 +18,7 @@
   types:
       - text
 
+# Should be kept in sync with pyproject.toml
 - id: codespell-complete
   entry: >
       codespell --builtin clear,en-GB_to_en-US,informal,name,rare,usage --check-filenames
