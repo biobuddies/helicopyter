@@ -7,7 +7,7 @@
     - Elements of Style, On Writing Well
 * Three strikes and you refactor
     - Copy/paste once is okay, preferably with a comment on the duplicatation
-    - Three examples should ease choosing the right abstraction
+    - Three examples ease choosing the right abstraction
     - Avoid overshooting on the journey from specific to generic
 * Composition over inheritance
 
@@ -70,6 +70,12 @@ $ date +%Y-%m-%d\ %Z | sed s/UTC/Z/
 $ date -u +%Y-%m-%d\ %Z | sed s/UTC/Z/
 2024-04-19 Z
 ```
+
+### Spelling
+* Use Wikipedia-derived Codespell
+* Python will convert to Normal Form Kompatability Composition (NFKC) at runtime; to begin as
+  Python will go on, use Greek small mu '\u03bc' instead of '\u00b5' micro sign
+* "Please use .yaml when possible." https://yaml.org/faq
 
 ## Code
 ### Indent by four spaces

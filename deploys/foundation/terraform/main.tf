@@ -23,7 +23,7 @@ import {
 terraform {
   required_providers {
     github = {
-      version = "6.5.0"
+      version = "6.6.0"
       source  = "integrations/github"
     }
   }

@@ -51,6 +51,24 @@ precommit = [
 [project.urls]
 source = 'https://github.com/biobuddies/helicopyter'
 
+# Should be kept in sync with .pre-commit-hooks.yaml, except this version needs lots more skips
+# because its target list comes from the filesystem instead of git.
+[tool.codespell]
+builtin = ['clear', 'en-GB_to_en-US', 'informal', 'name', 'rare', 'usage']
+check-filenames = true
+dictionary = '.biobuddies/dictionary.txt'
+ignore-words-list = ['READYness']
+skip = [
+    './dist/*',
+    './documentation/self2024-python-defined-infrastructure.md',
+    './node_modules/*',
+    '.pre-commit-hooks.yaml',
+    '__pycache__',
+    'package-lock.json',
+    'yarn.lock',
+]
+write-changes = true
+
 [tool.ruff]
 line-length = 100
 target-version = 'py312'

@@ -33,8 +33,7 @@ jobs:
             - run: |
                   source includes.sh \
                   && a \
-                  && pca --color always --show-diff-on-failure --verbose . \
-                  && pctam mypy
+                  && just pcam --color always --show-diff-on-failure --verbose
 
             - run: |
                   source includes.sh \
