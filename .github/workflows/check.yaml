@@ -13,8 +13,6 @@ jobs:
         steps:
             - uses: actions/checkout@v4
             - run: bash includes.sh forceready
-            - run: npm install --frozen-lockfile
-            - run: bash includes.sh ups
 
             - run: |
                   .venv/bin/cookiecutter \
