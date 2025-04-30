@@ -14,6 +14,10 @@ BASH_MAJOR_VERSION=$(echo "$BASH_VERSION" | sed -E 's/^([^.]+).+/\1/')
 OPSY=$(uname -s)
 export OPSY
 
+TF_PLUGIN_CACHE_DIR="$HOME/.terraform.d/plugin-cache"
+export TF_PLUGIN_CACHE_DIR
+mkdir -p "$TF_PLUGIN_CACHE_DIR"
+
 case $OPSY in
     Darwin)
         # Apple stopped upgrading BASH, perhaps to avoid GPLv3, and switched to ZSH.
@@ -73,6 +77,7 @@ PACKAGES="$DEBS"
 export PACKAGES
 
 # Aliases only work in interactive shells
+alias grep='grep --color=auto'
 alias jq='jq --color-output'
 alias ls='ls --color=auto'
 
@@ -284,6 +289,13 @@ Act on "fixup!" and "squash!" commit title prefixes'
     fi
 }
 
+ups() {
+    : 'Uv venv and Pip Sync and similar for npm'
+    [[ ! -f package-lock.json ]] || npm install --frozen-lockfile
+    [[ -f requirements.txt ]] || return
+    uv venv && uv pip sync "$@" requirements.txt
+}
+
 asdf_url=https://github.com/asdf-vm/asdf/releases/download/v0.16.7/asdf-v0.16.7-linux-amd64.tar.gz
 
 forceready() {
@@ -365,7 +377,9 @@ export INSH_EMAIL=youremail@yourdomain.tld; forceready'
     git config --global rebase.autosquash true
 
     asdf current
-    # might be nice to show tofu, python terraform, versions
+    # might be nice to show tofu, python, terraform, versions like calling pathver
+
+    ups
 }
 
 envi() {
@@ -574,11 +588,6 @@ upc() {
         --output-file requirements.txt \
         --python-platform linux \
         pyproject.toml $([[ -f requirements.in ]] && echo requirements.in)
-}
-
-ups() {
-    : 'Uv venv and Pip Sync'
-    uv venv && uv pip sync "$@" requirements.txt
 }
 
 uuid() {

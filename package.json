@@ -1,13 +1,12 @@
 {
     "devDependencies": {
+        "cdk8s-cli": "^2.198.227",
         "prettier": "^3.2.5",
-        "prettier-plugin-toml": "^2.0.1"
+        "prettier-plugin-toml": "^2.0.1",
+        "wrangler": "^4.11.0"
     },
     "scripts": {
-        "prettier": "prettier --write"
-    },
-    "dependencies": {
-        "cdk8s-cli": "^2.198.227",
-        "wrangler": "^4.11.0"
+        "prettier": "prettier --write",
+        "wrangler": "wrangler"
     }
 }
