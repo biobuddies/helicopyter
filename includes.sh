@@ -77,6 +77,7 @@ PACKAGES="$DEBS"
 export PACKAGES
 
 # Aliases only work in interactive shells
+alias grep='grep --color=auto'
 alias jq='jq --color-output'
 alias ls='ls --color=auto'
 
