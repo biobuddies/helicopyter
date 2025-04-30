@@ -72,7 +72,7 @@ class HeliStack(TerraformStack):
         )
         stack.push(ZeroTrustAccessApplication, 'mydomain-wildcard', domain='*.mydomain.com')
         """
-        Element.__str__ = Element.to_string  # ignore: type[assignment,method-assign]
+        Element.__str__ = Element.to_string  # type: ignore[assignment,method-assign]
 
         if Element.__module__ == 'cdktf':
             scope_name = Element.__name__.lower().replace('terraform', '')
