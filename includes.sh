@@ -14,6 +14,10 @@ BASH_MAJOR_VERSION=$(echo "$BASH_VERSION" | sed -E 's/^([^.]+).+/\1/')
 OPSY=$(uname -s)
 export OPSY
 
+TF_PLUGIN_CACHE_DIR="$HOME/.terraform.d/plugin-cache"
+export TF_PLUGIN_CACHE_DIR
+mkdir -p "$TF_PLUGIN_CACHE_DIR"
+
 case $OPSY in
     Darwin)
         # Apple stopped upgrading BASH, perhaps to avoid GPLv3, and switched to ZSH.
