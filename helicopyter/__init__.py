@@ -72,6 +72,9 @@ class HeliStack(TerraformStack):
         )
         stack.push(ZeroTrustAccessApplication, 'mydomain-wildcard', domain='*.mydomain.com')
         """
+        # assignment: mypy thinks narrow type on one side and broad object type on the other are
+        # incompatible
+        # method-assign: mypy can't handle it https://github.com/python/mypy/issues/2427
         Element.__str__ = Element.to_string  # type: ignore[assignment,method-assign]
 
         if Element.__module__ == 'cdktf':
