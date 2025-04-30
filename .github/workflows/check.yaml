@@ -12,7 +12,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
-            - run: bash includes.sh forceready
+            - run: bash .biobuddies/includes.bash forceready
 
             - run: |
                   .venv/bin/cookiecutter \
@@ -29,23 +29,23 @@ jobs:
                   )
 
             - run: |
-                  source includes.sh \
+                  source .biobuddies/includes.bash \
                   && a \
                   && just pcam --color always --show-diff-on-failure
 
             - run: |
-                  source includes.sh \
+                  source .biobuddies/includes.bash \
                   && a \
                   && hti demo \
                   && tofu -chdir=deploys/demo/terraform validate
 
             - run: |
-                  source includes.sh \
+                  source .biobuddies/includes.bash \
                   && a \
                   && just test
 
             - run: |
-                  source includes.sh \
+                  source .biobuddies/includes.bash \
                   && a \
                   && python -m build \
                   && python -m twine check --strict dist/*
@@ -53,7 +53,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
-            - run: bash includes.sh summarize
+            - run: bash .biobuddies/includes.bash summarize
 
 on: # yamllint disable-line rule:truthy
     pull_request:
