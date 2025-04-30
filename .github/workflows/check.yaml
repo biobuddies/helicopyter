@@ -33,7 +33,7 @@ jobs:
             - run: |
                   source includes.sh \
                   && a \
-                  && just pcam --color always --show-diff-on-failure --verbose
+                  && just pcam --color always --show-diff-on-failure
 
             - run: |
                   source includes.sh \
