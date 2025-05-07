@@ -29,7 +29,8 @@ jobs:
                   )
 
             - run: |
-                  source .biobuddies/includes.bash \
+                  touch deploys/buddies/__init__.py \
+                  && source .biobuddies/includes.bash \
                   && a \
                   && just pcam --color always --show-diff-on-failure
 
