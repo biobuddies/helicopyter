@@ -75,11 +75,11 @@ dcu *args:
 
 # DEVelopment READYness check
 devready:
-    bash includes.sh devready
+    bash .biobuddies/includes.bash devready
 
 # FORCE system to be READY for development, clobbering current settings
 forceready:
-    bash includes.sh forceready
+    bash .biobuddies/includes.bash forceready
 
 # print CodeNAme, a four letter acronym
 cona:
@@ -125,8 +125,8 @@ pc *args:
 
 # run Pre-Commit on All files
 pca *args:
-    pre-commit {{ \
-        if `just cona` == 'helicopyter' { 'try-repo .' } else { 'run' } \
+    {{ \
+        if `just cona` == 'helicopyter' { 'python -m try_repo' } else { 'pre-commit run' } \
     }} --all-files {{args}}
 
 # run Pre-Commit on All files including Manual stage hooks
@@ -194,7 +194,7 @@ uuid:
 
 # SUMMARIZE environment by displaying four letter acronyms
 summarize:
-    bash includes.sh summarize
+    bash .biobuddies/includes.bash summarize
 
 # Backwards compatibility alias for summarize
 ghas: summarize
