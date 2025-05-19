@@ -1,6 +1,6 @@
 # shellcheck shell=bash
-if [[ -f /.biobuddies/includes.bash ]]; then
-    source /.biobuddies/includes.bash
+if [[ -f .biobuddies/includes.bash ]]; then
+    source .biobuddies/includes.bash
 else
     echo includes.sh has moved to .biobuddies/includes.bash to better accomodate downstream
     echo extensions and share a single popular fetch mechanism with files like .gitignore.
