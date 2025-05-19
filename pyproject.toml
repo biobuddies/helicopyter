@@ -43,7 +43,6 @@ precommit = [
     'shellcheck-py',
     'shfmt-py',
     'types-setuptools',
-    'uv',
     'validate-pyproject[all]',
     'yamllint',
 ]

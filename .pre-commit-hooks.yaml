@@ -88,8 +88,8 @@
       bash -c "
       cat > includes.sh <<EOD
       # shellcheck shell=bash
-      if [[ -f \$BASH_SOURCE/.biobuddies/includes.bash ]]; then
-          source \$BASH_SOURCE/.biobuddies/includes.bash
+      if [[ -f $PWD/.biobuddies/includes.bash ]]; then
+          source $PWD/.biobuddies/includes.bash
       else
           echo includes.sh has moved to .biobuddies/includes.bash to better accomodate downstream
           echo extensions and share a single popular fetch mechanism with files like .gitignore.
