@@ -1,8 +1,12 @@
 set export
 set shell := ['bash', '-euo', 'pipefail', '-c']
 
+# Pre-installed on Sonoma:
+#   * Skip upgrades: host, file, less, ps
+#   * Upgrade: bash, curl, git (may come with xcode)
+BRWS := 'asdf bash curl fping git gnu-sed tmux tree'
+DEBS := 'bash bind9-host curl file fping git less procps tmux tree'
 OPSY := `uname -s`
-DEBS := 'bind9-host curl file fping git less procps tmux tree'
 
 # List all recipes
 default:

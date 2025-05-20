@@ -25,9 +25,10 @@ case $OPSY in
         # See devready and forceready for upgrading BASH with Brew.
         [[ $BASH_MAJOR_VERSION -gt 3 ]] || export BASH_SILENCE_DEPRECATION_WARNING=1
 
-        # On Sonoma: pre-installed file, host, and less are new enough. BASH is pre-installed, and
-        # git may have been installed with xcode, but upgrading both with brew is good.
-        BRWS='asdf bash fping git gnu-sed tmux tree'
+        # Pre-installed on Sonoma:
+        #   * Skip upgrades: host, file, less, ps
+        #   * Upgrade: bash, curl, git (may come with xcode)
+        BRWS='asdf bash curl fping git gnu-sed tmux tree'
         export BRWS
 
         # https://github.com/ansible/ansible/issues/32499
