@@ -110,7 +110,7 @@
       - manual # Because Internet
 
 - id: helicopyter
-  entry: bash includes.sh hs
+  entry: bash .biobuddies/includes.bash hs
   files: ^(helicopyter\.py|deploys/.+/terraform/main\.py)$
   language: system
   name: helicopyter
@@ -119,7 +119,7 @@
   require_serial: true
 
 - id: mailmap
-  entry: bash includes.sh check_mailmap
+  entry: bash .biobuddies/includes.bash check_mailmap
   language: system
   name: mailmap
   pass_filenames: false
@@ -194,7 +194,7 @@
   pass_filenames: false
 
 - id: uv-pip-compile
-  entry: bash includes.sh upc
+  entry: bash .biobuddies/includes.bash upc
   language: system
   name: uv-pip-compile
 
