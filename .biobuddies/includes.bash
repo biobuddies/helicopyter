@@ -464,7 +464,8 @@ orgn() {
     if [[ ${GITHUB_REPOSITORY_OWNER-} ]]; then
         echo "$GITHUB_REPOSITORY_OWNER"
     else
-        git remote get-url origin | gsed -E 's,.+github.com/([^/]+).+,\1,'
+        # git will have colon :, https will have slash /
+        git remote get-url origin | sed -E 's,.+github.com[:/]([^/]+).+,\1,'
     fi
 }
 
