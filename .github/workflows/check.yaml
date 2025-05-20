@@ -20,7 +20,7 @@ jobs:
                       --no-input \
                       --overwrite-if-exists \
                       .
-                  git update-index --refresh
+                  git update-index --refresh --unmerged
                   git diff-index --quiet "$(git write-tree)" || (
                       git status
                       git -c color.ui=always diff
