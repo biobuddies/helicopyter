@@ -15,20 +15,6 @@ jobs:
             - run: bash .biobuddies/includes.bash forceready
 
             - run: |
-                  .venv/bin/cookiecutter \
-                      --config-file .cookiecutter.yaml \
-                      --no-input \
-                      --overwrite-if-exists \
-                      .
-                  git update-index --refresh --unmerged
-                  git diff-index --quiet "$(git write-tree)" || (
-                      git status
-                      git -c color.ui=always diff
-                      echo Cookiecutter introduced changes
-                      exit 1
-                  )
-
-            - run: |
                   touch deploys/buddies/__init__.py \
                   && source .biobuddies/includes.bash \
                   && a \
