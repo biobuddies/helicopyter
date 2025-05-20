@@ -25,10 +25,11 @@ case $OPSY in
         # See devready and forceready for upgrading BASH with Brew.
         [[ $BASH_MAJOR_VERSION -gt 3 ]] || export BASH_SILENCE_DEPRECATION_WARNING=1
 
-        # On Sonoma: pre-installed file, host, and less are new enough. BASH is pre-installed, and
-        # git may have been installed with xcode, but upgrading both with brew is good.
-        BREWS='asdf bash fping git gnu-sed tmux tree'
-        export BREWS
+        # Pre-installed on Sonoma:
+        #   * Skip upgrades: host, file, less, ps
+        #   * Upgrade: bash, curl, git (may come with xcode)
+        BRWS='asdf bash curl fping git gnu-sed tmux tree'
+        export BRWS
 
         # https://github.com/ansible/ansible/issues/32499
         export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
@@ -72,7 +73,7 @@ export ASDF_PLUGINS
 DEBS='bash bind9-host curl file fping git less procps tmux tree'
 export DEBS
 
-# We should probably deprecate `PACKAGES` in favor of `DEBS` and `BREWS`.
+# We should probably deprecate `PACKAGES` in favor of `DEBS` and `BRWS`.
 PACKAGES="$DEBS"
 export PACKAGES
 
@@ -256,10 +257,10 @@ Use feature branches with "GitHub Flow"'
     [[ $(git config --global rebase.autosquash) == true ]] \
         || echo 'WARNING: git rebase.autosquash != true
 Act on "fixup!" and "squash!" commit title prefixes'
-    if [[ $OS == Darwin ]]; then
+    if [[ $OPSY == Darwin ]]; then
         if [[ $(command -v brew) ]]; then
             installed_brews="$(brew list)"
-            for brew in $BREWS; do
+            for brew in $BRWS; do
                 if [[ $installed_brews != *$brew* ]]; then
                     echo "WARNING: Homebrew package $brew not installed"
                 fi
@@ -320,7 +321,7 @@ forceready() {
         )"
         eval "$(/opt/homebrew/bin/brew shellenv)"
         # shellcheck disable=SC2086
-        brew install --no-interaction --quiet $BREWS
+        brew install --quiet $BRWS
         [[ -f ~/.config/git/ignore ]] || curl --fail --show-error --silent --output ~/.config/git/ignore \
             https://raw.githubusercontent.com/github/gitignore/master/Global/macOS.gitignore
         defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
@@ -464,7 +465,8 @@ orgn() {
     if [[ ${GITHUB_REPOSITORY_OWNER-} ]]; then
         echo "$GITHUB_REPOSITORY_OWNER"
     else
-        git remote get-url origin | gsed -E 's,.+github.com/([^/]+).+,\1,'
+        # git will have colon :, https will have slash /
+        git remote get-url origin | sed -E 's,.+github.com[:/]([^/]+).+,\1,'
     fi
 }
 

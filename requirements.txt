@@ -308,8 +308,6 @@ urllib3==2.4.0
     # via
     #   requests
     #   twine
-uv==0.6.17
-    # via helicopyter (pyproject.toml)
 validate-pyproject==0.24.1
     # via helicopyter (pyproject.toml)
 virtualenv==20.30.0
