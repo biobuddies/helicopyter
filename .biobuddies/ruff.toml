@@ -1,0 +1,45 @@
+line-length = 100
+target-version = 'py312'
+
+[format]
+quote-style = 'single'
+skip-magic-trailing-comma = true
+
+[lint]
+fixable = ['ALL']
+ignore = [
+    'ANN401', # `**kwargs: Any` is reasonable
+    'COM812', # Insists on `join([],)` over `join([])`
+    'D101',
+    'D103',
+    'D104',
+    'D107',
+    'EM101',
+    'EM102',
+    'INP001',
+    'ISC001',
+    'PT013',  # `import pytest` would be inconsistent with other imports
+    'Q000',   # ruff format will single quote
+    'Q001',   # ruff format will single quote
+    'Q003',   # ruff format will single quote
+    # N806 tries to lowercase classes; currently ignored on a line-by-line basis
+    'S607',   # Using $PATH is pretty necessary for nvmrc, pyenv, venv, tfenv
+    'SLF001', # Private member access is probably a last resort
+    'TD002',  # The git log records who wrote a TODO line
+    'TD003',  # Don't require issue links
+    'TD004',  # A colon takes up space without really improving readability
+    'TRY002',
+    'TRY003',
+]
+select = ['ALL']
+
+[lint.isort]
+split-on-trailing-comma = false
+
+[lint.per-file-ignores]
+'test_*' = [
+    'S101', # assert is good for tests
+]
+
+[lint.pydocstyle]
+convention = 'pep257'

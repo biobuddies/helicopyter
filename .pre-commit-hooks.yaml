@@ -4,6 +4,7 @@
   language: system
   name: actionlint
 
+# Can't replace micro with mu; evaluating typos as replacement
 - id: codespell
   # Hook users will inherit this ignore and be able to define their own in the
   # `[tool.codespell]` section of their `pyproject.toml`
@@ -19,6 +20,7 @@
   types:
       - text
 
+# Can't replace micro with mu; evaluating typos as replacement
 # Should be kept in sync with pyproject.toml
 - id: codespell-complete
   entry: >
@@ -91,7 +93,7 @@
       if [[ -f $PWD/.biobuddies/includes.bash ]]; then
           source $PWD/.biobuddies/includes.bash
       else
-          echo includes.sh has moved to .biobuddies/includes.bash to better accomodate downstream
+          echo includes.sh has moved to .biobuddies/includes.bash to better accommodate downstream
           echo extensions and share a single popular fetch mechanism with files like .gitignore.
           echo Please update your .pre-commit-config.yaml to include the cookiecutter hook
           echo '- repo: https://github.com/biobuddies/helicopyter'
@@ -180,6 +182,27 @@
   name: shfmt
   types:
       - shell
+
+# Hopefully typos can do micro to mu and take over from codespell
+- id: typos
+  args:
+      - --config
+      - .biobuddies/typos.toml
+  entry: typos --write-changes
+  # Cookiecutter copied files
+  exclude: |
+      (?x)^(
+          \.biobuddies/.+
+          |\.github/pull_request_template.md
+          |\.editorconfig
+          |\.prettierrc.toml
+          |\.shellcheckrc
+          |\.yamllint.yaml
+      )$
+  types:
+      - text
+  language: system
+  name: typos
 
 - id: validate-pyproject
   entry: validate-pyproject

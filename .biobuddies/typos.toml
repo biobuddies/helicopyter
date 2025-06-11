@@ -1,0 +1,3 @@
+[default.extend-identifiers]
+'iTerm2' = 'iTerm2'
+'IDentifier' = 'IDentifier' # Capitalization explaining UUID

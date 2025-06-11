@@ -38,7 +38,7 @@ Inspired by https://blog.cleancoder.com/uncle-bob/2013/05/27/TheTransformationPr
     * Prioritize steps similarly
     * Leave 10% or more of the steps as manual
         - "Done is better than perfect."
-        - "The perfect is the enemey of the good."
+        - "The perfect is the enemy of the good."
 4. Monitor and make "continuous" improvements
 5. Instigate fire drills of rare "black swan" events
 
@@ -82,7 +82,7 @@ $ date -u +%Y-%m-%d\ %Z | sed s/UTC/Z/
 This aligns with PEP-8. Consistent indentation across file types makes editor configuration easier.
 
 ### Wrap lines around 100 characters
-A maximized iterm2 window on a 13" 2020 MacBook Pro with the default font is 203 characters wide.
+A maximized iTerm2 window on a 13" 2020 MacBook Pro with the default font is 203 characters wide.
 A maximized gnome-terminal window on a ThinkPad X1 Carbon Gen 9 running Ubuntu 20.04 with the default font is also 203 characters wide.
 Using 100 characters allows two side-by-side files to be displayed with tmux, etc.
 
