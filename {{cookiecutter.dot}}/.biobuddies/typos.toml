@@ -1,3 +1,10 @@
+[default]
+locale = 'en-us'
+
 [default.extend-identifiers]
 'iTerm2' = 'iTerm2'
 'IDentifier' = 'IDentifier' # Capitalization explaining UUID
+
+[default.extend-words]
+'yml' = 'yaml' # http://www.yaml.org/faq.html
+'µ' = 'μ' # 0xb5 micro sign to 0x3bc Greek small mu
