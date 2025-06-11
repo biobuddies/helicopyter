@@ -6,6 +6,5 @@ locale = 'en-us'
 'IDentifier' = 'IDentifier' # Capitalization explaining UUID
 
 [default.extend-words]
-# 0xb5 micro sign to 0x3bc Greek small mu
-'µL' = 'μL'
-'µM' = 'μM'
+'yml' = 'yaml' # http://www.yaml.org/faq.html
+'µ' = 'μ'      # 0xb5 micro sign to 0x3bc Greek small mu

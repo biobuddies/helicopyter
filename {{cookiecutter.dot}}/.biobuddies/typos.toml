@@ -7,4 +7,4 @@ locale = 'en-us'
 
 [default.extend-words]
 'yml' = 'yaml' # http://www.yaml.org/faq.html
-'µ' = 'μ' # 0xb5 micro sign to 0x3bc Greek small mu
+'µ' = 'μ'      # 0xb5 micro sign to 0x3bc Greek small mu

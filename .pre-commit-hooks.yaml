@@ -4,7 +4,7 @@
   language: system
   name: actionlint
 
-# Replace with typos: can't fix µL->μL
+# Replace with typos
 - id: codespell
   # Hook users will inherit this ignore and be able to define their own in the
   # `[tool.codespell]` section of their `pyproject.toml`
@@ -20,7 +20,7 @@
   types:
       - text
 
-# Replace with typos: can't fix µL->μL
+# Replace with typos
 - id: codespell-complete
   entry: >
       codespell --builtin clear,en-GB_to_en-US,informal,name,rare,usage --check-filenames
@@ -71,10 +71,9 @@
 
 # Replace with typos
 - id: dot-yaml
-  description: Require four letter suffix http://www.yaml.org/faq.html
-  entry: dot-yaml
-  files: .*\.yml$
-  language: fail
+  description: Replace with typos
+  entry: echo replace with typos
+  language: system
   name: dot-yaml
 
 - id: hadolint
@@ -166,10 +165,13 @@
       - --config
       - .biobuddies/typos.toml
   entry: typos --write-changes
-  # Cookiecutter copied files
+  # First, files that contain misspellings
+  # Then, files copied by cookiecutter
   exclude: |
       (?x)^(
-          \.biobuddies/.+
+          {{cookiecutter.dot}}/\.biobuddies/dictionary.txt
+          |documentation/self2024-python-defined-infrastructure\.md
+          |\.biobuddies/.+
           |\.github/pull_request_template.md
           |\.editorconfig
           |\.prettierrc.toml
