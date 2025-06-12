@@ -14,11 +14,9 @@ ignore = [
     'D103',
     'D104',
     'D107',
-    'EM101',
-    'EM102',
+    'EM101',  # Simple code is more important than simple tracebacks
+    'EM102',  # Simple code is more important than simple tracebacks
     'INP001',
-    'ISC001',
-    'PT013',  # `import pytest` would be inconsistent with other imports
     'Q000',   # ruff format will single quote
     'Q001',   # ruff format will single quote
     'Q003',   # ruff format will single quote
@@ -28,8 +26,8 @@ ignore = [
     'TD002',  # The git log records who wrote a TODO line
     'TD003',  # Don't require issue links
     'TD004',  # A colon takes up space without really improving readability
-    'TRY002',
-    'TRY003',
+    'TRY002', # Forces premature specialization; the right time to subclass is when the exception starts being caught
+    'TRY003', # Forces premature specialization; the right time to subclass is when the exception starts being caught
 ]
 select = ['ALL']
 
@@ -38,7 +36,11 @@ split-on-trailing-comma = false
 
 [lint.per-file-ignores]
 'test_*' = [
-    'S101', # assert is good for tests
+    'PT013',   # `import pytest` would be inconsistent with other imports
+    'N802',    # Tests function names can match class names
+    'PLR2004', # Tests can have magic values
+    'PLR6301', # Test classes can ignore self
+    'S101',    # Tests can have assertions
 ]
 
 [lint.pydocstyle]

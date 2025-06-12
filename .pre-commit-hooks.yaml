@@ -71,9 +71,10 @@
 
 # Replace with typos
 - id: dot-yaml
-  description: Replace with typos
-  entry: echo replace with typos
-  language: system
+  description: Require four letter suffix http://www.yaml.org/faq.html
+  entry: dot-yaml
+  files: .*\.yml$ # noqa:typos
+  language: fail
   name: dot-yaml
 
 - id: hadolint
