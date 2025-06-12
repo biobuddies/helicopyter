@@ -1,11 +1,14 @@
 [default]
 locale = 'en-us'
-extend-ignore-re = ['(?Rm)^.*(#|//)\\s*noqa:typos$']
+extend-ignore-re = ['(?Rm)^.+(#|//) *noqa(:typos)?$']
 
 [default.extend-identifiers]
 'iTerm2' = 'iTerm2'
 'IDentifier' = 'IDentifier' # Capitalization explaining UUID
 
 [default.extend-words]
+'wxperiment' = 'experiment'
+'wxperimental' = 'experimental'
+'wxperimentation' = 'experimentation'
 'yml' = 'yaml' # http://www.yaml.org/faq.html
 'µ' = 'μ'      # 0xb5 micro sign to 0x3bc Greek small mu
