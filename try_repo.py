@@ -31,6 +31,9 @@ def try_repo(args: argparse.Namespace) -> int:
             load_manifest(Path(repo_path) / constants.MANIFEST_FILE), key=lambda hook: hook['id']
         )
 
+        if getattr(args, 'hook', None):
+            manifest = [hook for hook in manifest if hook['id'] == args.hook]
+
         config = yaml_dump(
             {
                 'repos': [

@@ -124,23 +124,25 @@ orgn:
         git remote get-url origin | sed -E 's,.+github.com[:/]([^/]+).+,\1,';
     fi
 
-# run Pre-Commit on modified files
-pc *args:
-    pre-commit run {{args}}
+# Pre-Commit Run (defaults to modified files)
+pcr *args:
+    {{ \
+        if `just cona` == 'helicopyter' { 'python -m try_repo' } else { 'pre-commit run' } \
+    }} {{args}}
 
 # run Pre-Commit on All files
 pca *args:
-    {{ \
-        if `just cona` == 'helicopyter' { 'python -m try_repo' } else { 'pre-commit run' } \
-    }} --all-files {{args}}
+    # Seemingly contradicting the help text, experimentation shows hook positional arguments must
+    # come before flags
+    just pcr {{args}} --all-files
 
 # run Pre-Commit on All files including Manual stage hooks
 pcam *args:
-    just pca --hook-stage manual {{args}}
+    just pca {{args}} --hook-stage manual
 
 # run Pre-Commit on modified files including Manual stage hooks
 pcm *args:
-    pre-commit run --hook-stage manual {{args}}
+    just pcr {{args}} --hook-stage manual
 
 # git PUSH over https
 push *args:

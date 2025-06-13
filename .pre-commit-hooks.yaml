@@ -4,6 +4,7 @@
   language: system
   name: actionlint
 
+# Replace with typos
 - id: codespell
   # Hook users will inherit this ignore and be able to define their own in the
   # `[tool.codespell]` section of their `pyproject.toml`
@@ -19,7 +20,7 @@
   types:
       - text
 
-# Should be kept in sync with pyproject.toml
+# Replace with typos
 - id: codespell-complete
   entry: >
       codespell --builtin clear,en-GB_to_en-US,informal,name,rare,usage --check-filenames
@@ -68,10 +69,11 @@
   types:
       - jinja
 
+# Replace with typos
 - id: dot-yaml
   description: Require four letter suffix http://www.yaml.org/faq.html
   entry: dot-yaml
-  files: .*\.yml$
+  files: .*\.yml$ # noqa:typos
   language: fail
   name: dot-yaml
 
@@ -81,33 +83,6 @@
   name: hadolint
   types:
       - dockerfile
-
-# Now just a wrapper around .biobuddies/includes.bash fetched by cookiecutter hook
-- id: includes-sh
-  entry: |
-      bash -c "
-      cat > includes.sh <<EOD
-      # shellcheck shell=bash
-      if [[ -f $PWD/.biobuddies/includes.bash ]]; then
-          source $PWD/.biobuddies/includes.bash
-      else
-          echo includes.sh has moved to .biobuddies/includes.bash to better accomodate downstream
-          echo extensions and share a single popular fetch mechanism with files like .gitignore.
-          echo Please update your .pre-commit-config.yaml to include the cookiecutter hook
-          echo '- repo: https://github.com/biobuddies/helicopyter'
-          echo '  rev: v2025.17.01  # or newer'
-          echo '  hooks:'
-          echo '      - id: cookiecutter'
-          echo
-          echo and run
-          echo 'pre-commit run --all-files --hook-stage manual cookiecutter'
-      fi
-      EOD"
-  language: system
-  name: includes-sh
-  pass_filenames: false
-  stages:
-      - manual # Because Internet
 
 - id: helicopyter
   entry: bash .biobuddies/includes.bash hs
@@ -134,6 +109,7 @@
   types:
       - python
 
+# Relies on .prettierrc.toml from cookiecutter
 - id: prettier-write
   entry: node_modules/.bin/prettier --write
   exclude: ^deploys/.+/terraform/main.tf.json$
@@ -145,6 +121,7 @@
       - toml
       - ts
 
+# Relies on .biobuddies/ruff.toml from cookiecutter
 - id: ruff-check-fix
   args:
       - --fix
@@ -156,6 +133,7 @@
       - python
       - pyi
 
+# Relies on .biobuddies/ruff.toml from cookiecutter
 - id: ruff-format
   entry: ruff format --force-exclude
   language: system
@@ -165,6 +143,7 @@
       - python
       - pyi
 
+# Relies on .shellcheckrc from cookiecutter
 - id: shellcheck
   entry: shellcheck
   language: system
@@ -180,6 +159,30 @@
   name: shfmt
   types:
       - shell
+
+# Hopefully typos can do micro to mu and take over from codespell
+- id: typos
+  args:
+      - --config
+      - .biobuddies/typos.toml
+  entry: typos --write-changes
+  # First, files that contain misspellings
+  # Then, files copied by cookiecutter
+  exclude: |
+      (?x)^(
+          {{cookiecutter.dot}}/\.biobuddies/dictionary.txt
+          |documentation/self2024-python-defined-infrastructure\.md
+          |\.biobuddies/.+
+          |\.github/pull_request_template.md
+          |\.editorconfig
+          |\.prettierrc.toml
+          |\.shellcheckrc
+          |\.yamllint.yaml
+      )$
+  types:
+      - text
+  language: system
+  name: typos
 
 - id: validate-pyproject
   entry: validate-pyproject
@@ -198,10 +201,10 @@
   language: system
   name: uv-pip-compile
 
+# Relies on .yamllint.yaml from cookiecutter
 - id: yamllint
   entry: yamllint
   language: system
   name: yamllint
   types:
-      - file
       - yaml

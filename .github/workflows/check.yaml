@@ -15,8 +15,7 @@ jobs:
             - run: bash .biobuddies/includes.bash forceready
 
             - run: |
-                  touch deploys/buddies/__init__.py \
-                  && source .biobuddies/includes.bash \
+                  source .biobuddies/includes.bash \
                   && a \
                   && just pcam --color always --show-diff-on-failure
 

@@ -21,7 +21,7 @@ readme = 'README.md'
 buildrelease = ['build', 'ipython', 'twine']
 demos = [
     'cdktf-cdktf-provider-aws',
-    # prebuilt package 12+ bring provider 5+
+    # prebuilt package 12+ brings provider 5+
     # https://registry.terraform.io/providers/cloudflare/cloudflare/latest/docs/guides/version-5-upgrade
     'cdktf-cdktf-provider-cloudflare==11.*',
     'cdktf-cdktf-provider-docker',
@@ -42,6 +42,7 @@ precommit = [
     'rust-just',
     'shellcheck-py',
     'shfmt-py',
+    'typos',
     'types-setuptools',
     'validate-pyproject[all]',
     'yamllint',
@@ -50,74 +51,8 @@ precommit = [
 [project.urls]
 source = 'https://github.com/biobuddies/helicopyter'
 
-# Should be kept in sync with .pre-commit-hooks.yaml, except this version needs lots more skips
-# because its target list comes from the filesystem instead of git.
-[tool.codespell]
-builtin = ['clear', 'en-GB_to_en-US', 'informal', 'name', 'rare', 'usage']
-check-filenames = true
-dictionary = '.biobuddies/dictionary.txt'
-ignore-words-list = ['READYness']
-skip = [
-    './dist/*',
-    './documentation/self2024-python-defined-infrastructure.md',
-    './node_modules/*',
-    '.pre-commit-hooks.yaml',
-    '__pycache__',
-    'package-lock.json',
-    'yarn.lock',
-]
-write-changes = true
-
 [tool.ruff]
-line-length = 100
-target-version = 'py312'
-
-[tool.ruff.format]
-quote-style = 'single'
-skip-magic-trailing-comma = true
-
-[tool.ruff.lint]
-fixable = ['ALL']
-ignore = [
-    'ANN401', # `**kwargs: Any` is reasonable
-    'COM812', # Insists on `join([],)` over `join([])`
-    'D101',
-    'D103',
-    'D104',
-    'D107',
-    'EM101',
-    'EM102',
-    'INP001',
-    'ISC001',
-    'PT013',  # `import pytest` would be inconsistent with other imports
-    'Q000',   # ruff format will single quote
-    'Q001',   # ruff format will single quote
-    'Q003',   # ruff format will single quote
-    # N806 tries to lowercase classes; currently ignored on a line-by-line basis
-    'S607',   # Using $PATH is pretty necessary for nvmrc, pyenv, venv, tfenv
-    'SLF001', # Private member access is probably a last resort
-    'TD002',  # The git log records who wrote a TODO line
-    'TD003',  # Don't require issue links
-    'TD004',  # A colon takes up space without really improving readability
-    'TD002',  # The git log records who wrote a TODO line
-    'TD003',  # Don't require issue links
-    'TD004',  # A colon takes up space without really improving readability
-    'TRY002',
-    'TRY003',
-    'Q001',   # Single quote
-]
-select = ['ALL']
-
-[tool.ruff.lint.per-file-ignores]
-'test_*' = [
-    'S101', # assert is good for tests
-]
-
-[tool.ruff.lint.isort]
-split-on-trailing-comma = false
-
-[tool.ruff.lint.pydocstyle]
-convention = 'pep257'
+extend = '.biobuddies/ruff.toml'
 
 [tool.setuptools]
 py-modules = ['helicopyter']
