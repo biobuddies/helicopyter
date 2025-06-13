@@ -31,6 +31,10 @@ ignore = [
 ]
 select = ['ALL']
 
+[lint.flake8-pytest-style]
+parametrize-values-row-type = 'tuple'
+parametrize-values-type = 'tuple'
+
 [lint.isort]
 split-on-trailing-comma = false
 
