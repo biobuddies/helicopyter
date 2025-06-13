@@ -184,6 +184,8 @@ pluggy==1.5.0
     # via pytest
 pre-commit==4.2.0
     # via helicopyter (pyproject.toml)
+pre-commit-hooks==5.0.0
+    # via helicopyter (pyproject.toml)
 prompt-toolkit==3.0.51
     # via ipython
 ptyprocess==0.7.0
@@ -247,6 +249,10 @@ rich==14.0.0
     # via
     #   cookiecutter
     #   twine
+ruamel-yaml==0.18.14
+    # via pre-commit-hooks
+ruamel-yaml-clib==0.2.12
+    # via ruamel-yaml
 ruff==0.11.7
     # via helicopyter (pyproject.toml)
 rust-just==1.40.0

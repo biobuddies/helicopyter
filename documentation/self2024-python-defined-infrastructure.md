@@ -77,7 +77,7 @@ https://github.com/biobuddies/helicopyter/blob/main/deploys/allowedflare/terrafo
 - id: dot-yaml
   description: Require four letter suffix http://www.yaml.org/faq.html
   entry: dot-yaml
-  files: .*\.yml$
+  files: .*\.yml$  # noqa:typos
   language: fail
   name: dot-yaml
 

@@ -36,6 +36,7 @@ precommit = [
     'hadolint-py @ git+https://github.com/AleksaC/hadolint-py.git',
     'mypy',
     'pre-commit',
+    'pre-commit-hooks',
     'pytest',
     'pytest-cov',
     'ruff',

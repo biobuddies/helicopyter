@@ -41,7 +41,7 @@ split-on-trailing-comma = false
 [lint.per-file-ignores]
 'test_*' = [
     'PT013',   # `import pytest` would be inconsistent with other imports
-    'N802',    # Tests function names can match class names
+    'N802',    # Test functions can match class names
     'PLR2004', # Tests can have magic values
     'PLR6301', # Test classes can ignore self
     'S101',    # Tests can have assertions
