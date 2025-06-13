@@ -108,7 +108,7 @@ Prefer multiple, specific variable names over a general variable name with shift
 Allow the jump-to-definition features of editors to find the good default values you have chosen.
 
 ### 'off' sentinel value
-For loosely coupled systems, support a sentinel value of 'off', such as `CODENAME_OTHER_SERVICE_URL=off`. (Are there similar existing conventions? If not perhaps there's an opportunity to register the off URI schema with the IANA.) 
+For loosely coupled systems, support a sentinel value of 'off', such as `CODENAME_OTHER_SERVICE_URL=off`. (Are there similar existing conventions? If not perhaps there's an opportunity to register the off URI schema with the IANA.)
 
 ### Assign unique port numbers
 This allows multiple codenames to run concurrently, such as in the `local` developer laptop environment. For easy debugging, use the unique port number as much as possible. For a webserver, this probably means using it both inside and outside the container, only proxying from/to 443 at the TLS-terminating load balancer.

@@ -136,7 +136,14 @@
 
 - id: trailing-whitespace-fixer
   entry: trailing-whitespace-fixer
-  exclude: ^\.github/pull_request_template\.md$
+  exclude: |
+      (?x)^(
+          README\.md
+          |\.github/pull_request_template\.md
+          |\.gitignore
+          |documentation/djangocon-us-2024\.md
+          |documentation/self2024-python-defined-infrastructure\.md
+      )$
   language: system
   name: trailing-whitespace-fixer
   types:
@@ -151,8 +158,7 @@
   # Then, files copied by cookiecutter
   exclude: |
       (?x)^(
-          |documentation/self2024-python-defined-infrastructure\.md
-          |\.biobuddies/.+
+          \.biobuddies/.+
           |\.github/pull_request_template.md
           |\.editorconfig
           |\.prettierrc.toml
