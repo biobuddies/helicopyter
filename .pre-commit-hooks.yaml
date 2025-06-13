@@ -4,39 +4,6 @@
   language: system
   name: actionlint
 
-# Replace with typos
-- id: codespell
-  # Hook users will inherit this ignore and be able to define their own in the
-  # `[tool.codespell]` section of their `pyproject.toml`
-  entry: codespell --check-filenames --ignore-words-list READYness --write-changes
-  language: system
-  name: codespell
-  exclude: |
-      (?x)^(
-          package-lock\.json
-          |documentation/self2024-python-defined-infrastructure\.md
-          |yarn\.lock
-      )$
-  types:
-      - text
-
-# Replace with typos
-- id: codespell-complete
-  entry: >
-      codespell --builtin clear,en-GB_to_en-US,informal,name,rare,usage --check-filenames
-      --dictionary .biobuddies/dictionary.txt --ignore-words-list READYness --write-changes
-  language: system
-  name: codespell-complete
-  exclude: |
-      (?x)^(
-          \.pre-commit-hooks\.yaml
-          |documentation/self2024-python-defined-infrastructure\.md
-          |package-lock\.json
-          |yarn\.lock
-      )$
-  types:
-      - text
-
 - id: cookiecutter
   # Allow overwriting with . to test local changes
   args:
@@ -76,6 +43,13 @@
   files: .*\.yml$ # noqa:typos
   language: fail
   name: dot-yaml
+
+- id: end-of-file-fixer
+  entry: end-of-file-fixer
+  language: system
+  name: end-of-file-fixer
+  types:
+      - text
 
 - id: hadolint
   entry: hadolint
@@ -160,7 +134,14 @@
   types:
       - shell
 
-# Hopefully typos can do micro to mu and take over from codespell
+- id: trailing-whitespace-fixer
+  entry: trailing-whitespace-fixer
+  exclude: ^\.github/pull_request_template\.md$
+  language: system
+  name: trailing-whitespace-fixer
+  types:
+      - text
+
 - id: typos
   args:
       - --config
@@ -170,7 +151,6 @@
   # Then, files copied by cookiecutter
   exclude: |
       (?x)^(
-          {{cookiecutter.dot}}/\.biobuddies/dictionary.txt
           |documentation/self2024-python-defined-infrastructure\.md
           |\.biobuddies/.+
           |\.github/pull_request_template.md
