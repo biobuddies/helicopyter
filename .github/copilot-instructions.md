@@ -6,9 +6,9 @@ Prefer `python -m package.module` to `python package/module.py` to avoid surpris
 imports. Prefer modern Python 3 idioms, like `from pathlib import Path; Path('a') / 'b'` instead of
 `from os import path; os.path.join('a', 'b')`.
 
-Run `just pcm file0 file1` to autoformat and lint, or approximate with 4 space indentations, single
-quotes, and 100 character lines.
+Run `just pcm --files file0 file1` to autoformat and lint, or approximate with 4 space
+indentations, single quotes, and 100 character lines.
 
-Use git history to understand design choices, variance, and timing. Follow the Rule of Three for
-writing new abstractions. Comment `# SAMEAS other/file.py:123` when there are two exact or nearly
-exact copies.
+Use git history to understand design choices, authorship, and timing. Follow the Rule of Three for
+writing new abstractions. Comment `# SAMEAS other/file.py:123` when there are two exact, or nearly
+exact, copies.

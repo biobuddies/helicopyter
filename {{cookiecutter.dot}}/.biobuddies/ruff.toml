@@ -20,9 +20,9 @@ ignore = [
     # Demystify magic values with good variable names, comments, or other context. Follow
     # Rule Of Three for when to abstract.
     'PLR2004',
-    'Q000',   # ruff format will single quote
-    'Q001',   # ruff format will single quote
-    'Q003',   # ruff format will single quote
+    'Q000',    # ruff format will single quote
+    'Q001',    # ruff format will single quote
+    'Q003',    # ruff format will single quote
     # N806 tries to lowercase classes; currently ignored on a line-by-line basis
     'S607',   # Using $PATH is pretty necessary for nvmrc, pyenv, venv, tfenv
     'SLF001', # Private member access is probably a last resort
