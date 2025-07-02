@@ -233,30 +233,27 @@ Files like .python-version will be ignored'
 asdf is a version manager for node, tenv (terraform, tofu), uv (python), and more'
     fi
 
-    [[ $(git config --global advice.skippedCherryPicks) == false ]] \
-        || echo 'WARNING: git advice.skippedCherryPicks != false
-This reduces noise when pull requests are squashed on the server side'
-    [[ $(git config --global core.commentChar) == ';' ]] \
-        || echo 'WARNING: git core.commentChar != ;
-This allows # hash character to be used for Markdown headers'
-    [[ $(git config --global diff.colormoved) == zebra ]] \
-        || echo 'WARNING: git diff.colormoved != zebra
-This distinguishes moved lines from added and removed lines'
-    [[ $(git config --global user.name) ]] \
-        || echo 'ERROR: git user.name missing
-Inconsistency breaks reports like git shortlog'
-    [[ $(git config --global user.email) ]] \
-        || echo 'ERROR: git user.email missing
-Inconsistency breaks reports like git shortlog'
-    [[ $(git config --global pull.rebase) == true ]] \
-        || echo 'WARNING: git pull.rebase != true
-Always be rebasing'
-    [[ $(git config --global push.default) == current ]] \
-        || echo 'WARNING: git push.default != current
-Use feature branches with "GitHub Flow"'
-    [[ $(git config --global rebase.autosquash) == true ]] \
-        || echo 'WARNING: git rebase.autosquash != true
-Act on "fixup!" and "squash!" commit title prefixes'
+    while read -r line; do
+        read -r key expected level message <<< "$line"
+        if [[ $expected == "__PRESENT__" ]]; then
+            [[ $(git config --global "$key") ]] \
+                || echo "$level: git $key missing
+$message"
+        else
+            [[ $(git config --global "$key") == "$expected" ]] \
+                || echo "$level: git $key != $expected
+$message"
+        fi
+    done << 'EOF'
+advice.skippedCherryPicks false WARNING This reduces noise when pull requests are squashed on the server side
+core.commentChar ; WARNING This allows # hash character to be used for Markdown headers
+diff.colormoved zebra WARNING This distinguishes moved lines from added and removed lines
+user.name __PRESENT__ ERROR Inconsistency breaks reports like git shortlog
+user.email __PRESENT__ ERROR Inconsistency breaks reports like git shortlog
+pull.rebase true WARNING Always be rebasing
+push.default current WARNING Use feature branches with "GitHub Flow"
+rebase.autosquash true WARNING Act on "fixup!" and "squash!" commit title prefixes
+EOF
     if [[ $OPSY == Darwin ]]; then
         if [[ $(command -v brew) ]]; then
             installed_brews="$(brew list)"

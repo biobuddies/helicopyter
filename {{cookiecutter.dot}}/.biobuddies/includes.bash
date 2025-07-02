@@ -14,7 +14,9 @@ BASH_MAJOR_VERSION=$(echo "$BASH_VERSION" | sed -E 's/^([^.]+).+/\1/')
 OPSY=$(uname -s)
 export OPSY
 
-TF_PLUGIN_CACHE_DIR="$HOME/.terraform.d/plugin-cache"
+# Terraform documenation mentions ~/.terraform.d/plugin-cache but prioritizing 
+# similarity to pre-commit and uv instead.
+TF_PLUGIN_CACHE_DIR=~/.cache/terraform
 export TF_PLUGIN_CACHE_DIR
 mkdir -p "$TF_PLUGIN_CACHE_DIR"
 
@@ -139,7 +141,7 @@ a() {
         pathver python .python-version
     elif [[ -d conda ]]; then
         # shellcheck disable=SC1091
-        source "$HOME/miniconda3/etc/profile.d/conda.sh"
+        source ~/miniconda3/etc/profile.d/conda.sh
         conda activate "$(basename "$PWD")"
         pathver python .python-version
     fi
@@ -215,78 +217,76 @@ dcu() {
     docker compose up "$@"
 }
 
+expected_git_configuration="
+advice.skippedCherryPicks=false Reduces noise when pull requests are squashed on the server side
+core.commentChar=; Allows # hash character to be used for Markdown headers
+diff.colormoved=zebra Distinguishes moved lines from added and removed lines
+init.defaultBranch=main New standard value skips long explanation
+pull.rebase=true Always be rebasing
+push.default=current Use feature branches with \"GitHub Flow\"
+rebase.autosquash=true Act on \"fixup\!\" and \"squash\!\" commit title prefixes
+user.email=${INSH_EMAIL:-\$INSH_EMAIL} Inconsistency breaks reports like git shortlog
+user.name=${INSH_NAME:-\$INSH_NAME} Inconsistency breaks reports like git shortlog
+"
+
 devready() {
     : 'DEVelopment READYness check'
     if [[ $(command -v asdf) ]]; then
         grep -qE 'legacy_version_file.*=.*yes' ~/.asdfrc 2>/dev/null \
-            || echo 'WARNING: legacy_version_file != yes
+            || echo 'TODO: legacy_version_file != yes
 Files like .python-version will be ignored'
         local installed_asdf_plugins
         installed_asdf_plugins=$(asdf plugin list 2>/dev/null)
         for plugin in $ASDF_PLUGINS; do
             if [[ $installed_asdf_plugins != *$plugin* ]]; then
-                echo "WARNING: $plugin plugin for asdf not added"
+                echo "TODO: $plugin plugin for asdf not added"
             fi
         done
     else
-        echo 'WARNING: asdf not installed
+        echo 'TODO: asdf not installed
 asdf is a version manager for node, tenv (terraform, tofu), uv (python), and more'
     fi
 
-    [[ $(git config --global advice.skippedCherryPicks) == false ]] \
-        || echo 'WARNING: git advice.skippedCherryPicks != false
-This reduces noise when pull requests are squashed on the server side'
-    [[ $(git config --global core.commentChar) == ';' ]] \
-        || echo 'WARNING: git core.commentChar != ;
-This allows # hash character to be used for Markdown headers'
-    [[ $(git config --global diff.colormoved) == zebra ]] \
-        || echo 'WARNING: git diff.colormoved != zebra
-This distinguishes moved lines from added and removed lines'
-    [[ $(git config --global user.name) ]] \
-        || echo 'ERROR: git user.name missing
-Inconsistency breaks reports like git shortlog'
-    [[ $(git config --global user.email) ]] \
-        || echo 'ERROR: git user.email missing
-Inconsistency breaks reports like git shortlog'
-    [[ $(git config --global pull.rebase) == true ]] \
-        || echo 'WARNING: git pull.rebase != true
-Always be rebasing'
-    [[ $(git config --global push.default) == current ]] \
-        || echo 'WARNING: git push.default != current
-Use feature branches with "GitHub Flow"'
-    [[ $(git config --global rebase.autosquash) == true ]] \
-        || echo 'WARNING: git rebase.autosquash != true
-Act on "fixup!" and "squash!" commit title prefixes'
+    for line in $(
+        comm -13i <(git config --global --list | sort) <(echo "$expected_git_configuration" | cut -f 1 -d ' ')
+    ); do
+        identifier=${line/=}
+        echo -n "TODO: git "
+        echo "$expected_git_configuration" | sed -n /${line/=*}/'{s/=/ != /; p;}'
+    done
+    
     if [[ $OPSY == Darwin ]]; then
         if [[ $(command -v brew) ]]; then
             installed_brews="$(brew list)"
             for brew in $BRWS; do
                 if [[ $installed_brews != *$brew* ]]; then
-                    echo "WARNING: Homebrew package $brew not installed"
+                    echo "TODO: Homebrew package $brew not installed"
                 fi
             done
         else
-            echo WARNING: Homebrew not installed
+            echo ERROR: Homebrew not installed
         fi
         [[ $BASH_MAJOR_VERSION -gt 3 ]] \
-            || echo "WARNING: Very old BASH version $BASH_VERSION"
+            || echo "TODO: Very old BASH version $BASH_VERSION"
         grep --fixed-strings --no-messages --quiet .DS_Store ~/.config/git/ignore \
-            || echo WARNING: .DS_Store files not globally git ignored
+            || echo TODO: .DS_Store files not globally git ignored
         [[ $(defaults read NSGlobalDomain ApplePressAndHoldEnabled) == '0' ]] \
-            || echo WARNING: MacOS press and hold enabled
+            || echo TODO: MacOS press and hold enabled
         [[ $(defaults read NSGlobalDomain NSAutomaticPeriodSubstitutionEnabled) == '0' ]] \
-            || echo WARNING: MacOS period substitution enabled
+            || echo TODO: MacOS period substitution enabled
         [[ $(defaults read NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled) == '0' ]] \
-            || echo WARNING: MacOS quote substitution enabled
+            || echo TODO: MacOS quote substitution enabled
     elif [[ $OPSY == Linux ]]; then
+        [[ $USER == root ]] || $(type -p sudo >/dev/null) || \
+            echo ERROR: USER=$USER and sudo missing
         installed_debs="$(dpkg-query -W --showformat='${Package}\n')"
         for deb in $DEBS; do
             if [[ $installed_debs != *$deb* ]]; then
-                echo "WARNING: $deb not installed"
+                echo "TODO: $deb not installed"
             fi
         done
     else
-        echo "WARNING: Unsupported operating system $OPSY"
+        echo "ERROR: Unsupported operating system $OPSY"
     fi
 }
 
@@ -321,19 +321,31 @@ forceready() {
         )"
         eval "$(/opt/homebrew/bin/brew shellenv)"
         # shellcheck disable=SC2086
-        brew install --quiet $BRWS
+        [[ -z ${BRWS-} ]] || brew install --quiet $BRWS
         [[ -f ~/.config/git/ignore ]] || curl --fail --show-error --silent --output ~/.config/git/ignore \
             https://raw.githubusercontent.com/github/gitignore/master/Global/macOS.gitignore
         defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
         defaults write NSGlobalDomain NSAutomaticPeriodSubstitutionEnabled -bool false
         defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
     elif [[ $OPSY == Linux ]]; then
-        [[ $GITHUB_WORKSPACE ]] || sudo apt-get update
-        # shellcheck disable=SC2046,SC2086
-        sudo apt-get install --no-install-recommends --yes $([[ -z $GITHUB_WORKSPACE ]] || echo --dry-run) $DEBS
+        if [[ ${DEBS-} ]]; then
+            if [[ $USER == root ]]; then
+                apt-get update
+                # shellcheck disable=SC2046,SC2086
+                apt-get install --no-install-recommends --yes $DEBS
+            elif $(type -p sudo >/dev/null); then
+                sudo apt-get update
+                # shellcheck disable=SC2046,SC2086
+                sudo apt-get install --no-install-recommends --yes $DEBS
+            else
+                echo ERROR: USER=$USER and sudo missing
+                return 1
+            fi
+        fi
         [[ -x ~/.local/bin/asdf ]] || curl --fail --location --show-error --silent $asdf_url \
             | tar -xzC ~/.local/bin
         if ! asdf --version >/dev/null; then
+            echo ERROR: asdf installation failed
             echo "PATH=$PATH"
             return 1
         fi
@@ -354,28 +366,16 @@ forceready() {
     ! [[ -f .terraform-version ]] || tenv terraform install
     ! [[ -f .tofu-version ]] || tenv opentofu install
 
-    git config --global advice.skippedCherryPicks false
-    git config --global core.commentChar ';'
-    git config --global diff.colormoved zebra
-    if [[ $INSH_NAME ]]; then
-        git config --global user.name "$INSH_NAME"
-    elif [[ $GITHUB_WORKSPACE ]]; then
-        :
-    else
-        echo 'WARNING: Not setting user.name for git. Run:
+    eval $(
+        echo "$expected_git_configuration" \
+            | sed -E '/\$/d; s/^([^=]+)=([^ ]+).*/git config --global \1 "\2"; /'
+    )
+    [[ ${INSH_NAME-} || ${GITHUB_WORKSPACE-} || $USER == root ]] \
+        || echo 'WARNING: Not setting git user.name. Run:
 export INSH_NAME="Your Name"; forceready'
-    fi
-    if [[ $INSH_EMAIL ]]; then
-        git config --global user.email "$INSH_EMAIL"
-    elif [[ $GITHUB_WORKSPACE ]]; then
-        :
-    else
-        echo 'WARNING: Not setting user.email for git. Run:
+    [[ ${INSH_EMAIL-} || ${GITHUB_WORKSPACE-} || $USER == root ]] \
+        || echo 'WARNING: Not setting git user.email. Run:
 export INSH_EMAIL=youremail@yourdomain.tld; forceready'
-    fi
-    git config --global pull.rebase true
-    git config --global push.default current
-    git config --global rebase.autosquash true
 
     asdf current
     # might be nice to show tofu, python, terraform, versions like calling pathver
@@ -441,8 +441,7 @@ hti() {
     : 'Helper for Terraform Init and synth'
     local cona="${1?:Please provide a code name as the first argument}"
     shift
-    ${INSH_TF:-terraform} -chdir="deploys/$cona/terraform" init "$@" \
-        && hs "$cona"
+    ${INSH_TF:-terraform} -chdir="deploys/$cona/terraform" init "$@"
 }
 
 htp() {

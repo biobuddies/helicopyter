@@ -17,6 +17,9 @@ ignore = [
     'EM101',  # Simple code is more important than simple tracebacks
     'EM102',  # Simple code is more important than simple tracebacks
     'INP001',
+    # Demystify magic values with good variable names, comments, or other context. Follow
+    # Rule Of Three for when to abstract.
+    'PLR2004',
     'Q000',   # ruff format will single quote
     'Q001',   # ruff format will single quote
     'Q003',   # ruff format will single quote
