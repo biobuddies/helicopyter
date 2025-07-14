@@ -142,7 +142,7 @@ a() {
         source .venv/bin/activate
         pathver python .python-version
     elif [[ -d conda ]]; then
-        # shellcheck disable=SC1091
+        # shellcheck disable=SC1090
         source ~/miniconda3/etc/profile.d/conda.sh
         conda activate "$(basename "$PWD")"
         pathver python .python-version
@@ -252,9 +252,8 @@ asdf is a version manager for node, tenv (terraform, tofu), uv (python), and mor
     for line in $(
         comm -13i <(git config --global --list | sort) <(echo "$expected_git_configuration" | cut -f 1 -d ' ')
     ); do
-        identifier=${line/=/}
         echo -n "TODO: git config --global "
-        echo "$expected_git_configuration" | sed -n /${line/=*/}/'{s/=/ /; p;}'
+        echo "$expected_git_configuration" | sed -n "/${line/=*/}/{s/=/ /; p;}"
     done
 
     if [[ $OPSY == Darwin ]]; then
@@ -368,6 +367,8 @@ forceready() {
     ! [[ -f .terraform-version ]] || tenv terraform install
     ! [[ -f .tofu-version ]] || tenv opentofu install
 
+    # intentional word splitting
+    # shellcheck disable=SC2046
     eval $(
         echo "$expected_git_configuration" \
             | sed -E '/\$/d; s/^([^=]+)=([^ ]+).*/git config --global \1 "\2"; /'
