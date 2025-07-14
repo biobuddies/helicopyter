@@ -277,10 +277,10 @@ asdf is a version manager for node, tenv (terraform, tofu), uv (python), and mor
         [[ $(defaults read NSGlobalDomain NSAutomaticPeriodSubstitutionEnabled) == '0' ]] \
             || echo TODO: Turn off MacOS period substitution
         [[ $(defaults read NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled) == '0' ]] \
-            || echo TODO: Trun off MacOS quote substitution
+            || echo TODO: Turn off MacOS quote substitution
     elif [[ $OPSY == Linux ]]; then
-        [[ $USER == root ]] || $(type -p sudo >/dev/null) \
-            || echo ERROR: USER=$USER and sudo missing
+        [[ $USER == root ]] || type -p sudo >/dev/null \
+            || echo "ERROR: USER=$USER and sudo missing"
         installed_debs="$(dpkg-query -W --showformat='${Package}\n')"
         for deb in $DEBS; do
             if [[ $installed_debs != *$deb* ]]; then
@@ -335,12 +335,12 @@ forceready() {
                 apt-get update
                 # shellcheck disable=SC2046,SC2086
                 apt-get install --no-install-recommends --yes $DEBS
-            elif $(type -p sudo >/dev/null); then
+            elif type -p sudo >/dev/null; then
                 sudo apt-get update
                 # shellcheck disable=SC2046,SC2086
                 sudo apt-get install --no-install-recommends --yes $DEBS
             else
-                echo ERROR: USER=$USER and sudo missing
+                "echo ERROR: USER=$USER and sudo missing"
                 return 1
             fi
         fi

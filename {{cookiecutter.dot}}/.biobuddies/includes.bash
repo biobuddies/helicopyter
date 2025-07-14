@@ -279,7 +279,7 @@ asdf is a version manager for node, tenv (terraform, tofu), uv (python), and mor
         [[ $(defaults read NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled) == '0' ]] \
             || echo TODO: Turn off MacOS quote substitution
     elif [[ $OPSY == Linux ]]; then
-        [[ $USER == root ]] || $(type -p sudo >/dev/null) \
+        [[ $USER == root ]] || type -p sudo >/dev/null \
             || echo "ERROR: USER=$USER and sudo missing"
         installed_debs="$(dpkg-query -W --showformat='${Package}\n')"
         for deb in $DEBS; do
@@ -335,7 +335,7 @@ forceready() {
                 apt-get update
                 # shellcheck disable=SC2046,SC2086
                 apt-get install --no-install-recommends --yes $DEBS
-            elif $(type -p sudo >/dev/null); then
+            elif type -p sudo >/dev/null; then
                 sudo apt-get update
                 # shellcheck disable=SC2046,SC2086
                 sudo apt-get install --no-install-recommends --yes $DEBS
