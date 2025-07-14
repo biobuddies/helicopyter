@@ -1,5 +1,7 @@
 # shellcheck shell=bash
 
+# TODO alternate implementation using /proc/$$/cmdline for minimal Docker images
+# need to keep something like this for MacOS though
 shell=$(ps -p $$ -o 'comm=')
 [[ $shell == *bash ]] || cat <<EOD
 WARNING: includes.bash has only been tested with, and linted for, BASH. You are running $shell.
@@ -14,7 +16,7 @@ BASH_MAJOR_VERSION=$(echo "$BASH_VERSION" | sed -E 's/^([^.]+).+/\1/')
 OPSY=$(uname -s)
 export OPSY
 
-# Terraform documenation mentions ~/.terraform.d/plugin-cache but prioritizing
+# Terraform documentation mentions ~/.terraform.d/plugin-cache but prioritizing
 # similarity to pre-commit and uv instead.
 TF_PLUGIN_CACHE_DIR=~/.cache/terraform
 export TF_PLUGIN_CACHE_DIR
@@ -233,17 +235,17 @@ devready() {
     : 'DEVelopment READYness check'
     if [[ $(command -v asdf) ]]; then
         grep -qE 'legacy_version_file.*=.*yes' ~/.asdfrc 2>/dev/null \
-            || echo 'TODO: legacy_version_file != yes
+            || echo 'TODO: legacy_version_file = yes
 Files like .python-version will be ignored'
         local installed_asdf_plugins
         installed_asdf_plugins=$(asdf plugin list 2>/dev/null)
         for plugin in $ASDF_PLUGINS; do
             if [[ $installed_asdf_plugins != *$plugin* ]]; then
-                echo "TODO: $plugin plugin for asdf not added"
+                echo "TODO: asdf plugin add $plugin"
             fi
         done
     else
-        echo 'TODO: asdf not installed
+        echo 'TODO: install asdf
 asdf is a version manager for node, tenv (terraform, tofu), uv (python), and more'
     fi
 
@@ -251,8 +253,8 @@ asdf is a version manager for node, tenv (terraform, tofu), uv (python), and mor
         comm -13i <(git config --global --list | sort) <(echo "$expected_git_configuration" | cut -f 1 -d ' ')
     ); do
         identifier=${line/=/}
-        echo -n "TODO: git "
-        echo "$expected_git_configuration" | sed -n /${line/=*/}/'{s/=/ != /; p;}'
+        echo -n "TODO: git config --global "
+        echo "$expected_git_configuration" | sed -n /${line/=*/}/'{s/=/ /; p;}'
     done
 
     if [[ $OPSY == Darwin ]]; then
@@ -260,29 +262,29 @@ asdf is a version manager for node, tenv (terraform, tofu), uv (python), and mor
             installed_brews="$(brew list)"
             for brew in $BRWS; do
                 if [[ $installed_brews != *$brew* ]]; then
-                    echo "TODO: Homebrew package $brew not installed"
+                    echo "TODO: brew install $brew"
                 fi
             done
         else
             echo ERROR: Homebrew not installed
         fi
         [[ $BASH_MAJOR_VERSION -gt 3 ]] \
-            || echo "TODO: Very old BASH version $BASH_VERSION"
+            || echo "TODO: Upgrade bash beyond $BASH_VERSION"
         grep --fixed-strings --no-messages --quiet .DS_Store ~/.config/git/ignore \
-            || echo TODO: .DS_Store files not globally git ignored
+            || echo TODO: git ignore .DS_Store files
         [[ $(defaults read NSGlobalDomain ApplePressAndHoldEnabled) == '0' ]] \
-            || echo TODO: MacOS press and hold enabled
+            || echo TODO: Turn off MacOS press and hold
         [[ $(defaults read NSGlobalDomain NSAutomaticPeriodSubstitutionEnabled) == '0' ]] \
-            || echo TODO: MacOS period substitution enabled
+            || echo TODO: Turn off MacOS period substitution
         [[ $(defaults read NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled) == '0' ]] \
-            || echo TODO: MacOS quote substitution enabled
+            || echo TODO: Trun off MacOS quote substitution
     elif [[ $OPSY == Linux ]]; then
         [[ $USER == root ]] || $(type -p sudo >/dev/null) \
             || echo ERROR: USER=$USER and sudo missing
         installed_debs="$(dpkg-query -W --showformat='${Package}\n')"
         for deb in $DEBS; do
             if [[ $installed_debs != *$deb* ]]; then
-                echo "TODO: $deb not installed"
+                echo "TODO: apt-get install $deb"
             fi
         done
     else
