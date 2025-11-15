@@ -28,11 +28,11 @@ class HeliStack(TerraformStack):
         self.cona = cona
         self._scopes: dict[str, Construct] = {}
 
-    def _allocate_logical_id(self, element: Node | TerraformElement) -> str:
-        if isinstance(element, Node):
+    def _allocate_logical_id(self, tf_element: Node | TerraformElement) -> str:
+        if isinstance(tf_element, Node):
             # Mostly for mypy. Patches to support AWS CDK welcome.
             raise TypeError('AWS CDK unsupported; please use CDKTF')
-        return element.node.id
+        return tf_element.node.id
 
     def override(self, **kwargs: Any) -> None:
         """Call add_override for each keyword argument."""
@@ -125,8 +125,8 @@ def multisynth(
             f'deploys/{cona}/terraform/main.tf{"" if hashicorp_configuration_language else ".json"}'
         )
         print(f'Generating {relative_path}')
+        module_path = f'deploys.{cona}.terraform.main'
         try:
-            module_path = f'deploys.{cona}.terraform.main'
             main = import_module(module_path)
             stack = main.synth.__annotations__['stack'](cona)
             main.synth(stack)
@@ -154,11 +154,11 @@ def multisynth(
 
 
 class Parameters(Tap):
-    conas: list[str]  # space-separated COdeNAmes
+    conas: list[str]  # pyright: ignore[reportUninitializedInstanceVariable]
     directory: Path | None = None
     format_with: str = 'terraform'
     hashicorp_configuration_language: bool = True
 
     def configure(self) -> None:  # noqa: D102
-        self.add_argument('conas')  # Positional argument
+        self.add_argument('conas', help='space-separated COdeNAmes')
         self.add_argument('-C', '--directory')  # Like make and tar

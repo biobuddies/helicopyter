@@ -10,8 +10,10 @@ from typing import TextIO
 
 import setuptools
 from packaging.metadata import Metadata
-from setuptools._core_metadata import _write_requirements  # type: ignore[import-not-found]
-from setuptools.build_meta import *  # noqa: F403
+from setuptools._core_metadata import (  # type: ignore[import-not-found]  # pyright: ignore[reportMissingImports]
+    _write_requirements,  # pyright: ignore[reportUnknownVariableType]
+)
+from setuptools.build_meta import *  # noqa: F403  # pyright: ignore[reportWildcardImportFromLibrary]
 
 
 def write_pypi_compatible_requirements(self: Metadata, final_file: TextIO) -> None:
@@ -27,4 +29,4 @@ def write_pypi_compatible_requirements(self: Metadata, final_file: TextIO) -> No
         final_file.write(final_line)
 
 
-setuptools._core_metadata._write_requirements = write_pypi_compatible_requirements
+setuptools._core_metadata._write_requirements = write_pypi_compatible_requirements  # pyright: ignore[reportUnknownMemberType,reportAttributeAccessIssue]

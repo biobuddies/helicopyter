@@ -15,6 +15,13 @@
   stages:
       - manual # because Internet
 
+- id: basedpyright
+  entry: npx basedpyright --level error
+  language: system
+  name: basedpyright
+  types:
+      - python
+
 - id: django-upgrade
   entry: django-upgrade
   language: system

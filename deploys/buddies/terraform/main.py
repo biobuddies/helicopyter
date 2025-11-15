@@ -6,7 +6,9 @@ from stacks.base import BaseStack
 
 try:
     # Full membership not checked into the public repository
-    from deploys.buddies.members import mapping  # type: ignore[import-not-found]
+    from deploys.buddies.members import (  # type: ignore[import-not-found]  # pyright: ignore[reportMissingImports]
+        mapping,
+    )
 except ImportError:
     # Example contents for GitHub Actions and readers
     mapping = {'christopher.covington': ('covracer', 'admin')}
