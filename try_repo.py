@@ -44,6 +44,11 @@ def try_repo(args: argparse.Namespace) -> int:
                             {
                                 'id': hook['id'],
                                 **({'args': ['.']} if hook['id'] == 'cookiecutter' else {}),
+                                **(
+                                    {'exclude': r'\.gitignore$'}
+                                    if hook['id'] == 'end-of-file-fixer'
+                                    else {}
+                                ),
                             }
                             for hook in manifest
                         ],
