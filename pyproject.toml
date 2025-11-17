@@ -43,14 +43,18 @@ precommit = [
     'rust-just',
     'shellcheck-py',
     'shfmt-py',
-    'typos',
     'types-setuptools',
+    'typos',
     'validate-pyproject[all]',
     'yamllint',
 ]
 
 [project.urls]
 source = 'https://github.com/biobuddies/helicopyter'
+
+[tool.basedpyright]
+failOnWarnings = false
+reportUnusedCallResult = false # _ = function() is silly
 
 [tool.ruff]
 extend = '.biobuddies/ruff.toml'
