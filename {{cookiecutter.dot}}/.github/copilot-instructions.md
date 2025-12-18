@@ -1,4 +1,4 @@
-Make the `git diff` great. Omit explanations unless specifically requested.
+Make the `git show` great. Omit explanations unless specifically requested.
 
 ## Great Style
 Your audience is proficient Python developers with limited time. Every character counts.
@@ -15,8 +15,6 @@ like `index` to abbreviations like `i`.
 Run `just pcm --files file0 file1` to autoformat and lint, or approximate with 4 space
 indentations, single quotes, and 100 character lines.
 
-Use filtered git history to understand design choices, authorship, and timing.
-
 Follow the "Rule of Three" or "Write Everything Twice". Use literals directly, instead of
 variables-used-once. Comment `# dup other/file.py:123` when you introduce or notice duplication.
 
@@ -30,3 +28,16 @@ code.
 
 Prefer `python -m package.module` to `python package/module.py` to avoid surprises with relative
 imports. Omit `#!` shebang lines.
+
+## Great Git
+Avoid `git add --all` to focus commits and prevent accidentally including temporary files.
+
+Branches should almost always track `origin/main`. Create new branches with `git checkout -b branch-name origin/main` (or set upstream for existing branches with `git branch --set-upstream-to=origin/main`).
+
+Use `git commit -a --amend` and squash/fixup to iterate on commits without causing a train-of-thought git history.
+
+When rebasing, avoid interactive commands as stdin might be wired up wrong.
+
+Use `gh` command line interface (usually installed by github-cli asdf plugin) for GitHub operations.
+
+Use filtered git history to understand design choices, authorship, and timing.

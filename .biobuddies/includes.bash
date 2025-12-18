@@ -293,9 +293,10 @@ asdf is a version manager for node, tenv (terraform, tofu), uv (python), and mor
 
 ups() {
     : 'Uv venv and Pip Sync and similar for npm'
-    [[ ! -f package-lock.json ]] || npm install --frozen-lockfile
+    [[ ! -f package-lock.json ]] || npm clean-install
     [[ -f requirements.txt ]] || return
-    uv venv && uv pip sync "$@" requirements.txt
+    # https://github.com/astral-sh/uv/pull/14309
+    uv venv --clear --no-progress && uv pip sync --no-progress "$@" requirements.txt
 }
 
 asdf_url=https://github.com/asdf-vm/asdf/releases/download/v0.16.7/asdf-v0.16.7-linux-amd64.tar.gz

@@ -45,6 +45,7 @@ precommit = [
     'shfmt-py',
     'types-setuptools',
     'typos',
+    # uv from asdf
     'validate-pyproject[all]',
     'yamllint',
 ]
