@@ -1,4 +1,4 @@
-set export
+set export := true
 set shell := ['bash', '-euo', 'pipefail', '-c']
 
 # Pre-installed on Sonoma:
@@ -161,7 +161,7 @@ update:
 
 # Uv venv and Pip Sync
 ups *args:
-    uv venv && uv pip sync {{args}} requirements.txt
+    uv venv --clear --no-progress && uv pip sync --no-progress {{args}} requirements.txt
 
 # Helicopyter Synth
 hs cona='all':
