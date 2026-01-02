@@ -4,78 +4,61 @@ set shell := ['bash', '-euo', 'pipefail', '-c']
 # Pre-installed on Sonoma:
 #   * Skip upgrades: host, file, less, ps
 #   * Upgrade: bash, curl, git (may come with xcode)
+
 BRWS := 'asdf bash curl fping git gnu-sed tmux tree'
 DEBS := 'bash bind9-host curl file fping git less procps tmux tree'
+JUST := just_executable()
 OPSY := `uname -s`
 
 # List all recipes
 default:
-    @just --list
-
-# Activate virtual environment after changing directory
-a:
-    #!/usr/bin/env bash
-    echo $SHELL $BASH_VERSION
-    check_conda=$(command -v conda)
-    echo $check_conda
-    [[ $(command -v conda) ]] && conda deactivate
-    might_be_file=$(command -v deactivate)
-    if [[ "${might_be_file}" ]]; then
-        if [[ -f "${might_be_file}" ]]; then
-            source deactivate
-        else
-            deactivate
-        fi
-    fi
-    if [[ -f .venv/bin/activate ]]; then
-        source .venv/bin/activate
-        just pathver python .python-version
-    elif [[ -d conda ]]; then
-        source "$HOME/miniconda3/etc/profile.d/conda.sh"
-        conda activate "$(basename "$PWD")"
-        just pathver python .python-version
-    fi
-    if [[ -f .nvmrc ]]; then
-        just pathver node .nvmrc
-    fi
+    @{{ JUST }} --list
 
 # print PATH and VERsion; optionally assert version file matches
 pathver command version_file="":
     #!/usr/bin/env bash
     # TODO investigate require() instead
-    source=$(type -p "{{command}}")
+    source=$(type -p "{{ command }}")
     if [[ -z $source ]]; then
-        source=$(type "{{command}}")
+        source=$(type "{{ command }}")
     fi
-    actual_version=$("{{command}}" --version 2>&1 | gsed -En 's/(.+ )?(v?[0-9]+\.[0-9]+\.[^ ]+).*/\2/p')
-    echo "$source $actual_version"
-    if [[ -f "{{version_file}}" ]]; then
-        expected_version=$(cat "{{version_file}}")
-        if [[ $actual_version != "$expected_version" ]]; then
-            echo "ERROR: $source version $actual_version does not match {{version_file}} $expected_version"
+    actual=$( "{{ command }}" --version 2>&1 | gsed -En 's/(.+ )?(v?[0-9]+\.[0-9]+\.[^ ]+).*/\2/p')
+    echo "$source $actual"
+    if [[ -f "{{ version_file }}" ]]; then
+        expected=$(cat "{{ version_file }}")
+        if [[ $actual != "$expected" ]]; then
+            echo "ERROR: $source version $actual does not match {{ version_file }} $expected"
             exit 1
         fi
     fi
 
+# BUILD, check, and optionally upload python package with TWINE
+build_twine upload='':
+    bash .biobuddies/includes.bash build_twine {{ upload }}
+
 # Docker Compose Build
 dcb *args:
-    docker compose --progress=plain build {{args}}
+    docker compose --progress=plain build {{ args }}
+
+# Docker Compose Django Manage
+dcdm *args:
+    docker compose exec web python -m manage {{ args }}
 
 # Docker Compose Push
 dcp *args:
-    docker compose push --quiet {{args}}
+    docker compose push --quiet {{ args }}
 
 # Docker Compose Run, respecting docker-compose.yaml port definitions
 dcr *args:
-    docker compose run --quiet-pull --service-ports {{args}}
+    docker compose run --quiet-pull --service-ports {{ args }}
 
 # Docker Compose Shell
 dcs *args:
-    docker compose run "$(just cona)" bash {{args}}
+    docker compose run "$(just cona)" bash {{ args }}
 
 # Docker Compose Up
 dcu *args:
-    docker compose up {{args}}
+    docker compose up {{ args }}
 
 # DEVelopment READYness check
 devready:
@@ -126,78 +109,76 @@ orgn:
 
 # Pre-Commit Run (defaults to modified files)
 pcr *args:
-    {{ \
-        if `just cona` == 'helicopyter' { 'python -m try_repo' } else { 'pre-commit run' } \
-    }} {{args}}
+    {{ if `$JUST cona` == 'helicopyter' { '.venv/bin/python -m try_repo' } else { 'pre-commit run' } }} {{ args }}
 
 # run Pre-Commit on All files
 pca *args:
-    # Seemingly contradicting the help text, experimentation shows hook positional arguments must
-    # come before flags
-    just pcr {{args}} --all-files
+    @# Seemingly contradicting the help text, experimentation shows hook positional arguments must
+    @# come before flags
+    {{ JUST }} pcr {{ args }} --all-files
 
 # run Pre-Commit on All files including Manual stage hooks
 pcam *args:
-    just pca {{args}} --hook-stage manual
+    {{ JUST }} pca {{ args }} --hook-stage manual
 
 # run Pre-Commit on modified files including Manual stage hooks
 pcm *args:
-    just pcr {{args}} --hook-stage manual
+    {{ JUST }} pcr {{ args }} --hook-stage manual
 
 # git PUSH over https
 push *args:
-    git push https://${GITHUB_TOKEN}@github.com/$(just orgn)/$(just cona) {{args}}
+    git push https://${GITHUB_TOKEN}@github.com/$({{ JUST }} orgn)/$({{ JUST }} cona) {{ args }}
 
 # Uv Pip Compile
 upc *args:
     uv pip compile --all-extras --output-file requirements.txt --python-platform linux \
-        pyproject.toml {{ \
-            if path_exists('requirements.in') == 'true' { 'requirements.in' } else { '' } \
-        }} {{args}}
+        pyproject.toml {{ if path_exists('requirements.in') == 'true' { 'requirements.in' } else { '' } }} {{ args }}
 
 # Update asdf .tool-versions
 update:
-    echo -e "glow $(asdf latest glow)\nuv $(asdf latest uv)\ntenv $(asdf latest tenv)" > .tool-versions
+    echo -e "glow $(asdf latest glow)\nuv $(asdf latest uv)\ntenv $(asdf latest tenv)" \
+        > .tool-versions
 
 # Uv venv and Pip Sync
 ups *args:
-    uv venv --clear --no-progress && uv pip sync --no-progress {{args}} requirements.txt
+    uv venv --clear --no-progress && uv pip sync --no-progress {{ args }} requirements.txt
 
 # Helicopyter Synth
 hs cona='all':
-    python -m helicopyter --format_with=${INSH_TF:-terraform} {{cona}}
+    python -m helicopyter --format_with=${INSH_TF:-terraform} {{ cona }}
 
 # Helicopyter synth and Terraform Apply
 hta cona envi *args:
     #!/usr/bin/env bash
-    if [[ "{{envi}}" == "default" ]]; then
+    if [[ "{{ envi }}" == "default" ]]; then
         echo 'The default workspace behaves inconsistently.'
         echo 'If you only have one environment, please name it `prod`.'
         exit 1
     fi
-    just hs {{cona}} \
-        && TF_VAR_giha=$(just giha) TF_VAR_tabr=$(just tabr) TF_WORKSPACE={{envi}} \
-            ${INSH_TF:-terraform} -chdir=deploys/{{cona}}/terraform apply {{args}}
+    {{ JUST }} hs {{ cona }} \
+        && TF_VAR_giha=$({{ JUST }} giha) TF_VAR_tabr=$({{ JUST }} tabr) TF_WORKSPACE={{ envi }} \
+            ${INSH_TF:-terraform} -chdir=deploys/{{ cona }}/terraform apply {{ args }}
 
 # Helper for Terraform Init and synth
 hti cona *args:
-    ${INSH_TF:-terraform} -chdir=deploys/{{cona}}/terraform init {{args}}
-    just hs {{cona}}
+    ${INSH_TF:-terraform} -chdir=deploys/{{ cona }}/terraform init {{ args }}
+    {{ JUST }} hs {{ cona }}
 
 # Helicopyter synth and Terraform Plan
 htp cona envi *args:
     #!/usr/bin/env bash
-    if [[ "{{envi}}" == "default" ]]; then
+    if [[ "{{ envi }}" == "default" ]]; then
         echo 'The default workspace behaves inconsistently.'
         echo 'If you only have one environment, please name it `prod`.'
         exit 1
     fi
-    just hs {{cona}} \
-        && TF_WORKSPACE={{envi}} ${INSH_TF:-terraform} -chdir=deploys/{{cona}}/terraform plan {{args}}
+    {{ JUST }} hs {{ cona }} \
+        && TF_WORKSPACE={{ envi }} ${INSH_TF:-terraform} -chdir=deploys/{{ cona }}/terraform plan \
+        {{ args }}
 
 # Universally Unique IDentifier
 uuid:
-    @echo {{uuid()}}
+    @echo {{ uuid() }}
 
 # SUMMARIZE environment by displaying four letter acronyms
 summarize:
@@ -207,17 +188,17 @@ summarize:
 ghas: summarize
 
 github_reference := env('GITHUB_HEAD_REF', env('GITHUB_REF_NAME', ''))
+
 # print TAg or BRanch or empty string, a four letter acronym
 tabr:
     @# remotes/origin/mybranch -> mybranch
     @# heads/mybranch -> mybranch
     @# tags/v2025.02.03 -> v2025.02.03
     @# heads/mybranch-dirty -> '' #empty string
-    @echo {{ if github_reference == '' { \
-        `git describe --all --dirty --exact-match 2>/dev/null \
-            | sed -En '/-dirty$/ q; s,(remotes/[^/]+|heads|tags)/,,p'` \
-    } else { github_reference } }}
+    @echo {{ if github_reference == '' { `git describe --all --dirty --exact-match 2>/dev/null \
+        | sed -En '/-dirty$/ q; s,(remotes/[^/]+|heads|tags)/,,p'` } else { github_reference } }}
 
 # run TESTs and report uncovered lines
-test:
-    python -m pytest --cov="$(just cona)" --cov-report=term-missing:skip-covered --verbose
+test *cover:
+    .venv/bin/pytest --cov{{ if cover == '' { '' } else { '=' + cover } }} \
+        --cov-report=term-missing:skip-covered --verbose

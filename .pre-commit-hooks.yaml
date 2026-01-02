@@ -8,7 +8,7 @@
   # Allow overwriting with . to test local changes
   args:
       - https://github.com/biobuddies/helicopyter.git
-  entry: cookiecutter --config-file .cookiecutter.yaml --no-input --overwrite-if-exists
+  entry: .venv/bin/cookiecutter --config-file .cookiecutter.yaml --no-input --overwrite-if-exists
   language: system
   name: cookiecutter
   pass_filenames: false
@@ -73,6 +73,13 @@
   # Without this, there can be a useless run with specific deploys/*/terraform/main.py files,
   # followed by the run for all deploys/*/terraform/main.py files (triggered by helicopyter.py)
   require_serial: true
+
+- id: just-fmt
+  entry: just --check --fmt --unstable
+  files: (^|/)justfile$
+  language: system
+  name: just-fmt
+  pass_filenames: false
 
 - id: mailmap
   entry: bash .biobuddies/includes.bash check_mailmap
