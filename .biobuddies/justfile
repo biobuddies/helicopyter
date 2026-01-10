@@ -12,7 +12,7 @@ OPSY := `uname -s`
 
 # List all recipes
 default:
-    @{{ JUST }} --list
+    {{ JUST }} --list
 
 # print PATH and VERsion; optionally assert version file matches
 pathver command version_file="":
@@ -42,7 +42,7 @@ dcb *args:
 
 # Docker Compose Django Manage
 dcdm *args:
-    docker compose exec web python -m manage {{ args }}
+    docker compose exec `{{ JUST }} cona` python -m manage {{ args }}
 
 # Docker Compose Push
 dcp *args:
@@ -54,7 +54,7 @@ dcr *args:
 
 # Docker Compose Shell
 dcs *args:
-    docker compose run "$(just cona)" bash {{ args }}
+    docker compose run `{{ JUST }} cona` bash {{ args }}
 
 # Docker Compose Up
 dcu *args:
@@ -127,7 +127,7 @@ pcm *args:
 
 # git PUSH over https
 push *args:
-    git push https://${GITHUB_TOKEN}@github.com/$({{ JUST }} orgn)/$({{ JUST }} cona) {{ args }}
+    git push https://${GITHUB_TOKEN}@github.com/`{{ JUST }} orgn`/`{{ JUST }} cona` {{ args }}
 
 # Uv Pip Compile
 upc *args:
@@ -136,8 +136,7 @@ upc *args:
 
 # Update asdf .tool-versions
 update:
-    echo -e "glow $(asdf latest glow)\nuv $(asdf latest uv)\ntenv $(asdf latest tenv)" \
-        > .tool-versions
+    echo "uv `asdf latest uv`" > .tool-versions
 
 # Uv venv and Pip Sync
 ups *args:
@@ -156,7 +155,7 @@ hta cona envi *args:
         exit 1
     fi
     {{ JUST }} hs {{ cona }} \
-        && TF_VAR_giha=$({{ JUST }} giha) TF_VAR_tabr=$({{ JUST }} tabr) TF_WORKSPACE={{ envi }} \
+        && TF_VAR_giha=`{{ JUST }} giha` TF_VAR_tabr=`{{ JUST }} tabr` TF_WORKSPACE={{ envi }} \
             ${INSH_TF:-terraform} -chdir=deploys/{{ cona }}/terraform apply {{ args }}
 
 # Helper for Terraform Init and synth

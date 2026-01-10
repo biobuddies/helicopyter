@@ -1,13 +1,11 @@
 {
     "devDependencies": {
-        "basedpyright": "^1.18.2",
-        "cdk8s-cli": "^2.198.227",
-        "prettier": "^3.2.5",
-        "prettier-plugin-toml": "^2.0.1",
-        "wrangler": "^4.11.0"
-    },
-    "scripts": {
-        "prettier": "prettier --write",
-        "wrangler": "wrangler"
+        "basedpyright": "*",
+        "cdk8s-cli": "*",
+        "prettier": "*",
+        "prettier-plugin-jinja-template": "*",
+        "prettier-plugin-organize-attributes": "*",
+        "prettier-plugin-toml": "*",
+        "wrangler": "*"
     }
 }

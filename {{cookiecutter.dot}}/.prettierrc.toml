@@ -1,8 +1,16 @@
 bracketSpacing = false
-plugins = ['prettier-plugin-toml']
-printWidth = 100
+plugins = [
+    'prettier-plugin-jinja-template',
+    'prettier-plugin-organize-attributes',
+    'prettier-plugin-toml',
+]
+printWidth = 100 # Could omit to just use max_line_length from .editorconfig
 semi = false
 singleQuote = true
-tabWidth = 4
-trailingComma = 'all'
-useTabs = false
+jsxSingleQuote = true
+tabWidth = 4 # Could omit to just use indent_size from .editorconfig
+
+[[overrides]]
+files = ["*.j2.html"]
+[overrides.options]
+parser = "jinja-template"

@@ -6,6 +6,7 @@ quote-style = 'single'
 skip-magic-trailing-comma = true
 
 [lint]
+external = ['typos']
 fixable = ['ALL']
 ignore = [
     'ANN401', # `**kwargs: Any` is reasonable
@@ -16,6 +17,7 @@ ignore = [
     'D107',
     'EM101',  # Simple code is more important than simple tracebacks
     'EM102',  # Simple code is more important than simple tracebacks
+    'FIX002', # Don't make the perfect the enemy of the good
     'INP001',
     # Demystify magic values with good variable names, comments, or other context. Follow
     # Rule Of Three for when to abstract.
@@ -42,11 +44,12 @@ parametrize-values-type = 'tuple'
 split-on-trailing-comma = false
 
 [lint.per-file-ignores]
-'test_*' = [
-    'PT013',   # `import pytest` would be inconsistent with other imports
+'**/test*.py' = [
+    'ANN201',  # -> None doesn't improve pytest functions
     'N802',    # Test functions can match class names
     'PLR2004', # Tests can have magic values
     'PLR6301', # Test classes can ignore self
+    'PT013',   # `import pytest` would be inconsistent with other imports
     'S101',    # Tests can have assertions
 ]
 
