@@ -31,7 +31,7 @@ class HeliStack(TerraformStack):
     def _allocate_logical_id(self, tf_element: Node | TerraformElement) -> str:
         if isinstance(tf_element, Node):
             # Mostly for mypy. Patches to support AWS CDK welcome.
-            raise TypeError('AWS CDK unsupported; please use CDKTF')
+            raise TypeError('AWS CDK unsupported; please use CDKTF')  # pragma:no cover
         return tf_element.node.id
 
     def override(self, **kwargs: Any) -> None:
@@ -154,7 +154,7 @@ def multisynth(
 
 
 class Parameters(Tap):
-    conas: list[str]  # pyright: ignore[reportUninitializedInstanceVariable]
+    conas: list[str]  # pyright:ignore[reportUninitializedInstanceVariable]
     directory: Path | None = None
     format_with: str = 'terraform'
     hashicorp_configuration_language: bool = True

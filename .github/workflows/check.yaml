@@ -7,6 +7,7 @@ env:
     CLOUDFLARE_ACCOUNT_ID: 0123456789abcdef0123456789abcdef00
     CLOUDFLARE_ZONE_ID: 0123456789abcdef0123456789abcdef01
     INSH_TF: tofu
+    PATH: .venv/bin:/home/runner/.local/bin:/home/runner/.asdf/shims:/usr/bin:/bin
 jobs:
     check:
         runs-on: ubuntu-latest
@@ -14,27 +15,10 @@ jobs:
             - uses: actions/checkout@v4
             - run: bash .biobuddies/includes.bash forceready
 
-            - run: |
-                  source .biobuddies/includes.bash \
-                  && a \
-                  && just pcam --color always --show-diff-on-failure
-
-            - run: |
-                  source .biobuddies/includes.bash \
-                  && a \
-                  && hti demo \
-                  && tofu -chdir=deploys/demo/terraform validate
-
-            - run: |
-                  source .biobuddies/includes.bash \
-                  && a \
-                  && just test
-
-            - run: |
-                  source .biobuddies/includes.bash \
-                  && a \
-                  && python -m build \
-                  && python -m twine check --strict dist/*
+            - run: .venv/bin/just pcam --color always --show-diff-on-failure
+            - run: .venv/bin/just hti demo && tofu -chdir=deploys/demo/terraform validate
+            - run: .venv/bin/just test
+            - run: .venv/bin/just build_twine
     summarize:
         runs-on: ubuntu-latest
         steps:

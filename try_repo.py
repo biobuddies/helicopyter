@@ -71,4 +71,4 @@ def try_repo(args: argparse.Namespace) -> int:
 pre_commit.main.try_repo = try_repo
 
 if __name__ == '__main__':
-    raise SystemExit(pre_commit.main.main(('try-repo', '.', *argv[1:])))
+    raise SystemExit(pre_commit.main.main(('try-repo', '.', *argv[1:])))  # pragma:no cover

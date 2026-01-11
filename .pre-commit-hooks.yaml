@@ -8,7 +8,7 @@
   # Allow overwriting with . to test local changes
   args:
       - https://github.com/biobuddies/helicopyter.git
-  entry: cookiecutter --config-file .cookiecutter.yaml --no-input --overwrite-if-exists
+  entry: .venv/bin/cookiecutter --config-file .cookiecutter.yaml --no-input --overwrite-if-exists
   language: system
   name: cookiecutter
   pass_filenames: false
@@ -43,14 +43,6 @@
   types:
       - jinja
 
-# Replace with typos
-- id: dot-yaml
-  description: Require four letter suffix http://www.yaml.org/faq.html
-  entry: dot-yaml
-  files: .*\.yml$ # noqa:typos
-  language: fail
-  name: dot-yaml
-
 - id: end-of-file-fixer
   entry: end-of-file-fixer
   language: system
@@ -74,12 +66,20 @@
   # followed by the run for all deploys/*/terraform/main.py files (triggered by helicopyter.py)
   require_serial: true
 
+- id: just-fmt
+  entry: just --check --fmt --unstable
+  files: (^|/)justfile$
+  language: system
+  name: just-fmt
+  pass_filenames: false
+
 - id: mailmap
   entry: bash .biobuddies/includes.bash check_mailmap
   language: system
   name: mailmap
   pass_filenames: false
 
+# Consider basedpyright instead for speed
 - id: mypy
   entry: mypy .
   language: system
@@ -90,17 +90,22 @@
   types:
       - python
 
-# Relies on .prettierrc.toml from cookiecutter
+# Relies on .editorconfig and .prettierrc.toml from cookiecutter
 - id: prettier-write
-  entry: node_modules/.bin/prettier --write
+  entry: npx prettier --write
   exclude: ^deploys/.+/terraform/main.tf.json$
   language: system
   name: prettier-write
   types_or:
+      - html
+      - javascript
       - json
-      - yaml
+      - jsx
+      # not markdown because - over * and too much blank space
       - toml
       - ts
+      - tsx
+      - yaml
 
 # Relies on .biobuddies/ruff.toml from cookiecutter
 - id: ruff-check-fix
@@ -161,12 +166,12 @@
       - --config
       - .biobuddies/typos.toml
   entry: typos --write-changes
-  # First, files that contain misspellings
-  # Then, files copied by cookiecutter
+  # Files copied by cookiecutter
   exclude: |
       (?x)^(
           \.biobuddies/.+
-          |\.github/pull_request_template.md
+          |\.github/copilot-instructions\.md
+          |\.github/pull_request_template\.md
           |\.editorconfig
           |\.prettierrc.toml
           |\.shellcheckrc

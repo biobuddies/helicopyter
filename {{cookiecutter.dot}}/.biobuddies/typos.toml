@@ -1,6 +1,6 @@
 [default]
 locale = 'en-us'
-extend-ignore-re = ['(?Rm)^.+(#|//) *noqa(:typos)?$']
+extend-ignore-re = ['(?Rm)^.*(#|//) *noqa(: *typos)?$']
 
 [default.extend-identifiers]
 'iTerm2' = 'iTerm2'

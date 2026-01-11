@@ -154,17 +154,20 @@ a() {
 }
 
 build_twine() {
-    : 'clean, BUILD, and upload python package with TWINE'
-    if [[ $(git describe --exact --tags) != v20* ]]; then
-        echo 'ERROR: Please tag in the gvcount or yucount format'
-        return 1
+    : 'clean, BUILD, check, and optionally upload python package with TWINE'
+    local upload="${1:-}"
+    if [[ $upload != '' ]]; then
+        if [[ $(git describe --exact-match --tags) != v20* ]]; then
+            echo 'ERROR: Please tag in the gvcount or yucount format'
+            return 1
+        fi
+        if [[ $TWINE_USERNAME != '__token__' || -z $TWINE_PASSWORD ]]; then
+            echo 'ERROR: Please set TWINE_USERNAME=__token__ and TWINE_PASSWORD=...'
+            return 1
+        fi
     fi
-    if [[ $TWINE_USERNAME != '__token__' || -z $TWINE_PASSWORD ]]; then
-        echo 'ERROR: Please set TWINE_USERNAME=__token__ and TWINE_PASSWORD=...'
-        return 1
-    fi
-    [[ -d dist ]] || mkdir dist
-    rm -r dist && python -m build && twine upload dist/*
+    rm -rf dist && .venv/bin/python -m build && .venv/bin/python -m twine check --strict dist/*
+    [[ $upload == '' ]] || .venv/bin/python -m twine upload dist/*
 }
 
 cona() {
@@ -507,7 +510,7 @@ release() {
     count=$(git tag --list "$prefix*" | gsed "s/$prefix//" | sort -r | head -1)
     gh release create "$prefix$(printf '%02d' $((${count:-0} + 1)))" --generate-notes
     git fetch --tags
-    [[ $* == build ]] && build_twine
+    [[ $* == build ]] && build_twine upload
 }
 
 summarize() {
