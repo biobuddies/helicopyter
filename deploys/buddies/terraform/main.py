@@ -11,7 +11,7 @@ try:
     )
 except ImportError:
     # Example contents for GitHub Actions and readers
-    mapping = {'christopher.covington': ('covracer', 'admin')}
+    mapping = {'coving.tron': ('covingtron', 'admin')}
 
 
 def synth(stack: BaseStack) -> None:
