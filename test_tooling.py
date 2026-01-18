@@ -47,8 +47,8 @@ def test_prettier():
 
 
 def test_typos(tmp_path: Path):
-    input_path = tmp_path / 'wxperiment-\xb5.yml'  # noqa:typos
-    input_path.write_text('wxperiment:\n  - \xb5\n  yml')  # noqa:typos
+    input_path = tmp_path / 'wxperiment-\xb5.yml'  # noqa: typos
+    input_path.write_text('wxperiment:\n  - \xb5\n  yml')  # noqa: typos
     try_repo.pre_commit.main.main(('try-repo', '.', 'typos', '--files', str(input_path)))
     assert (tmp_path / 'experiment-\u03bc.yaml').read_text() == 'experiment:\n  - \u03bc\n  yaml'
     # TODO also the html escape sequence &micro; -> &mu;

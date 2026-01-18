@@ -3,6 +3,7 @@
 from collections.abc import Iterable
 from importlib import import_module
 from json import dumps
+from os import environ
 from pathlib import Path
 from re import sub
 from subprocess import check_output
@@ -12,6 +13,8 @@ from cdk8s import Chart
 from cdktf import App, TerraformElement, TerraformStack
 from constructs import Construct, Node
 from tap import Tap
+
+environ['JSII_SILENCE_WARNING_UNTESTED_NODE_VERSION'] = '1'
 
 
 class HeliChart(Chart):

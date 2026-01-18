@@ -35,7 +35,7 @@ Prefer `python -m package.module` to `python package/module.py` to avoid surpris
 imports. Omit `#!` shebang lines.
 
 ## Great Git
-Avoid `git add --all` to focus commits and prevent accidentally including temporary files.
+Avoid `git add --all` and `git add .` to focus commits and prevent accidentally including temporary files.
 
 Branches should almost always track `origin/main`. Create new branches with
 `git checkout -b branch-name origin/main` (or set upstream for existing branches with
