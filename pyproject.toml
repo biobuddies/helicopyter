@@ -64,6 +64,6 @@ extend = '.biobuddies/ruff.toml'
 py-modules = ['helicopyter']
 
 [tool.setuptools.packages.find]
-exclude = ['deploys*'] # Applies to wheel but not sdist
+exclude = ['deploys*', 'node_modules*'] # Applies to wheel but not sdist
 
 [tool.setuptools_scm]

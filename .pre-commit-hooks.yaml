@@ -45,6 +45,10 @@
 
 - id: end-of-file-fixer
   entry: end-of-file-fixer
+  exclude: |
+      (?x)^(
+          \.gitignore
+      )$
   language: system
   name: end-of-file-fixer
   types:
