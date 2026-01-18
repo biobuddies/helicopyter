@@ -54,8 +54,8 @@ precommit = [
 source = 'https://github.com/biobuddies/helicopyter'
 
 [tool.basedpyright]
+extends = '.biobuddies/basedpyright.toml'
 failOnWarnings = false
-reportUnusedCallResult = false # _ = function() is silly
 
 [tool.ruff]
 extend = '.biobuddies/ruff.toml'
