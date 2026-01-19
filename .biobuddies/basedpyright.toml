@@ -1,1 +1,2 @@
+[tool.basedpyright]
 reportUnusedCallResult = false # _ = function() is silly
