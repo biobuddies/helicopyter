@@ -4,6 +4,7 @@ language python
 function count_text_refs($name, $haystack) js {
   const name = $name.text;
   const haystack = $haystack.text;
+  // $name is always a Python identifier (word chars only), so no regex escaping needed
   const re = new RegExp('\\b' + name + '\\b', 'g');
   const matches = haystack.match(re);
   return `${matches ? matches.length : 0}`;
@@ -13,6 +14,7 @@ function replace_first_ref($name, $haystack, $replacement) js {
   const name = $name.text;
   const haystack = $haystack.text;
   const replacement = $replacement.text;
+  // $name is always a Python identifier (word chars only), so no regex escaping needed
   const re = new RegExp('\\b' + name + '\\b');
   return haystack.replace(re, replacement);
 }
