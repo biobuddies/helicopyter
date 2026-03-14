@@ -1,5 +1,6 @@
 {
     "devDependencies": {
+        "@getgrit/cli": "^0.1.0-alpha.1743007075",
         "basedpyright": "*",
         "cdk8s-cli": "*",
         "prettier": "*",
