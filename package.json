@@ -1,7 +1,5 @@
 {
     "devDependencies": {
-        "basedpyright": "*",
-        "cdk8s-cli": "*",
         "prettier": "*",
         "prettier-plugin-jinja-template": "*",
         "prettier-plugin-organize-attributes": "*",

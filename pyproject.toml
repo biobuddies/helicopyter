@@ -5,16 +5,17 @@ backend-path = ['']
 
 [project]
 classifiers = [
-    'Programming Language :: Python :: 3',
+    'Programming Language :: Python :: 3.12',
     'License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)',
     'Operating System :: OS Independent',
     'Topic :: System :: Systems Administration',
     'Topic :: System :: Installation/Setup',
 ]
 description = 'Python Terraform JSON configuration generator'
-dependencies = ['cdk8s', 'cdktf', 'cdktf-cdktf-provider-null', 'typed-argument-parser']
+dependencies = ['cdktf', 'typed-argument-parser']
 dynamic = ['version']
 name = 'helicopyter'
+requires-python = '>=3.12'
 readme = 'README.md'
 
 [project.optional-dependencies]
@@ -26,9 +27,11 @@ demos = [
     'cdktf-cdktf-provider-cloudflare==11.*',
     'cdktf-cdktf-provider-docker',
     'cdktf-cdktf-provider-github',
+    'cdktf-cdktf-provider-null',
 ]
 precommit = [
     'actionlint-py',
+    'basedpyright',
     'codespell>=2.3',                                               # For codespell inline ignore comment support
     'cookiecutter',
     'django-upgrade',
