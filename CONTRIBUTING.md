@@ -36,7 +36,7 @@ simplest:
     - Split files around 500 lines
 * Alphabetize, sometimes within sections (header worth a comment)
 * Use Python 3.12+ idioms like:
-    - `from pytest import parametrize`
+    - `from pytest import mark; @mark.parametrize()`
     - `from pathlib import Path; Path('a') / 'b'`
     - `from subprocess import check_call, check_output; check_call(...); check_output(...)`
     - Usually easiest to not `re.compile` at all than worry about aliasing the builtin

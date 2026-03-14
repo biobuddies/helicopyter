@@ -1,0 +1,321 @@
+[settings]
+experimental = true
+
+[settings.python]
+uv_venv_auto = 'create|source'
+
+[env]
+TENV_AUTO_INSTALL = 'true'
+_.path = ['./node_modules/.bin']
+_.python.venv = { path = '.venv' }
+
+[hooks]
+postinstall = """
+set -o errexit -o nounset
+npm clean-install --no-audit --no-fund &
+npm_pid=$!
+uv venv --allow-existing --no-progress
+uv pip sync requirements.txt
+wait "$npm_pid"
+"""
+
+# Prerequisite tasks
+[tasks.cona]
+run = """
+#!/usr/bin/env bash
+set -o errexit -o nounset -o pipefail
+if [[ ${GITHUB_REPOSITORY-} ]]; then echo "${GITHUB_REPOSITORY##*/}"
+elif [[ ${VIRTUAL_ENV-} ]]; then basename "${VIRTUAL_ENV%/.venv}"
+else basename "$PWD"
+fi
+"""
+
+[tasks.envi]
+run = """
+#!/usr/bin/env bash
+set -o errexit -o nounset -o pipefail
+if [[ ${ENVI-} ]]; then echo "$ENVI"
+elif [[ ${GITHUB_ACTIONS-} ]]; then echo github
+else echo local
+fi
+"""
+
+[tasks.giha]
+run = 'git describe --abbrev=40 --always --dirty --match=-'
+
+[tasks.orgn]
+run = '''
+#!/usr/bin/env bash
+set -o errexit -o nounset -o pipefail
+if [[ ${GITHUB_REPOSITORY_OWNER-} ]]; then echo "$GITHUB_REPOSITORY_OWNER"
+else git remote get-url origin | sed -E 's,.+github.com[:/]([^/]+).+,\1,'
+fi
+'''
+
+[tasks.run-on-sources]
+quiet = true
+run = '''
+#!/usr/bin/env bash
+set -o errexit -o nounset -o pipefail
+tool=${1:?missing executable}
+eval "glob=(${2:?missing source glob})"
+shift 2
+command_args=$*
+set -- $(
+    git ls-files -- "${glob[@]}" \
+        | grep --invert-match --extended-regexp --file <(
+            grep --invert-match '^#' .biobuddies/autoformat-excludes
+        ) || [[ $? -eq 1 ]]
+)
+[[ $# -eq 0 ]] && exit 0
+[[ -z $command_args ]] || set -- $command_args "$@"
+"$tool" "$@"
+'''
+
+[tasks.tabr]
+run = '''
+#!/usr/bin/env bash
+set -o errexit -o nounset -o pipefail
+if [[ ${GITHUB_HEAD_REF-} ]]; then echo "$GITHUB_HEAD_REF"
+elif [[ ${GITHUB_REF_NAME-} ]]; then echo "$GITHUB_REF_NAME"
+else
+    git describe --all --dirty --exact-match 2>/dev/null \
+        | sed -En '/-dirty$/ q; s,(remotes/[^/]+|heads|tags)/,,p'
+fi
+'''
+
+[tasks.tinit]
+run = """
+#!/usr/bin/env bash
+set -o errexit -o nounset -o pipefail
+cona=${1:?missing cona}
+shift
+tf=${INSH_TF:-terraform}
+"$tf" -chdir="deploys/$cona/terraform" init "$@"
+python -m helicopyter --format_with="$tf" "$cona"
+"""
+
+# Leaf tasks
+[tasks.actionlint]
+run = 'actionlint "$@"'
+
+[tasks.bash]
+run = 'env bash --login -o errexit -o pipefail'
+
+[tasks.basedpyright]
+run = 'mise run-on-sources basedpyright "*.py{,i}" --level error "$@"'
+
+[tasks.cookiecutter]
+run = '''
+#!/usr/bin/env bash
+set -o errexit -o nounset -o pipefail
+cookiecutter --config-file .cookiecutter.yaml --no-input --overwrite-if-exists "$(
+    [[ $(mise orgn)/$(mise cona) == biobuddies/helicopyter ]] \
+        && echo . \
+        || echo https://github.com/biobuddies/helicopyter.git
+)"
+'''
+
+[tasks.django-upgrade]
+run = 'mise run-on-sources django-upgrade \*.py "$@"'
+
+[tasks.djlint-django]
+run = 'mise run-on-sources djlint \*.dj.html --profile=django --reformat "$@"'
+
+[tasks.djlint-jinja]
+run = 'mise run-on-sources djlint \*.j2.html --profile=jinja --reformat "$@"'
+
+[tasks.end-of-file-fixer]
+run = 'mise run-on-sources end-of-file-fixer . "$@"'
+
+[tasks.hadolint]
+run = 'mise run-on-sources hadolint "*Dockerfile*" "$@"'
+
+[tasks.helicopyter]
+run = 'python -m helicopyter --format_with=${INSH_TF:-terraform} all "$@"'
+
+[tasks.mailmap]
+run = """
+#!/usr/bin/env bash
+set -o errexit -o nounset -o pipefail
+emails_names=$(git log --format='%aE%x09%aN' --use-mailmap "$@" | sort --unique)
+return_code=0
+for repeat in $(echo "$emails_names" | cut -f 1 | uniq --repeated); do
+    echo "$emails_names" | grep "$repeat"
+    echo
+    return_code=1
+done
+[[ $return_code == 0 ]] || echo 'Multiple names are associated with the same email address.'
+exit $return_code
+"""
+
+[tasks.prettier-write]
+run = 'mise run-on-sources prettier "*.{html,js,json,jsx,toml,ts,tsx,yaml}" --write "$@"'
+
+[tasks.ruff-check-fix]
+run = 'mise run-on-sources ruff "*.py{,i}" check --force-exclude --fix "$@"'
+
+[tasks.ruff-format]
+run = 'mise run-on-sources ruff "*.py{,i}" format --force-exclude "$@"'
+
+[tasks.set-environment]
+run = """
+#!/usr/bin/env bash
+set -o errexit -o nounset -o pipefail
+cat <<EOD | tee -a "${GITHUB_ENV:-/tmp/flan.ini}"
+CONA=$(mise cona)
+ENVI=$(mise envi)
+GIHA=$(mise giha)
+ORGN=$(mise orgn)
+ROLE=${ROLE-}
+TABR=$(mise tabr)
+EOD
+set -o allexport
+# shellcheck disable=SC1090
+source "${GITHUB_ENV:-/tmp/flan.ini}"
+"""
+
+[tasks.shellcheck]
+run = 'mise run-on-sources shellcheck "*.{bash,sh}" "$@"'
+
+[tasks.shfmt]
+run = '''
+mise run-on-sources shfmt "*.{bash,sh}" \
+    --binary-next-line --case-indent --simplify --write \
+    --indent 4 --language-dialect bash "$@"
+'''
+
+[tasks.tabularize]
+run = """
+#!/usr/bin/env bash
+set -o errexit -o nounset -o pipefail
+cat <<EOD | tee "${GITHUB_STEP_SUMMARY:-/dev/null}"
+| Unabbreviat. | FLAN | Value        |
+| ------------ | ---- | ------------ |
+| COdeNAme     | CONA | $(mise cona) |
+| ENVIronment  | ENVI | $(mise envi) |
+| GIt HAsH     | GIHA | $(mise giha) |
+| ORGanizatioN | ORGN | $(mise orgn) |
+| ROLE         | ROLE | ${ROLE-} |
+| TAg/BRanch   | TABR | $(mise tabr) |
+EOD
+"""
+
+[tasks.tapply]
+run = """
+#!/usr/bin/env bash
+set -o errexit -o nounset -o pipefail
+cona=${1:?missing cona}
+envi=${2:?missing envi}
+shift 2
+if [[ "$envi" == "default" ]]; then
+    echo 'The default workspace behaves inconsistently.'
+    echo 'If you only have one environment, please name it `prod`.'
+    exit 1
+fi
+mise tinit "$cona"
+tf=${INSH_TF:-terraform}
+TF_VAR_giha=$(mise giha) TF_VAR_tabr=$(mise tabr) TF_WORKSPACE="$envi" \
+    "$tf" -chdir="deploys/$cona/terraform" apply "$@"
+"""
+
+[tasks.test]
+run = '''
+#!/usr/bin/env bash
+set -o errexit -o nounset -o pipefail
+pytest --cov${PYTEST_COV-} \
+    --cov-report=term-missing:skip-covered --verbose "$@"
+'''
+
+[tasks.tplan]
+run = """
+#!/usr/bin/env bash
+set -o errexit -o nounset -o pipefail
+cona=${1:?missing cona}
+envi=${2:?missing envi}
+shift 2
+if [[ "$envi" == "default" ]]; then
+    echo 'The default workspace behaves inconsistently.'
+    echo 'If you only have one environment, please name it `prod`.'
+    exit 1
+fi
+mise tinit "$cona"
+tf=${INSH_TF:-terraform}
+TF_VAR_giha=$(mise giha) TF_VAR_tabr=$(mise tabr) TF_WORKSPACE="$envi" \
+    "$tf" -chdir="deploys/$cona/terraform" plan "$@"
+"""
+
+[tasks.trailing-whitespace-fixer]
+run = 'mise run-on-sources trailing-whitespace-fixer . "$@"'
+
+[tasks.tvalid]
+run = """
+#!/usr/bin/env bash
+set -o errexit -o nounset -o pipefail
+cona=${1:?missing cona}
+shift
+mise tinit "$cona"
+${INSH_TF:-terraform} -chdir="deploys/$cona/terraform" validate "$@"
+"""
+
+[tasks.typos]
+run = 'typos --write-changes --config .biobuddies/typos.toml "$@"'
+
+[tasks.uv-pip-check]
+run = 'uv pip check "$@"'
+
+[tasks.uv-pip-compile]
+run = '''
+uv pip compile --all-extras --output-file requirements.txt \
+    --python-platform linux pyproject.toml "$@"
+'''
+
+[tasks.validate-pyproject]
+run = 'validate-pyproject pyproject.toml "$@"'
+
+[tasks.wait-actions]
+run = 'mise x -- gh run list --branch $(git branch --show-current) --limit 1 --json databaseId --jq ".[0].databaseId" | xargs -I {} mise x -- gh run watch {}'
+
+[tasks.yamllint]
+run = 'mise run-on-sources yamllint \*.yaml "$@"'
+
+# Task collections
+[tasks.pre-commit-fast]
+depends = [
+    # line changers
+    'django-upgrade',
+    'djlint-django',
+    'djlint-jinja',
+    'end-of-file-fixer',
+    'prettier-write',
+    'ruff-check-fix',
+    'ruff-format',
+    'shfmt',
+    'trailing-whitespace-fixer',
+    'typos',
+    # line keepers
+    'actionlint',
+    'basedpyright',
+    'hadolint',
+    'helicopyter',
+    'mailmap',
+    'shellcheck',
+    'uv-pip-check',
+    'validate-pyproject',
+    'yamllint',
+]
+
+[tasks.pre-commit]
+depends = [
+    'cookiecutter',    # needs Internet
+    'pre-commit-fast',
+    'uv-pip-compile',  # needs Internet
+]
+
+[tools]
+'aqua:tofuutils/tenv' = '4.9.3'
+gh = 'latest'
+just = '1.36.0'
+node = '22'
+python = '3.12'
+uv = '0.10.10'
