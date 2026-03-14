@@ -26,8 +26,10 @@ EXPECTED_GIT_CONFIG = {
 }
 
 # Defined for all operating systems to support Linux containers from macOS
-DEBS = ['bash', 'bind9-host', 'ca-certificates', 'curl', 'file', 'fping', 'git', 'less',
-    'procps', 'tmux', 'tree']
+DEBS = [
+    'bash', 'bind9-host', 'ca-certificates', 'curl', 'file', 'fping', 'git', 'less',
+    'procps', 'tmux', 'tree',
+]
 
 # Pre-installed on Sonoma — skip upgrades: host, file, less, ps
 # asdf intentionally dropped in favor of mise
