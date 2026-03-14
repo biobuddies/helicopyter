@@ -8,6 +8,7 @@ repositories = {
     'airdjang': ('Airflow + Django', ['airflow', 'django', 'python']),
     'allowedflare': ('Intranet connectivity for Django and more', ['django', 'python']),
     'helicopyter': ('Python-defined infrastructure', ['ansible', 'cdktf', 'python', 'terraform']),
+    'measles': ('Continuous cookiecutter featuring mise', ['cookiecutter', 'python']),
     'wellplated': ('Python Django models for liquid handling', ['django', 'python']),
 }
 
@@ -41,4 +42,4 @@ def synth(stack: BaseStack) -> None:
             squash_merge_commit_message='PR_BODY',
             squash_merge_commit_title='PR_TITLE',
             topics=topics,
-        ).import_from(name)
+        )

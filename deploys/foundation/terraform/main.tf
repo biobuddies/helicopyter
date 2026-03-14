@@ -49,11 +49,6 @@ resource "github_repository" "airdjang" {
   ]
 }
 
-import {
-  to = github_repository.airdjang
-  id = "airdjang"
-}
-
 resource "github_repository" "allowedflare" {
   allow_auto_merge            = true
   allow_merge_commit          = false
@@ -75,11 +70,6 @@ resource "github_repository" "allowedflare" {
     "django",
     "python"
   ]
-}
-
-import {
-  to = github_repository.allowedflare
-  id = "allowedflare"
 }
 
 resource "github_repository" "helicopyter" {
@@ -107,9 +97,27 @@ resource "github_repository" "helicopyter" {
   ]
 }
 
-import {
-  to = github_repository.helicopyter
-  id = "helicopyter"
+resource "github_repository" "measles" {
+  allow_auto_merge            = true
+  allow_merge_commit          = false
+  allow_rebase_merge          = true
+  allow_squash_merge          = true
+  allow_update_branch         = true
+  delete_branch_on_merge      = true
+  description                 = "Continuous cookiecutter featuring mise"
+  has_downloads               = false
+  has_issues                  = true
+  has_projects                = false
+  has_wiki                    = false
+  merge_commit_message        = "PR_BODY"
+  merge_commit_title          = "PR_TITLE"
+  name                        = "measles"
+  squash_merge_commit_message = "PR_BODY"
+  squash_merge_commit_title   = "PR_TITLE"
+  topics = [
+    "cookiecutter",
+    "python"
+  ]
 }
 
 resource "github_repository" "wellplated" {
@@ -133,9 +141,4 @@ resource "github_repository" "wellplated" {
     "django",
     "python"
   ]
-}
-
-import {
-  to = github_repository.wellplated
-  id = "wellplated"
 }
