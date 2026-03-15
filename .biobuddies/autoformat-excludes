@@ -1,0 +1,14 @@
+# Cookiecutter outputs
+^\.biobuddies/
+^\.editorconfig$
+^\.github/copilot-instructions\.md$
+^\.github/pull_request_template\.md$
+^\.gitignore$
+^\.prettierrc\.toml$
+^\.shellcheckrc$
+^\.yamllint\.yaml$
+# Markdown with intentional trailing whitespace
+^README\.md$
+# Presentations
+^documentation/djangocon-us-2024\.md$
+^documentation/self2024-python-defined-infrastructure\.md$

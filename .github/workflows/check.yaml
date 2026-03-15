@@ -7,23 +7,36 @@ env:
     CLOUDFLARE_ACCOUNT_ID: 0123456789abcdef0123456789abcdef00
     CLOUDFLARE_ZONE_ID: 0123456789abcdef0123456789abcdef01
     INSH_TF: tofu
-    PATH: .venv/bin:/home/runner/.local/bin:/home/runner/.asdf/shims:/usr/bin:/bin
+    PATH: .venv/bin:/home/runner/.local/bin:/home/runner/.local/share/mise/shims:/usr/bin:/bin
 jobs:
     check:
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v4
-            - run: bash .biobuddies/includes.bash forceready
-
-            - run: .venv/bin/just pcam --color always --show-diff-on-failure
-            - run: .venv/bin/just hti demo && tofu -chdir=deploys/demo/terraform validate
-            - run: .venv/bin/just test
+            # Real hash is head_ref on pull_request, ref on push
+            - uses: actions/checkout@v6
+              with:
+                  fetch-depth: 0
+                  ref: ${{ github.head_ref || github.ref }}
+            - uses: jdx/mise-action@v3
+              with:
+                  experimental: true
+            - run: mise run set-environment
+            - run: mise run pre-commit
+            - run: mise tvalid demo
+            - run: mise test
             - run: .venv/bin/just build_twine
-    summarize:
+    tabularize:
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v4
-            - run: bash .biobuddies/includes.bash summarize
+            # Real hash is head_ref on pull_request, ref on push
+            - uses: actions/checkout@v6
+              with:
+                  fetch-depth: 0
+                  ref: ${{ github.head_ref || github.ref }}
+            - uses: jdx/mise-action@v3
+              with:
+                  experimental: true
+            - run: mise run tabularize
 
 on: # yamllint disable-line rule:truthy
     pull_request:
