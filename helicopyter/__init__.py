@@ -18,22 +18,11 @@ from tap import Tap
 registry: list['Block'] = []
 
 
-class Reference:
-    """Unquoted HCL reference rendered as its dotted path (e.g. local.cona, string)."""
-
-    def __init__(self, path: str) -> None:
-        self._path = path
-
-    def __getattr__(self, name: str) -> 'Reference':
-        return Reference(f'{self._path}.{name}')
-
-    def __str__(self) -> str:
-        return self._path
-
-
 def quote(value: Any, depth: int = 1) -> str:
-    if isinstance(value, (Reference, Block)):
-        return str(value)
+    if isinstance(value, Block):
+        return value.to_hcl(depth) if value.attributes else str(value)
+    if isinstance(value, bool):
+        return 'true' if value else 'false'
     if isinstance(value, dict):
         pad = '  ' * (depth + 1)
         close = '  ' * depth
@@ -48,36 +37,66 @@ class Block:
     """HCL block prototype; each __call__ creates a new registered Block instance."""
 
     def __init__(self, kind: str, *labels: str) -> None:
-        self._kind = kind
-        self._labels = labels
-        self._attrs: dict[str, Any] = {}
+        self.kind = kind
+        self.labels = labels
+        self.attributes = {}
+
+    def __call__(self, *labels: str, **kwargs: Any) -> 'Block':
+        if labels and not kwargs:
+            child = Block(self.kind, *self.labels, *labels)
+            try:
+                object.__setattr__(child, 'parent', object.__getattribute__(self, 'parent'))
+            except AttributeError:
+                pass
+            return child
+        if kwargs:
+            self.attributes = kwargs
+        if labels:
+            self.labels = (*self.labels, *labels)
+        if self not in registry:
+            registry.append(self)
+        try:
+            parent = object.__getattribute__(self, 'parent')
+            parent.attributes[self.kind] = self
+            if parent not in registry:
+                registry.append(parent)
+        except AttributeError:
+            pass
+        return self
 
     def __getattr__(self, name: str) -> 'Block':
-        return Block(self._kind, *self._labels, name)
+        return Block(self.kind, *self.labels, name)
 
-    def __call__(self, **kwargs: Any) -> 'Block':
-        block = Block(self._kind, *self._labels)
-        block._attrs = kwargs
-        registry.append(block)
-        return block
+    def __setattr__(self, name: str, value: Any) -> None:
+        if isinstance(value, Block):
+            object.__setattr__(value, 'parent', self)
+        object.__setattr__(self, name, value)
 
     def __str__(self) -> str:
-        return '.'.join([self._kind, *self._labels])
+        return '.'.join([self.kind, *self.labels])
 
-    def to_hcl(self) -> str:
-        labels = (' ' + ' '.join(f'"{label}"' for label in self._labels)) if self._labels else ''
-        head = f'{self._kind}{labels} {{'
-        if not self._attrs:
+    def to_hcl(self, depth: int = 0) -> str:
+        pad = '  ' * depth
+        tags = (' ' + ' '.join(f'"{tag}"' for tag in self.labels)) if self.labels else ''
+        head = f'{pad}{self.kind}{tags} {{'
+        if not self.attributes:
             return f'{head}}}'
-        attrs = '\n'.join(f'  {k} = {quote(v)}' for k, v in self._attrs.items())
-        return f'{head}\n{attrs}\n}}'
+        parts = []
+        for key, value in self.attributes.items():
+            if isinstance(value, Block) and value.attributes:
+                parts.append(value.to_hcl(depth + 1))
+            else:
+                parts.append(f'{pad}  {key} = {quote(value, depth + 1)}')
+        return f'{head}\n{'\n'.join(parts)}\n{pad}}}'
 
 
 # Unquoted type references
-tbool = Reference('bool')  # noqa: A001
-number = Reference('number')
-string = Reference('string')
-terraform = Reference('terraform')
+tbool = Block('bool')  # noqa: A001
+number = Block('number')
+string = Block('string')
+terraform = Block('terraform')
+terraform.required_providers = Block('required_providers')
+terraform.backend = Block('backend')
 
 # Block builders (attribute access chains labels; calling registers a block)
 data = Block('data')
@@ -87,8 +106,8 @@ resource = Block('resource')
 variable = Block('variable')
 
 # Read-side references (e.g. local.cona, var.giha)
-local = Reference('local')
-var = Reference('var')
+local = Block('local')
+var = Block('var')
 
 cona: str = 'UNSET'
 environ['JSII_SILENCE_WARNING_UNTESTED_NODE_VERSION'] = '1'
@@ -196,10 +215,6 @@ def multisynth(
             cona = path_to_check.parent.parent.name
         else:
             cona = cona_or_path
-        relative_path = (
-            f'deploys/{cona}/terraform/main.tf{"" if hashicorp_configuration_language else ".json"}'
-        )
-        print(f'Generating {relative_path}')
         module_path = f'deploys.{cona}.terraform.main'
         try:
             main = import_module(module_path)
@@ -209,7 +224,14 @@ def multisynth(
             raise
         if not hasattr(main, 'synth'):
             hashicorp_configuration_language = True
-            unformatted_body = '\n\n'.join(block.to_hcl() for block in registry)
+            children = {
+                id(value)
+                for block in registry
+                for value in block.attributes.values()
+                if isinstance(value, Block) and value.attributes
+            }
+            top_level = [block for block in registry if id(block) not in children]
+            unformatted_body = '\n\n'.join(block.to_hcl() for block in top_level)
             registry.clear()
         if hasattr(main, 'synth'):
             try:
@@ -220,6 +242,10 @@ def multisynth(
                 print(f'`def synth(stack: HeliStack):` appears to be missing from {python_file}')
                 raise
             unformatted_body = stack.to_hcl_terraform()['hcl']
+        relative_path = (
+            f'deploys/{cona}/terraform/main.tf{"" if hashicorp_configuration_language else ".json"}'
+        )
+        print(f'Generating {relative_path}')
         if hashicorp_configuration_language:
             unformatted = '# AUTOGENERATED by helicopyter\n\n' + unformatted_body
             try:
