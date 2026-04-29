@@ -132,7 +132,15 @@ run = 'mise run-on-sources end-of-file-fixer . "$@"'
 run = 'mise run-on-sources hadolint "*Dockerfile*" "$@"'
 
 [tasks.helicopyter]
-run = 'python -m helicopyter --format_with=${INSH_TF:-terraform} all "$@"'
+run = '''
+#!/usr/bin/env bash
+set -o errexit -o nounset -o pipefail
+export ALLOWEDFLARE_EMAIL="${ALLOWEDFLARE_EMAIL:-person@emailprovider.example}"
+export ALLOWEDFLARE_PRIVATE_DOMAIN="${ALLOWEDFLARE_PRIVATE_DOMAIN:-organization.example}"
+export CLOUDFLARE_ACCOUNT_ID="${CLOUDFLARE_ACCOUNT_ID:-0123456789abcdef0123456789abcdef00}"
+export CLOUDFLARE_ZONE_ID="${CLOUDFLARE_ZONE_ID:-0123456789abcdef0123456789abcdef01}"
+python -m helicopyter --format_with="${INSH_TF:-terraform}" all "$@"
+'''
 
 [tasks.mailmap]
 run = """
