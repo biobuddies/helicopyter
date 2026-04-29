@@ -2,10 +2,6 @@ defaults:
     run:
         shell: bash --noprofile --norc -o errexit -o nounset -o pipefail -o xtrace {0}
 env:
-    ALLOWEDFLARE_EMAIL: person@emailprovider.example
-    ALLOWEDFLARE_PRIVATE_DOMAIN: organization.example
-    CLOUDFLARE_ACCOUNT_ID: 0123456789abcdef0123456789abcdef00
-    CLOUDFLARE_ZONE_ID: 0123456789abcdef0123456789abcdef01
     INSH_TF: tofu
     PATH: .venv/bin:/home/runner/.local/bin:/home/runner/.local/share/mise/shims:/usr/bin:/bin
 jobs:
