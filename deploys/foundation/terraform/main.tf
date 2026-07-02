@@ -25,6 +25,12 @@ provider "github" {
   owner = "biobuddies"
 }
 
+resource "github_actions_organization_workflow_permissions" "biobuddies" {
+  can_approve_pull_request_reviews = true
+  default_workflow_permissions     = "write"
+  organization_slug                = "biobuddies"
+}
+
 resource "github_repository" "airdjang" {
   allow_auto_merge            = true
   allow_merge_commit          = false
@@ -58,6 +64,25 @@ resource "github_repository" "allowedflare" {
   merge_commit_message        = "PR_BODY"
   merge_commit_title          = "PR_TITLE"
   name                        = "allowedflare"
+  squash_merge_commit_message = "PR_BODY"
+  squash_merge_commit_title   = "PR_TITLE"
+  topics                      = ["django", "python"]
+}
+
+resource "github_repository" "django-plugin-field-day" {
+  allow_auto_merge            = true
+  allow_merge_commit          = false
+  allow_rebase_merge          = true
+  allow_squash_merge          = true
+  allow_update_branch         = true
+  delete_branch_on_merge      = true
+  description                 = "Django plugin field day"
+  has_issues                  = true
+  has_projects                = false
+  has_wiki                    = false
+  merge_commit_message        = "PR_BODY"
+  merge_commit_title          = "PR_TITLE"
+  name                        = "django-plugin-field-day"
   squash_merge_commit_message = "PR_BODY"
   squash_merge_commit_title   = "PR_TITLE"
   topics                      = ["django", "python"]
@@ -99,6 +124,25 @@ resource "github_repository" "measles" {
   squash_merge_commit_message = "PR_BODY"
   squash_merge_commit_title   = "PR_TITLE"
   topics                      = ["cookiecutter", "python"]
+}
+
+resource "github_repository" "styleforce" {
+  allow_auto_merge            = true
+  allow_merge_commit          = false
+  allow_rebase_merge          = true
+  allow_squash_merge          = true
+  allow_update_branch         = true
+  delete_branch_on_merge      = true
+  description                 = "Autoformat the Rule of Three and more"
+  has_issues                  = true
+  has_projects                = false
+  has_wiki                    = false
+  merge_commit_message        = "PR_BODY"
+  merge_commit_title          = "PR_TITLE"
+  name                        = "styleforce"
+  squash_merge_commit_message = "PR_BODY"
+  squash_merge_commit_title   = "PR_TITLE"
+  topics                      = ["autoformatting"]
 }
 
 resource "github_repository" "wellplated" {

@@ -100,7 +100,7 @@ pathver() {
     echo "$source $actual_version"
     if [[ -f $2 ]]; then
         expected_version=$(cat "$2")
-        if [[ $actual_version != "$expected_version" ]]; then
+        if [[ $actual_version != "${expected_version%.*}".* ]]; then
             echo "ERROR: $source version $actual_version does not match $2 $expected_version"
             return 1
         fi
@@ -222,9 +222,11 @@ dcu() {
     docker compose up "$@"
 }
 
+# https://adamj.eu/tech/2024/01/18/git-improve-diff-histogram/
 expected_git_configuration="
 advice.skippedCherryPicks=false Reduces noise when pull requests are squashed on the server side
 core.commentChar=; Allows # hash character to be used for Markdown headers
+diff.algorithm=histogram Diff better
 diff.colormoved=zebra Distinguishes moved lines from added and removed lines
 init.defaultBranch=main New standard value skips long explanation
 pull.rebase=true Always be rebasing

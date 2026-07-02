@@ -6,8 +6,10 @@ from stacks.base import r2_backend
 repositories = {
     'airdjang': ('Airflow + Django', ['airflow', 'django', 'python']),
     'allowedflare': ('Intranet connectivity for Django and more', ['django', 'python']),
+    'django-plugin-field-day': ('Django plugin field day', ['django', 'python']),
     'helicopyter': ('Python-defined infrastructure', ['ansible', 'cdktf', 'python', 'terraform']),
     'measles': ('Continuous cookiecutter featuring mise', ['cookiecutter', 'python']),
+    'styleforce': ('Autoformat the Rule of Three and more', ['autoformatting']),
     'wellplated': ('Python Django models for liquid handling', ['django', 'python']),
 }
 
@@ -16,6 +18,11 @@ terraform.required_providers(
     github={'source': 'integrations/github', 'version': '>=6.6.0'},
 )
 provider.github(owner='biobuddies')
+resource.github_actions_organization_workflow_permissions('biobuddies')(
+    can_approve_pull_request_reviews=True,
+    default_workflow_permissions='write',
+    organization_slug='biobuddies',
+)
 
 for name, (description, topics) in repositories.items():
     resource.github_repository(name)(
