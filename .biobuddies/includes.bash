@@ -100,7 +100,8 @@ pathver() {
     echo "$source $actual_version"
     if [[ -f $2 ]]; then
         expected_version=$(cat "$2")
-        if [[ $actual_version != "${expected_version%.*}".* ]]; then
+        if [[ $actual_version != "$expected_version" &&
+            ${actual_version%.*} != "$expected_version" ]]; then
             echo "ERROR: $source version $actual_version does not match $2 $expected_version"
             return 1
         fi
