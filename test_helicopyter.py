@@ -8,6 +8,7 @@ from helicopyter import (
     Block,
     HeliStack,
     data,
+    flush_registry,
     local,
     number,
     provider,
@@ -196,20 +197,25 @@ def test_multisynth_filters_children() -> None:
     """Blocks that are attr values in other blocks only render nested."""
     terraform.backend('s3')(bucket='tf', key='cona.tfstate', region='auto')
     terraform.required_providers(github={'source': 'integrations/github', 'version': '~> 6.0'})
-    children = {
-        id(value)
-        for block in registry
-        for value in block.attributes.values()
-        if isinstance(value, Block) and value.attributes
-    }
-    top_level = [b for b in registry if id(b) not in children]
-    hcl = '\n\n'.join(b.to_hcl() for b in top_level)
-    registry.clear()
+    hcl = flush_registry()
     assert hcl.startswith('terraform {')
     assert hcl.count('backend "s3" {') == 1
     assert hcl.count('required_providers {') == 1
     assert '  backend "s3" {' in hcl
     assert '  required_providers {' in hcl
+
+
+def test_flush_registry_isolates_deploys() -> None:
+    """Each deploy's terraform block must render in its own call order, not a predecessor's."""
+    terraform.required_providers(cloudflare={'source': 'cloudflare/cloudflare'})
+    terraform.backend('s3')(bucket='tf', key='first.tfstate')
+    flush_registry()
+    terraform.backend('s3')(bucket='tf', key='second.tfstate')
+    terraform.required_providers(github={'source': 'integrations/github'})
+    hcl = flush_registry()
+    assert 'cloudflare' not in hcl
+    assert 'first.tfstate' not in hcl
+    assert hcl.index('backend "s3"') < hcl.index('required_providers')
 
 
 def test_boolean_unquoted() -> None:
