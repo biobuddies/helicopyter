@@ -109,22 +109,6 @@ variable = Block('variable')
 local = Block('local')
 var = Block('var')
 
-
-def flush_registry() -> str:
-    """Render top-level registered blocks as HCL, then reset shared state between deploys."""
-    children = {
-        id(value)
-        for block in registry
-        for value in block.attributes.values()
-        if isinstance(value, Block) and value.attributes
-    }
-    body = '\n\n'.join(block.to_hcl() for block in registry if id(block) not in children)
-    registry.clear()
-    for singleton in (terraform, terraform.required_providers, terraform.backend, tlocals):
-        singleton.attributes.clear()
-    return body
-
-
 cona: str = 'UNSET'
 environ['JSII_SILENCE_WARNING_UNTESTED_NODE_VERSION'] = '1'
 
@@ -240,7 +224,18 @@ def multisynth(
             raise
         if not hasattr(main, 'synth'):
             hashicorp_configuration_language = True
-            unformatted_body = flush_registry()
+            children = {
+                id(value)
+                for block in registry
+                for value in block.attributes.values()
+                if isinstance(value, Block) and value.attributes
+            }
+            unformatted_body = '\n\n'.join(
+                block.to_hcl() for block in registry if id(block) not in children
+            )
+            registry.clear()
+            for singleton in (terraform, terraform.required_providers, terraform.backend, tlocals):
+                singleton.attributes.clear()
         if hasattr(main, 'synth'):
             try:
                 stack = main.synth.__annotations__['stack'](cona)
