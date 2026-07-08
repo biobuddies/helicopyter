@@ -25,6 +25,7 @@ from helicopyter import (
     var,
     variable,
 )
+from helicopyter.stubgen import annotate, generate
 
 
 def test_helistack() -> None:
@@ -141,8 +142,8 @@ def test_clear_registry() -> None:
 
 def test_prototype_not_mutated() -> None:
     """Calling a builder must not mutate the prototype for subsequent calls."""
-    resource.null_resource.first(name='a')
-    resource.null_resource.second(name='b')
+    resource.null_resource.first(triggers={'giha': 'a'})
+    resource.null_resource.second(triggers={'giha': 'b'})
     hcl = '\n\n'.join(block.to_hcl() for block in registry)
     registry.clear()
     assert '"first"' in hcl
@@ -317,3 +318,77 @@ def test_labels_and_kwargs_in_one_call() -> None:
     registry.clear()
     assert blk.labels == ('mylabel',)
     assert blk.attributes == {'key': 'value'}
+
+
+GITHUB_SCHEMAS = {
+    'registry.opentofu.org/integrations/github': {
+        'provider': {'block': {'attributes': {'owner': {'type': 'string', 'optional': True}}}},
+        'resource_schemas': {
+            'github_repository': {
+                'block': {
+                    'attributes': {
+                        'description': {'type': 'string', 'optional': True},
+                        'etag': {'type': 'string', 'computed': True, 'optional': True},
+                        'full_name': {'type': 'string', 'computed': True},
+                        'name': {'type': 'string', 'required': True},
+                        'topics': {'type': ['set', 'string'], 'optional': True},
+                    },
+                    'block_types': {'pages': {'nesting_mode': 'list', 'block': {}}},
+                }
+            }
+        },
+        'data_source_schemas': {
+            'github_repository': {
+                'block': {'attributes': {'name': {'type': 'string', 'optional': True}}}
+            }
+        },
+    }
+}
+
+
+def test_stubgen_generate() -> None:
+    """Resources become Args TypedDicts and Call Protocols; computed-only attributes drop."""
+    stub = generate(GITHUB_SCHEMAS)
+    compile(stub, '__init__.pyi', 'exec')
+    assert 'class GithubRepositoryArgs(TypedDict, total=False):' in stub
+    assert '    name: Required[str | Block]' in stub
+    assert '    topics: list[str | Block] | str | Block' in stub
+    assert '    etag: str | Block' in stub
+    assert 'full_name' not in stub
+    assert '    pages: Block | dict[str, Any] | list[Any]' in stub
+    call = '    def __call__(self, **attributes: Unpack[GithubRepositoryArgs]) -> Block: ...'
+    assert call in stub
+    assert '    github_repository: Builder[GithubRepositoryCall]' in stub
+    assert '    github_repository: Builder[DataGithubRepositoryCall]' in stub
+    assert '    github: GithubProviderCall' in stub
+    assert stub.index('class Block:') < stub.index('class GithubProviderArgs')
+
+
+def test_stubgen_annotate() -> None:
+    assert annotate('bool') == 'bool | str | Block'
+    assert annotate(['map', 'string']) == 'dict[str, str | Block] | str | Block'
+    assert annotate(['object', {'id': 'string'}]) == 'dict[str, Any]'
+    assert annotate('dynamic') == 'Any'
+
+
+def test_stubgen_skips_keywords() -> None:
+    """Python keywords cannot be keyword arguments, so they stay out of TypedDicts."""
+    stub = generate(
+        {
+            'x/y/z': {
+                'resource_schemas': {
+                    'z_thing': {
+                        'block': {
+                            'attributes': {
+                                'class': {'type': 'string', 'optional': True},
+                                'valid': {'type': 'string', 'optional': True},
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    )
+    compile(stub, '__init__.pyi', 'exec')
+    assert 'class:' not in stub
+    assert '    valid: str | Block' in stub
