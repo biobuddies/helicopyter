@@ -73,7 +73,8 @@ class Block:
         object.__setattr__(self, name, value)
 
     def __str__(self) -> str:
-        return '.'.join([self.kind, *self.labels])
+        # HCL references drop the resource kind: null_resource.this, but data.x.y, local.cona
+        return '.'.join([*([] if self.kind == 'resource' else [self.kind]), *self.labels])
 
     def to_hcl(self, depth: int = 0) -> str:
         pad = '  ' * depth
