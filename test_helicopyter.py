@@ -74,7 +74,8 @@ def test_ref_str() -> None:
 
 
 def test_block_str() -> None:
-    assert str(resource.null_resource.this) == 'resource.null_resource.this'
+    assert str(resource.null_resource.this) == 'null_resource.this'
+    assert str(resource.null_resource.this.id) == 'null_resource.this.id'
     assert str(data.github_repository.helicopyter) == 'data.github_repository.helicopyter'
 
 
