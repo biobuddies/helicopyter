@@ -1,7 +1,7 @@
 """Configure GitHub repositories."""
 
-from helicopyter import cona, provider, resource, terraform
-from stacks.base import r2_backend
+from helicopyter import resource
+from stacks.base import provide
 
 repositories = {
     'airdjang': ('Airflow + Django', ['airflow', 'django', 'python']),
@@ -13,11 +13,7 @@ repositories = {
     'wellplated': ('Python Django models for liquid handling', ['django', 'python']),
 }
 
-r2_backend(cona, terraform)
-terraform.required_providers(
-    github={'source': 'integrations/github', 'version': '>=6.6.0'},
-)
-provider.github(owner='biobuddies')
+provide('integrations/github', '>=6.6.0', owner='biobuddies')
 resource.github_actions_organization_workflow_permissions('biobuddies')(
     can_approve_pull_request_reviews=True,
     default_workflow_permissions='write',
