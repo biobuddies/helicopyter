@@ -1,8 +1,7 @@
 """Grant access to people in the Biobuddies GitHub organization."""
 
-from cdktf_cdktf_provider_github.membership import Membership
-
-from stacks.base import BaseStack
+from helicopyter import resource
+from stacks.base import provide
 
 try:
     # Full membership not checked into the public repository
@@ -13,10 +12,9 @@ except ImportError:
     # Example contents for GitHub Actions and readers
     mapping = {'coving.tron': ('covingtron', 'admin')}
 
+provide('integrations/github', '6.6.0', owner='biobuddies')
 
-def synth(stack: BaseStack) -> None:
-    stack.provide('github', owner='biobuddies')
-    for firstname_dot_lastname, (username, role) in mapping.items():
-        stack.push(
-            Membership, firstname_dot_lastname.replace('.', '_'), role=role, username=username
-        )
+for firstname_dot_lastname, (username, role) in mapping.items():
+    resource.github_membership(firstname_dot_lastname.replace('.', '_'))(
+        role=role, username=username
+    )
