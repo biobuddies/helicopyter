@@ -58,7 +58,10 @@ run = '''
 #!/usr/bin/env bash
 set -o errexit -o nounset -o pipefail
 tool=${1:?missing executable}
+# noglob: brace-expand the pattern but leave * for git ls-files, not the repo root
+set -o noglob
 eval "glob=(${2:?missing source glob})"
+set +o noglob
 shift 2
 command_args=$*
 set -- $(
