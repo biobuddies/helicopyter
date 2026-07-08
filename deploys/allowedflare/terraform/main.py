@@ -2,8 +2,8 @@
 
 from os import environ
 
-from helicopyter import Block, cona, provider, resource, terraform
-from stacks.base import r2_backend
+from helicopyter import Block, resource
+from stacks.base import provide
 
 # If this was a private repository, I'd probably set these variables using string literals
 account_id = environ['CLOUDFLARE_ACCOUNT_ID']
@@ -11,16 +11,10 @@ email = environ['ALLOWEDFLARE_EMAIL']
 private_domain = environ['ALLOWEDFLARE_PRIVATE_DOMAIN']
 zone_id = environ['CLOUDFLARE_ZONE_ID']
 
-terraform.required_providers(
-    cloudflare={'source': 'cloudflare/cloudflare', 'version': '4.52.0'},
-)
-r2_backend(cona, terraform)
-provider.cloudflare()
+provide('cloudflare/cloudflare', '4.52.0')
 
 resource.cloudflare_zero_trust_access_identity_provider('this')(
-    account_id=account_id,
-    name='One-time PIN',
-    type='onetimepin',
+    account_id=account_id, name='One-time PIN', type='onetimepin'
 )
 
 email_policy = resource.cloudflare_zero_trust_access_policy('email-in')(
@@ -49,6 +43,6 @@ resource.cloudflare_zero_trust_access_application('this')(
 
 resource.cloudflare_workers_route('this')(
     pattern=f'*.{private_domain}/x/*',
-    script_name='allowedflare-proxy',
+    script_name='allowedflare-proxy',  # script in v5
     zone_id=zone_id,
 )

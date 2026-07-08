@@ -1,7 +1,7 @@
 """Grant access to people in the Biobuddies GitHub organization."""
 
-from helicopyter import cona, provider, resource, terraform
-from stacks.base import r2_backend
+from helicopyter import resource
+from stacks.base import provide
 
 try:
     # Full membership not checked into the public repository
@@ -12,14 +12,9 @@ except ImportError:
     # Example contents for GitHub Actions and readers
     mapping = {'coving.tron': ('covingtron', 'admin')}
 
-terraform.required_providers(
-    github={'source': 'integrations/github', 'version': '6.6.0'},
-)
-r2_backend(cona, terraform)
-provider.github(owner='biobuddies')
+provide('integrations/github', '6.6.0', owner='biobuddies')
 
 for firstname_dot_lastname, (username, role) in mapping.items():
     resource.github_membership(firstname_dot_lastname.replace('.', '_'))(
-        role=role,
-        username=username,
+        role=role, username=username
     )
