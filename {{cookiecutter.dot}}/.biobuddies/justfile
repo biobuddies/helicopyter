@@ -26,7 +26,7 @@ pathver command version_file="":
     echo "$source $actual"
     if [[ -f "{{ version_file }}" ]]; then
         expected=$(cat "{{ version_file }}")
-        if [[ $actual != "${expected%.*}".* ]]; then
+        if [[ $actual != "$expected" && ${actual%.*} != "$expected" ]]; then
             echo "ERROR: $source version $actual does not match {{ version_file }} $expected"
             exit 1
         fi
