@@ -236,16 +236,13 @@ def test_multisynth_isolates_deploys(tmp_path: Path, monkeypatch: MonkeyPatch) -
         (tmp_path / 'deploys' / cona / 'terraform').mkdir(parents=True)
         (tmp_path / 'deploys' / cona / 'terraform' / 'main.py').write_text(body)
     (tmp_path / 'deploys' / '__init__.py').write_text('')
-    passthrough = tmp_path / 'fmt-passthrough'
-    passthrough.write_text('#!/bin/sh\ncat\n')
-    passthrough.chmod(0o755)
     monkeypatch.syspath_prepend(tmp_path)
     monkeypatch.delitem(modules, 'deploys', raising=False)
     multisynth(
         ['aaa', 'bbb'],
         change_directory=tmp_path,
         hashicorp_configuration_language=True,
-        format_with=str(passthrough),
+        format_with='cat',
     )
     for name in [module for module in modules if module.startswith('deploys')]:
         del modules[name]
