@@ -1,6 +1,7 @@
 """Generate Hashicorp Configuration Language (HCL) or JSON from Python."""
 
 from collections.abc import Iterable
+from contextlib import suppress
 from importlib import import_module
 from json import dumps
 from os import environ
@@ -13,7 +14,6 @@ from typing import Any, TypeVar
 from cdktf import App, TerraformElement, TerraformStack
 from constructs import Construct, Node
 from tap import Tap
-
 
 registry: list['Block'] = []
 
@@ -29,7 +29,7 @@ def quote(value: Any, depth: int = 1) -> str:
         inner = '\n'.join(f'{pad}{k} = {quote(v, depth + 1)}' for k, v in value.items())
         return f'{{\n{inner}\n{close}}}'
     if isinstance(value, list):
-        return f"[{', '.join(quote(v, depth) for v in value)}]"
+        return f'[{", ".join(quote(v, depth) for v in value)}]'
     return f'"{value}"'
 
 
@@ -42,12 +42,11 @@ class Block:
         self.attributes = {}
 
     def __call__(self, *labels: str, **kwargs: Any) -> 'Block':
+        """Return a labeled copy given only labels; set attributes and register given kwargs."""
         if labels and not kwargs:
             child = Block(self.kind, *self.labels, *labels)
-            try:
+            with suppress(AttributeError):
                 object.__setattr__(child, 'parent', object.__getattribute__(self, 'parent'))
-            except AttributeError:
-                pass
             return child
         if kwargs:
             self.attributes = kwargs
@@ -65,18 +64,22 @@ class Block:
         return self
 
     def __getattr__(self, name: str) -> 'Block':
+        """Chain `name` onto the labels of a copy."""
         return Block(self.kind, *self.labels, name)
 
     def __setattr__(self, name: str, value: Any) -> None:
+        """Remember `self` as parent so assigned Blocks register alongside it."""
         if isinstance(value, Block):
             object.__setattr__(value, 'parent', self)
         object.__setattr__(self, name, value)
 
     def __str__(self) -> str:
+        """Render a dotted reference like `local.cona`."""
         # HCL references drop the resource kind: null_resource.this, but data.x.y, local.cona
         return '.'.join([*([] if self.kind == 'resource' else [self.kind]), *self.labels])
 
     def to_hcl(self, depth: int = 0) -> str:
+        """Render this block, and any nested blocks, as HCL."""
         pad = '  ' * depth
         tags = (' ' + ' '.join(f'"{tag}"' for tag in self.labels)) if self.labels else ''
         head = f'{pad}{self.kind}{tags} {{'
@@ -88,11 +91,11 @@ class Block:
                 parts.append(value.to_hcl(depth + 1))
             else:
                 parts.append(f'{pad}  {key} = {quote(value, depth + 1)}')
-        return f'{head}\n{'\n'.join(parts)}\n{pad}}}'
+        return f'{head}\n{"\n".join(parts)}\n{pad}}}'
 
 
 # Unquoted type references
-tbool = Block('bool')  # noqa: A001
+tbool = Block('bool')
 number = Block('number')
 string = Block('string')
 terraform = Block('terraform')
@@ -101,7 +104,7 @@ terraform.backend = Block('backend')
 
 # Block builders (attribute access chains labels; calling registers a block)
 data = Block('data')
-tlocals = Block('locals')  # noqa: A001
+tlocals = Block('locals')
 provider = Block('provider')
 resource = Block('resource')
 variable = Block('variable')
@@ -183,6 +186,28 @@ class HeliStack(TerraformStack):
 
 
 # ruff: noqa: T201
+def autoformat(unformatted: str, format_with: str) -> str:
+    """Pipe through `terraform fmt` or `tofu fmt`, then tighten blank lines."""
+    try:
+        autoformatted = check_output(  # noqa: S603
+            # cat skips autoformatting without needing tofu or terraform installed
+            ['cat'] if format_with == 'cat' else [format_with, 'fmt', '-'],
+            input=unformatted.encode(),
+            stderr=PIPE,
+        ).decode()
+    except CalledProcessError as error:
+        print(f'which {format_with}: {which(format_with)}')
+        print(f'{format_with} fmt stderr: {error.stderr}')
+        version = check_output([format_with, '--version'], stderr=PIPE)  # noqa: S603
+        print(f'{format_with} --version: {version}')
+        raise
+    return sub(
+        r'\n{3,}',
+        '\n\n',
+        autoformatted.replace('}\n\n\n}', '}\n}').replace('}\nresource', '}\n\nresource'),
+    )
+
+
 def multisynth(
     all_or_conas_or_paths: Iterable[str],
     *,
@@ -191,7 +216,7 @@ def multisynth(
     format_with: str,
 ) -> None:
     """Generate Hashicorp Configuration Language (HCL) or JSON."""
-    global cona
+    global cona  # noqa: PLW0603  # Deploy modules read helicopyter.cona at import time
     if not all_or_conas_or_paths:
         print('No codenames specified. Doing nothing.')
         return
@@ -208,14 +233,12 @@ def multisynth(
 
     for cona_or_path in sorted(conas_or_paths):
         path_to_check = Path(cona_or_path)
-        if (
+        is_main = (
             path_to_check.exists()
             and path_to_check.name == 'main.py'
             and path_to_check.parent.name == 'terraform'
-        ):
-            cona = path_to_check.parent.parent.name
-        else:
-            cona = cona_or_path
+        )
+        cona = path_to_check.parent.parent.name if is_main else cona_or_path
         module_path = f'deploys.{cona}.terraform.main'
         try:
             main = import_module(module_path)
@@ -223,8 +246,18 @@ def multisynth(
             python_file = module_path.replace('.', '/') + '.py'
             print(f'`def synth(stack: HeliStack):` appears to be missing from {python_file}')
             raise
-        if not hasattr(main, 'synth'):
-            hashicorp_configuration_language = True
+        if hasattr(main, 'synth'):
+            try:
+                stack = main.synth.__annotations__['stack'](cona)
+                main.synth(stack)
+            except (AttributeError, KeyError, TypeError):
+                python_file = module_path.replace('.', '/') + '.py'
+                print(f'`def synth(stack: HeliStack):` appears to be missing from {python_file}')
+                raise
+            dictionary = None if hashicorp_configuration_language else stack.to_terraform()
+            unformatted_body = stack.to_hcl_terraform()['hcl']
+        else:
+            dictionary = None
             children = {
                 id(value)
                 for block in registry
@@ -238,43 +271,13 @@ def multisynth(
             # Reset singletons so the next deploy renders in its own call order
             for singleton in (terraform, terraform.required_providers, terraform.backend, tlocals):
                 singleton.attributes.clear()
-        if hasattr(main, 'synth'):
-            try:
-                stack = main.synth.__annotations__['stack'](cona)
-                main.synth(stack)
-            except (AttributeError, KeyError, TypeError):
-                python_file = module_path.replace('.', '/') + '.py'
-                print(f'`def synth(stack: HeliStack):` appears to be missing from {python_file}')
-                raise
-            unformatted_body = stack.to_hcl_terraform()['hcl']
-        relative_path = (
-            f'deploys/{cona}/terraform/main.tf{"" if hashicorp_configuration_language else ".json"}'
-        )
+        relative_path = f'deploys/{cona}/terraform/main.tf{"" if dictionary is None else ".json"}'
         print(f'Generating {relative_path}')
-        if hashicorp_configuration_language:
+        if dictionary is None:
             unformatted = '# AUTOGENERATED by helicopyter\n\n' + unformatted_body
-            try:
-                autoformatted = check_output(  # noqa: S603
-                    # cat skips autoformatting without needing tofu or terraform installed
-                    ['cat'] if format_with == 'cat' else [format_with, 'fmt', '-'],
-                    input=unformatted.encode(),
-                    stderr=PIPE,
-                ).decode()
-            except CalledProcessError as error:
-                print(f'which {format_with}: {which(format_with)}')
-                print(f'{format_with} fmt stderr: {error.stderr}')
-                print(
-                    f'{format_with} --version: {check_output([format_with, "--version"], stderr=PIPE)}'
-                )  # noqa: S603
-                raise
-            formatted = sub(
-                r'\n{3,}',
-                '\n\n',
-                autoformatted.replace('}\n\n\n}', '}\n}').replace('}\nresource', '}\n\nresource'),
-            )
+            formatted = autoformat(unformatted, format_with)
             (top_directory / relative_path).write_text(formatted.strip() + '\n')
         else:
-            dictionary = stack.to_terraform()
             dictionary['//']['AUTOGENERATED'] = 'by helicopyter'
             (top_directory / relative_path).write_text(
                 dumps(dictionary, indent=4, sort_keys=True) + '\n'

@@ -12,3 +12,5 @@
 # Presentations
 ^documentation/djangocon-us-2024\.md$
 ^documentation/self2024-python-defined-infrastructure\.md$
+# Generated like a lock file; regenerate with `mise helicopyter-stubs`
+^helicopyter/__init__\.pyi$

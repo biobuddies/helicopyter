@@ -58,7 +58,10 @@ run = '''
 #!/usr/bin/env bash
 set -o errexit -o nounset -o pipefail
 tool=${1:?missing executable}
+# noglob: brace-expand the pattern but leave * for git ls-files, not the repo root
+set -o noglob
 eval "glob=(${2:?missing source glob})"
+set +o noglob
 shift 2
 command_args=$*
 set -- $(
@@ -140,6 +143,14 @@ export ALLOWEDFLARE_PRIVATE_DOMAIN="${ALLOWEDFLARE_PRIVATE_DOMAIN:-organization.
 export CLOUDFLARE_ACCOUNT_ID="${CLOUDFLARE_ACCOUNT_ID:-0123456789abcdef0123456789abcdef00}"
 export CLOUDFLARE_ZONE_ID="${CLOUDFLARE_ZONE_ID:-0123456789abcdef0123456789abcdef01}"
 python -m helicopyter --format_with="${INSH_TF:-terraform}" all "$@"
+'''
+
+# Run after tinit so types match .terraform.lock.hcl; commit the stub like a lock file
+[tasks.helicopyter-stubs]
+run = '''
+#!/usr/bin/env bash
+set -o errexit -o nounset -o pipefail
+python -m helicopyter.stubgen --format_with="${INSH_TF:-terraform}" "${@:-all}"
 '''
 
 [tasks.mailmap]
