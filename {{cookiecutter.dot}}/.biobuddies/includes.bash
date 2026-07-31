@@ -92,9 +92,13 @@ alias ls='ls --color=auto'
 
 pathver() {
     : 'print PATH and VERsion; optionally assert version file matches'
-    source=$(type -p "$1")
-    if [[ -z $source ]]; then
-        source=$(type "$1")
+    # Use POSIX command -v/-V so this function can be copied into a ~/.zshrc,
+    # as in cases where zsh aliases `type` to `whence -v`,
+    # which prints "python is /path" instead of "/path"
+    source=$(command -v "$1")
+    if [[ $source != /* ]]; then  # Not an absolute path (e.g. an alias or missing)
+        # We use 2>&1 because bash (unlike zsh) prints "not found" to stderr
+        source=$(command -V "$1" 2>&1)
     fi
     actual_version=$("$1" --version 2>&1 | gsed -En 's/(.+ )?(v?[0-9]+\.[0-9]+\.[^ ]+).*/\2/p')
     echo "$source $actual_version"
