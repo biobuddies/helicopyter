@@ -299,7 +299,11 @@ def test_boolean_unquoted() -> None:
 
 
 def test_list_quoting() -> None:
-    assert quote(['a', 'b', 3]) == '["a", "b", "3"]'
+    assert quote(['a', 'b', 3]) == '["a", "b", 3]'
+
+
+def test_string_escaping() -> None:
+    assert quote('"first"\nsecond') == '"\\"first\\"\\nsecond"'
 
 
 def test_labels_plus_kwargs() -> None:
