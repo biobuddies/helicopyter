@@ -14,6 +14,7 @@ from helicopyter import (
     local,
     multisynth,
     number,
+    only_main,
     provider,
     quote,
     registry,
@@ -195,6 +196,20 @@ def test_resource_label_chain() -> None:
     assert '"repo2"' in hcl
     assert 'name = "repo1"' in hcl
     assert 'name = "repo2"' in hcl
+
+
+def test_only_main() -> None:
+    """Only resources inside gain the count guard; data inside and resources outside stay bare."""
+    guard = 'count = terraform.workspace == "main" ? 1 : 0'
+    with only_main():
+        resource.github_membership.coving_tron(role='admin', username='covingtron')
+        data.github_user.coving_tron(username='covingtron')
+    resource.github_membership.always(role='admin', username='always')
+    rendered = {str(block): block.to_hcl() for block in registry}
+    registry.clear()
+    assert guard in rendered['github_membership.coving_tron']
+    assert guard not in rendered['data.github_user.coving_tron']
+    assert guard not in rendered['github_membership.always']
 
 
 def test_multisynth_filters_children() -> None:
