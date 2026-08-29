@@ -1,6 +1,7 @@
 """Generate Hashicorp Configuration Language (HCL) or JSON from Python."""
 
-from collections.abc import Iterable
+from collections.abc import Iterable, Iterator
+from contextlib import contextmanager
 from importlib import import_module
 from json import dumps
 from os import environ
@@ -108,6 +109,17 @@ variable = Block('variable')
 # Read-side references (e.g. local.cona, var.giha)
 local = Block('local')
 var = Block('var')
+
+
+@contextmanager
+def only_main() -> Iterator[None]:
+    """Count each resource defined inside to one in the main workspace, zero elsewhere."""
+    start = len(registry)
+    yield
+    for block in registry[start:]:
+        if block.kind == 'resource':
+            block.attributes['count'] = Block('terraform.workspace == "main" ? 1 : 0')
+
 
 cona: str = 'UNSET'
 environ['JSII_SILENCE_WARNING_UNTESTED_NODE_VERSION'] = '1'
