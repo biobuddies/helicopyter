@@ -31,7 +31,7 @@ def quote(value: Any, depth: int = 1) -> str:
         return f'{{\n{inner}\n{close}}}'
     if isinstance(value, list):
         return f"[{', '.join(quote(v, depth) for v in value)}]"
-    return f'"{value}"'
+    return dumps(value)
 
 
 class Block:
