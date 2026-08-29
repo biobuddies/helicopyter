@@ -92,7 +92,7 @@ fastjsonschema==2.21.1
     # via validate-pyproject
 filelock==3.18.0
     # via virtualenv
-hadolint-py @ git+https://github.com/AleksaC/hadolint-py.git@446db46ab58b26eb8e40d5626c1229e8cf75b3b5
+hadolint-py @ git+https://github.com/AleksaC/hadolint-py.git@6e7504451511eaeb62a3e7f14d63b0296cbf86eb
     # via helicopyter (pyproject.toml)
 id==1.5.0
     # via twine
@@ -212,6 +212,8 @@ pygments==2.19.1
     #   rich
 pyproject-hooks==1.2.0
     # via build
+pyrefly==1.2.0
+    # via helicopyter (pyproject.toml)
 pytest==8.3.5
     # via
     #   helicopyter (pyproject.toml)
