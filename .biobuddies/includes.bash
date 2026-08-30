@@ -96,7 +96,7 @@ pathver() {
     # as in cases where zsh aliases `type` to `whence -v`,
     # which prints "python is /path" instead of "/path"
     source=$(command -v "$1")
-    if [[ $source != /* ]]; then  # Not an absolute path (e.g. an alias or missing)
+    if [[ $source != /* ]]; then # Not an absolute path (e.g. an alias or missing)
         # We use 2>&1 because bash (unlike zsh) prints "not found" to stderr
         source=$(command -V "$1" 2>&1)
     fi
