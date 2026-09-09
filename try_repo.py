@@ -34,28 +34,26 @@ def try_repo(args: argparse.Namespace) -> int:
         if getattr(args, 'hook', None):
             manifest = [hook for hook in manifest if hook['id'] == args.hook]
 
-        config = yaml_dump(
-            {
-                'repos': [
-                    {
-                        'repo': repo,
-                        'rev': ref,
-                        'hooks': [
-                            {
-                                'id': hook['id'],
-                                **({'args': ['.']} if hook['id'] == 'cookiecutter' else {}),
-                                **(
-                                    {'exclude': r'\.gitignore$'}
-                                    if hook['id'] == 'end-of-file-fixer'
-                                    else {}
-                                ),
-                            }
-                            for hook in manifest
-                        ],
-                    }
-                ]
-            }
-        )
+        config = yaml_dump({
+            'repos': [
+                {
+                    'repo': repo,
+                    'rev': ref,
+                    'hooks': [
+                        {
+                            'id': hook['id'],
+                            **({'args': ['.']} if hook['id'] == 'cookiecutter' else {}),
+                            **(
+                                {'exclude': r'\.gitignore$'}
+                                if hook['id'] == 'end-of-file-fixer'
+                                else {}
+                            ),
+                        }
+                        for hook in manifest
+                    ],
+                }
+            ]
+        })
         config_file = Path(tempdir) / constants.CONFIG_FILE
         config_file.write_text(config)
 
