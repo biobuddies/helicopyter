@@ -2,6 +2,8 @@ line-length = 100
 target-version = 'py312'
 
 [format]
+docstring-code-format = true
+preview = true
 quote-style = 'single'
 skip-magic-trailing-comma = true
 
@@ -10,13 +12,16 @@ external = ['typos']
 fixable = ['ALL']
 ignore = [
     'ANN401', # `**kwargs: Any` is reasonable
+    'BLE001', # except Exception is okay
     'COM812', # Insists on `join([],)` over `join([])`
+    'CPY001', # Git records authors and dates
     'D101',
     'D103',
     'D104',
     'D107',
     'EM101',  # Simple code is more important than simple tracebacks
     'EM102',  # Simple code is more important than simple tracebacks
+    'FBT001', # What is bad about Boolean parameters?
     'FIX002', # Don't make the perfect the enemy of the good
     'INP001',
     # Demystify magic values with good variable names, comments, or other context. Follow
@@ -33,6 +38,7 @@ ignore = [
     'TD004',  # A colon takes up space without really improving readability
     'TRY002', # Forces premature specialization; the right time to subclass is when the exception starts being caught
     'TRY003', # Forces premature specialization; the right time to subclass is when the exception starts being caught
+    'UP031',  # Percent formatting can simplify curly-heavy strings
 ]
 select = ['ALL']
 
@@ -51,6 +57,8 @@ split-on-trailing-comma = false
     'PLR6301', # Test classes can ignore self
     'PT013',   # `import pytest` would be inconsistent with other imports
     'S101',    # Tests can have assertions
+    'S105',    # Testing authentication is good
+    'S603',    # Tests can call subprocesses
 ]
 
 [lint.pydocstyle]

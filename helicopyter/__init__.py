@@ -15,7 +15,6 @@ from cdktf import App, TerraformElement, TerraformStack
 from constructs import Construct, Node
 from tap import Tap
 
-
 registry: list['Block'] = []
 
 
@@ -30,7 +29,7 @@ def quote(value: Any, depth: int = 1) -> str:
         inner = '\n'.join(f'{pad}{k} = {quote(v, depth + 1)}' for k, v in value.items())
         return f'{{\n{inner}\n{close}}}'
     if isinstance(value, list):
-        return f"[{', '.join(quote(v, depth) for v in value)}]"
+        return f'[{", ".join(quote(v, depth) for v in value)}]'
     return dumps(value)
 
 
@@ -88,11 +87,11 @@ class Block:
                 parts.append(value.to_hcl(depth + 1))
             else:
                 parts.append(f'{pad}  {key} = {quote(value, depth + 1)}')
-        return f'{head}\n{'\n'.join(parts)}\n{pad}}}'
+        return f'{head}\n{"\n".join(parts)}\n{pad}}}'
 
 
 # Unquoted type references
-tbool = Block('bool')  # noqa: A001
+tbool = Block('bool')
 number = Block('number')
 string = Block('string')
 terraform = Block('terraform')
@@ -101,7 +100,7 @@ terraform.backend = Block('backend')
 
 # Block builders (attribute access chains labels; calling registers a block)
 data = Block('data')
-tlocals = Block('locals')  # noqa: A001
+tlocals = Block('locals')
 provider = Block('provider')
 resource = Block('resource')
 variable = Block('variable')
@@ -274,7 +273,7 @@ def multisynth(
                 print(f'{format_with} fmt stderr: {error.stderr}')
                 print(
                     f'{format_with} --version: {check_output([format_with, "--version"], stderr=PIPE)}'
-                )  # noqa: S603
+                )
                 raise
             formatted = sub(
                 r'\n{3,}',
