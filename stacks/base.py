@@ -30,7 +30,7 @@ def provide(source: str, version: str, **kwargs: Any) -> Block:
         skip_s3_checksum='true',
         use_path_style='true',
     )
-    name = source.split('/')[-1]
+    name = source.rsplit('/', maxsplit=1)[-1]
     terraform.required_providers(**{name: {'source': source, 'version': version}})
     return getattr(provider, name)(**kwargs)
 
