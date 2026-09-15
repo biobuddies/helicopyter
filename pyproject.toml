@@ -29,6 +29,7 @@ demos = [
     'cdktf-cdktf-provider-github',
     'cdktf-cdktf-provider-null',
 ]
+provision = ['pyinfra>=3']
 precommit = [
     'actionlint-py',
     'basedpyright',
