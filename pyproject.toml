@@ -12,7 +12,7 @@ classifiers = [
     'Topic :: System :: Installation/Setup',
 ]
 description = 'Python Terraform JSON configuration generator'
-dependencies = ['cdktf', 'typed-argument-parser']
+dependencies = ['typed-argument-parser']
 dynamic = ['version']
 name = 'helicopyter'
 requires-python = '>=3.12'
@@ -20,6 +20,7 @@ readme = 'README.md'
 
 [project.optional-dependencies]
 buildrelease = ['build', 'ipython', 'twine']
+cdktf = ['cdktf']
 demos = [
     'cdktf-cdktf-provider-aws',
     # prebuilt package 12+ brings provider 5+
