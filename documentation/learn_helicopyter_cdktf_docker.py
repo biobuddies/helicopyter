@@ -1,20 +1,18 @@
-"""Helicopyter example to compare with upstream CDKTF."""
+"""Docker example using Helicopyter with legacy CDKTF syntax."""
 
 from cdktf_cdktf_provider_docker.container import Container
 from cdktf_cdktf_provider_docker.image import Image
 
-from helicopyter import HeliStack
+from helicopyter.cdktf import HeliStack
 
 
 def synth(stack: HeliStack) -> None:
     stack.provide('docker')
 
-    docker_image = stack.push(Image, 'nginxImage', name='nginx:latest', keep_locally=False)
-
     stack.push(
         Container,
         'nginxContainer',
         name='tutorial',
-        image=docker_image.name,
+        image=stack.push(Image, 'nginxImage', name='nginx:latest', keep_locally=False).name,
         ports=[{'internal': 80, 'external': 8000}],
     )

@@ -47,7 +47,7 @@ app.synth()
 ## Diff from CDKTF to Helicopyter
 ```diff
 --- documentation/learn_cdktf_docker.py   2024-08-05 08:47:30
-+++ documentation/learn_helicopyter_docker.py     2024-08-05 08:47:25
++++ documentation/learn_helicopyter_cdktf_docker.py     2024-08-05 08:47:25
 @@ -1,28 +1,18 @@
 -from cdktf import App, TerraformStack
  from cdktf_cdktf_provider_docker.container import Container

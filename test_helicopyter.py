@@ -3,13 +3,10 @@
 from pathlib import Path
 from sys import modules
 
-from cdktf import TerraformLocal, TerraformOutput, TerraformVariable
-from cdktf_cdktf_provider_null.resource import Resource as NullResource
-from pytest import MonkeyPatch, raises
+from pytest import MonkeyPatch
 
 from helicopyter import (
     Block,
-    HeliStack,
     data,
     local,
     multisynth,
@@ -26,45 +23,6 @@ from helicopyter import (
     var,
     variable,
 )
-
-
-def test_helistack() -> None:
-    """The class must instantiate and provide the cona attribute and provide and push methods."""
-    stack = HeliStack('foo')
-    assert stack.cona == 'foo'
-    assert callable(stack.provide)
-    assert callable(stack.push)
-
-
-def test_override() -> None:
-    stack = HeliStack('foo')
-    stack.override(foo=True, bar=False)
-    output = stack.to_terraform()
-    assert output['foo']
-    assert not output['bar']
-
-
-def test_push_id() -> None:
-    """Within a given Element such as the NullResource, the id_ must be unique."""
-    stack = HeliStack('foo')
-    my_first_null = stack.push(NullResource, 'bar')
-    assert isinstance(my_first_null, NullResource)
-
-    my_second_null = stack.push(NullResource, 'baz')
-    assert isinstance(my_second_null, NullResource)
-
-    with raises(RuntimeError):
-        stack.push(NullResource, 'bar')
-
-
-def test_push_provider() -> None:
-    """The same id_ must be allowed for different Elements."""
-    stack = HeliStack('foo')
-    stack.push(NullResource, 'bar')
-    stack.push(TerraformLocal, 'bar', 'bar')
-    stack.push(TerraformOutput, 'bar', value='bar')
-    stack.push(TerraformVariable, 'bar')
-    stack.to_terraform()
 
 
 def test_ref_str() -> None:

@@ -1,28 +1,13 @@
-"""Demonstrate a simple HeliStack synth function using CDKTF constructs."""
+"""Demonstrate Python Syntax for Terraform."""
 
-from cdktf import LocalExecProvisioner, TerraformLocal, TerraformOutput, TerraformVariable
-from cdktf_cdktf_provider_null.resource import Resource as NullResource
+from helicopyter import Block, cona, resource, string, terraform, tlocals, var, variable
 
-from helicopyter import HeliStack
+tlocals(cona=cona, envi=terraform.workspace)
 
-
-def synth(stack: HeliStack) -> None:
-    """
-    Accept the GIt HAsh (GIHA) as a variable and output it.
-
-    Also infer the ENVIronment (ENVI) from the workspace and echo it to standard output.
-    """
-    stack.push(TerraformLocal, 'cona', stack.cona)
-    stack.push(TerraformLocal, 'envi', '${terraform.workspace}')
-
-    stack.push(
-        NullResource,
-        'this',
-        provisioners=[
-            LocalExecProvisioner(
-                command='echo $envi', environment={'envi': '${local.envi}'}, type='local-exec'
-            )
-        ],
+resource.null_resource.this(
+    provisioner=Block('provisioner', 'local-exec')(
+        command='echo $envi', environment={'envi': '${local.envi}'}
     )
-    giha = stack.push(TerraformVariable, 'giha', type='string')
-    stack.push(TerraformOutput, 'giha', value=giha.to_string())
+)
+variable.giha(type=string)
+Block('output', 'giha')(value=var.giha)
