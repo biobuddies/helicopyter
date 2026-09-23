@@ -1,3 +1,16 @@
+[settings]
+lockfile = true
+
+[env]
+# Placeholders render deploys here and in GitHub Actions
+ALLOWEDFLARE_EMAIL = "{{ get_env(name='ALLOWEDFLARE_EMAIL', default='person@emailprovider.example') }}"
+ALLOWEDFLARE_PRIVATE_DOMAIN = "{{ get_env(name='ALLOWEDFLARE_PRIVATE_DOMAIN', default='organization.example') }}"
+CLOUDFLARE_ACCOUNT_ID = "{{ get_env(name='CLOUDFLARE_ACCOUNT_ID', default='0123456789abcdef0123456789abcdef00') }}"
+CLOUDFLARE_ZONE_ID = "{{ get_env(name='CLOUDFLARE_ZONE_ID', default='0123456789abcdef0123456789abcdef01') }}"
+# Download OpenTofu from releases without GitHub API calls
+TOFUENV_INSTALL_MODE = 'mirror'
+TOFUENV_LIST_MODE = 'mirror'
+
 [hooks]
 postinstall = """
 set -o errexit -o nounset
@@ -124,10 +137,6 @@ run = 'mise run-on-sources hadolint "*Dockerfile*" "$@"'
 run = '''
 #!/usr/bin/env bash
 set -o errexit -o nounset -o pipefail
-export ALLOWEDFLARE_EMAIL="${ALLOWEDFLARE_EMAIL:-person@emailprovider.example}"
-export ALLOWEDFLARE_PRIVATE_DOMAIN="${ALLOWEDFLARE_PRIVATE_DOMAIN:-organization.example}"
-export CLOUDFLARE_ACCOUNT_ID="${CLOUDFLARE_ACCOUNT_ID:-0123456789abcdef0123456789abcdef00}"
-export CLOUDFLARE_ZONE_ID="${CLOUDFLARE_ZONE_ID:-0123456789abcdef0123456789abcdef01}"
 python -m helicopyter --format_with="${INSH_TF:-terraform}" all "$@"
 '''
 
@@ -251,7 +260,7 @@ run = """
 set -o errexit -o nounset -o pipefail
 cona=${1:?missing cona}
 shift
-mise tinit "$cona"
+mise tinit "$cona" -backend=false
 ${INSH_TF:-terraform} -chdir="deploys/$cona/terraform" validate "$@"
 """
 

@@ -1,2 +1,12 @@
 default_context:
+    description: Python-defined infrastructure
+    github_actions_env:
+        GITHUB_TOKEN: ${{ github.token }}
+        INSH_TF: tofu
+        PATH: .venv/bin:/home/runner/.local/bin:/home/runner/.local/share/mise/shims:/usr/bin:/bin
+        TENV_GITHUB_TOKEN: ${{ github.token }}
     languages: Node,Python,Terraform
+    license: MPL-2.0
+    publish_to_pypi: true
+    python_dependencies:
+        - typed-argument-parser

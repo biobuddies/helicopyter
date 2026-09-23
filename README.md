@@ -37,6 +37,25 @@ to generate multiple deployments. Additional hand-written `.tf` files can coexis
 Compare the Docker examples using [Python Syntax for Terraform](documentation/learn_helicopyter_pst_docker.py)
 and [legacy CDKTF syntax](documentation/learn_helicopyter_cdktf_docker.py).
 
+### Cloudflare Workers JAM stacks
+
+`jam()` provides Cloudflare Workers hosting, with branch-specific preview environments, given a
+URL like `rivertide.biobuddi.es/` or `staff@admin.cov.ing/`.
+
+```python
+from helicopyter.cloudflare import jam
+
+# Public; main deployed to `rivertide.biobuddi.es/`, previews to `rivertide-{branch}.biobuddi.es/`
+jam(
+    'rivertide.biobuddi.es/',
+    account_id='0123456789abcdef0123456789abcdef',
+    zone_id='fedcba9876543210fedcba9876543210',
+)
+
+# Staff only behind Cloudflare Access; main deployed to `admin.cov.ing/`, previews to `admin-{branch}.cov.ing/`
+jam('staff@admin.cov.ing/')  # $CLOUDFLARE_ACCOUNT_ID and $CLOUDFLARE_ZONE_ID read from environment
+```
+
 ## 2. Migrate existing CDKTF to Python Syntax for Terraform
 
 Migrate one deployment at a time. Before editing, synthesize its existing configuration and save
