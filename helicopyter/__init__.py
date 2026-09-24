@@ -109,11 +109,11 @@ var = Block('var')
 
 @contextmanager
 def only_main() -> Iterator[None]:
-    """Count each resource defined inside to one in the main workspace, zero elsewhere."""
+    """Count each data source or resource defined inside to one in main, zero elsewhere."""
     start = len(registry)
     yield
     for block in registry[start:]:
-        if block.kind == 'resource':
+        if block.kind in {'data', 'resource'}:
             block.attributes['count'] = Block('terraform.workspace == "main" ? 1 : 0')
 
 

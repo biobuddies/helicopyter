@@ -36,8 +36,9 @@ class HeliStack(TerraformStack):
         Example usage:
         stack.provide('github', owner='biobuddies')
         """
-        module = import_module(f'cdktf_cdktf_provider_{name}.provider')
-        return getattr(module, f'{name.title()}Provider')(self, 'this', **kwargs)
+        return getattr(
+            import_module(f'cdktf_cdktf_provider_{name}.provider'), f'{name.title()}Provider'
+        )(self, 'this', **kwargs)
 
     E = TypeVar('E', bound=TerraformElement)
 

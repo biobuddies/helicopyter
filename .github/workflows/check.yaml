@@ -4,6 +4,7 @@ defaults:
 env:
     INSH_TF: tofu
     PATH: .venv/bin:/home/runner/.local/bin:/home/runner/.local/share/mise/shims:/usr/bin:/bin
+    TENV_GITHUB_TOKEN: ${{ github.token }}
 jobs:
     check:
         runs-on: ubuntu-latest
@@ -19,6 +20,8 @@ jobs:
             - run: mise run set-environment
             - run: mise run pre-commit
             - run: mise tvalid demo
+            - run: mise tvalid demojampublic
+            - run: mise tvalid demojamstaff
             - run: mise test
             - run: .venv/bin/just build_twine
     tabularize:

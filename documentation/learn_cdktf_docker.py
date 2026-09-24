@@ -15,6 +15,7 @@ class MyStack(TerraformStack):
 
         docker_image = Image(self, 'nginxImage', name='nginx:latest', keep_locally=False)
 
+        # grit-ignore
         Container(
             self,
             'nginxContainer',
