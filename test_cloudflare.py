@@ -14,7 +14,7 @@ def render(monkeypatch: MonkeyPatch) -> Callable[[str], dict[str, str]]:
     """Call jam for codename `site`; return top-level blocks keyed by address."""
     monkeypatch.setattr(helicopyter, 'cona', 'site')
 
-    def call(url: str) -> dict[str, str]:
+    def inner(url: str) -> dict[str, str]:
         jam(url, account_id='account', zone_id='zone')
         children = {
             id(value)
@@ -26,7 +26,7 @@ def render(monkeypatch: MonkeyPatch) -> Callable[[str], dict[str, str]]:
         registry.clear()
         return blocks
 
-    return call
+    return inner
 
 
 def test_jam_sibling_preview(render: Callable[[str], dict[str, str]]) -> None:

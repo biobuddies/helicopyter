@@ -40,11 +40,13 @@ def test_mise():
 
     assert check_output(['mise', 'orgn']) == b'biobuddies\n'
 
-    tabr_env = {
-        'MISE_TRUSTED_CONFIG_PATHS': getenv('MISE_TRUSTED_CONFIG_PATHS', ''),
-        'PATH': environ['PATH'],
-    }
-    assert check_output(['mise', 'tabr'], env=tabr_env) == (
+    assert check_output(
+        ['mise', 'tabr'],
+        env={
+            'MISE_TRUSTED_CONFIG_PATHS': getenv('MISE_TRUSTED_CONFIG_PATHS', ''),
+            'PATH': environ['PATH'],
+        },
+    ) == (
         b''
         if is_dirty
         else check_output(['git', 'rev-parse', '--abbrev-ref', 'HEAD']).strip() + b'\n'
@@ -100,6 +102,12 @@ def test_tabr_git_describe_mocked(git_describe: str, tabr: str):
     )
     target = 'git describe --all --dirty --exact-match'
     assert target in original
-    mocked = original.replace(target, f'echo "{git_describe}"')
-    output = check_output(['/usr/bin/env', 'bash', '-c', mocked], env={}).decode().strip()
-    assert output == tabr
+    assert (
+        check_output(
+            ['/usr/bin/env', 'bash', '-c', original.replace(target, f'echo "{git_describe}"')],
+            env={},
+        )
+        .decode()
+        .strip()
+        == tabr
+    )

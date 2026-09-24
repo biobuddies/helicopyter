@@ -28,11 +28,9 @@ def test_override() -> None:
 def test_push_id() -> None:
     """Within a given Element such as the NullResource, the id_ must be unique."""
     stack = HeliStack('foo')
-    my_first_null = stack.push(NullResource, 'bar')
-    assert isinstance(my_first_null, NullResource)
+    assert isinstance(stack.push(NullResource, 'bar'), NullResource)
 
-    my_second_null = stack.push(NullResource, 'baz')
-    assert isinstance(my_second_null, NullResource)
+    assert isinstance(stack.push(NullResource, 'baz'), NullResource)
 
     assert (
         stack.to_hcl_terraform()['hcl'].strip()
