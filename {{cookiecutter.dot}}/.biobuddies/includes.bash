@@ -442,7 +442,7 @@ hta() {
     local envi="${2?:Please provide an environment as the second argument}"
     if [[ $envi == default ]]; then
         echo 'The default workspace behaves inconsistently.'
-        echo 'If you only have one environment, please name it `prod`.'
+        echo 'If you only have one environment, please name it `main`.'
         return 1
     fi
     shift 2
@@ -464,7 +464,7 @@ htp() {
     local envi="${2?:Please provide an environment as the second argument}"
     if [[ $envi == default ]]; then
         echo 'The default workspace behaves inconsistently.'
-        echo 'If you only have one environment, please name it `prod`.'
+        echo 'If you only have one environment, please name it `main`.'
         return 1
     fi
     shift 2

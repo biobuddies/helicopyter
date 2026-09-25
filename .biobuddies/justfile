@@ -151,7 +151,7 @@ hta cona envi *args:
     #!/usr/bin/env bash
     if [[ "{{ envi }}" == "default" ]]; then
         echo 'The default workspace behaves inconsistently.'
-        echo 'If you only have one environment, please name it `prod`.'
+        echo 'If you only have one environment, please name it `main`.'
         exit 1
     fi
     {{ JUST }} hs {{ cona }} \
@@ -168,7 +168,7 @@ htp cona envi *args:
     #!/usr/bin/env bash
     if [[ "{{ envi }}" == "default" ]]; then
         echo 'The default workspace behaves inconsistently.'
-        echo 'If you only have one environment, please name it `prod`.'
+        echo 'If you only have one environment, please name it `main`.'
         exit 1
     fi
     {{ JUST }} hs {{ cona }} \

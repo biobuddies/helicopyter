@@ -216,7 +216,7 @@ envi=${2:?missing envi}
 shift 2
 if [[ "$envi" == "default" ]]; then
     echo 'The default workspace behaves inconsistently.'
-    echo 'If you only have one environment, please name it `prod`.'
+    echo 'If you only have one environment, please name it `main`.'
     exit 1
 fi
 mise tinit "$cona"
@@ -242,7 +242,7 @@ envi=${2:?missing envi}
 shift 2
 if [[ "$envi" == "default" ]]; then
     echo 'The default workspace behaves inconsistently.'
-    echo 'If you only have one environment, please name it `prod`.'
+    echo 'If you only have one environment, please name it `main`.'
     exit 1
 fi
 mise tinit "$cona"
