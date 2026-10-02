@@ -103,17 +103,6 @@ run = 'env bash --login -o errexit -o pipefail'
 [tasks.basedpyright]
 run = 'mise run-on-sources basedpyright "*.py{,i}" --level error "$@"'
 
-[tasks.cookiecutter]
-run = '''
-#!/usr/bin/env bash
-set -o errexit -o nounset -o pipefail
-cookiecutter --config-file .cookiecutter.yaml --no-input --overwrite-if-exists "$(
-    [[ $(mise orgn)/$(mise cona) == biobuddies/helicopyter ]] \
-        && echo . \
-        || echo https://github.com/biobuddies/helicopyter.git
-)"
-'''
-
 [tasks.django-upgrade]
 run = 'mise run-on-sources django-upgrade \*.py "$@"'
 
@@ -224,6 +213,7 @@ TF_VAR_giha=$(mise giha) TF_VAR_tabr=$(mise tabr) TF_WORKSPACE="$envi" \
 run = '''
 #!/usr/bin/env bash
 set -o errexit -o nounset -o pipefail
+for cona in demo demojampublic demojamstaff; do mise tvalid "$cona"; done
 pytest --cov${PYTEST_COV-} \
     --cov-report=term-missing:skip-covered --verbose "$@"
 '''
