@@ -9,25 +9,6 @@ from subprocess import check_output
 from pytest import mark
 
 
-def test_just():
-    assert check_output(['.venv/bin/just', 'cona']) == b'helicopyter\n'
-
-    assert (
-        check_output(['.venv/bin/just', 'envi']) == b'github\n'
-        if getenv('GITHUB_ACTIONS')
-        else b'local\n'
-    )
-
-    giha = check_output(['.venv/bin/just', 'giha'])
-    assert match(rb'^[0-9a-f]{40}(-dirty)?\n$', giha)
-    if check_output(['git', 'status', '--porcelain', '--untracked-files=no']):
-        assert giha.endswith(b'-dirty\n')
-    else:
-        assert not giha.endswith(b'-dirty\n')
-
-    assert check_output(['.venv/bin/just', 'orgn']) == b'biobuddies\n'
-
-
 def test_mise():
     assert check_output(['mise', 'cona']) == b'helicopyter\n'
 
