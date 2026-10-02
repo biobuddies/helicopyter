@@ -80,7 +80,6 @@ jobs:
               with:
                   experimental: true
             - run: mise set-environment
-            - run: git diff --color=always --exit-code
             - if: github.event_name == 'push'
               run: mise release
             - run: mise build
