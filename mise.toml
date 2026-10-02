@@ -302,6 +302,8 @@ depends = [
     'uv-pip-compile',  # needs Internet
 ]
 
+# TODO harmonize packaging details then switch to measles' upstream version that includes
+# cookiecutter
 [tasks.pre-commit-all]
 run = '''
 #!/usr/bin/env bash
