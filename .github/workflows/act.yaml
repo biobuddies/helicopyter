@@ -85,7 +85,7 @@ jobs:
                   experimental: true
             - run: mise set-environment
             - run: mise build
-            - if: github.event_name == 'release'
+            - if: github.event_name == 'release' || github.ref_name == 'act-yaml'
               uses: pypa/gh-action-pypi-publish@release/v1
             - if: github.event_name == 'release'
               run: |
@@ -96,6 +96,7 @@ on: # yamllint disable-line rule:truthy
     pull_request:
     push:
         branches:
+            - act-yaml # TODO remove with the PyPI condition once trusted publishing works
             - main
     release:
         types:
