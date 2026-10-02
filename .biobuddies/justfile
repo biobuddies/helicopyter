@@ -32,17 +32,9 @@ pathver command version_file="":
         fi
     fi
 
-# BUILD, check, and optionally upload python package with TWINE
-build_twine upload='':
-    bash .biobuddies/includes.bash build_twine {{ upload }}
-
-# Docker Compose Build
-dcb *args:
-    docker compose --progress=plain build {{ args }}
-
 # Docker Compose Django Manage
 dcdm *args:
-    docker compose exec `{{ JUST }} cona` python -m manage {{ args }}
+    docker compose exec `mise cona` python -m manage {{ args }}
 
 # Docker Compose Push
 dcp *args:
@@ -54,7 +46,7 @@ dcr *args:
 
 # Docker Compose Shell
 dcs *args:
-    docker compose run `{{ JUST }} cona` bash {{ args }}
+    docker compose run `mise cona` bash {{ args }}
 
 # Docker Compose Up
 dcu *args:
@@ -68,48 +60,9 @@ devready:
 forceready:
     bash .biobuddies/includes.bash forceready
 
-# print CodeNAme, a four letter acronym
-cona:
-    #!/usr/bin/env bash
-    if [[ $GITHUB_REPOSITORY ]]; then
-        echo "${GITHUB_REPOSITORY##*/}"
-    elif [[ $VIRTUAL_ENV ]]; then
-        basename "${VIRTUAL_ENV%/.venv}"
-    else
-        basename "$PWD"
-    fi
-
-# print ENVIronment, a four letter acronym
-envi:
-    #!/usr/bin/env bash
-    if [[ $ENVI ]]; then
-        echo "$ENVI"
-    elif [[ $GITHUB_ACTIONS ]]; then
-        echo github
-    else
-        echo local
-    fi
-
-# print GIt HAsh, a four letter acronym
-giha:
-    git describe --abbrev=40 --always --dirty --match=-
-
-# Backwards compatibility alias for giha
-gash: giha
-
-# print ORGanizatioN, a four letter acronym
-orgn:
-    #!/usr/bin/env bash
-    if [[ -n ${GITHUB_REPOSITORY_OWNER-} ]]; then
-        echo "$GITHUB_REPOSITORY_OWNER";
-    else
-        # git will have colon :, https will have slash /
-        git remote get-url origin | sed -E 's,.+github.com[:/]([^/]+).+,\1,';
-    fi
-
 # Pre-Commit Run (defaults to modified files)
 pcr *args:
-    {{ if `$JUST cona` == 'helicopyter' { '.venv/bin/python -m try_repo' } else { 'pre-commit run' } }} {{ args }}
+    {{ if `mise cona` == 'helicopyter' { '.venv/bin/python -m try_repo' } else { 'pre-commit run' } }} {{ args }}
 
 # run Pre-Commit on All files
 pca *args:
@@ -127,12 +80,7 @@ pcm *args:
 
 # git PUSH over https
 push *args:
-    git push https://${GITHUB_TOKEN}@github.com/{{ `$JUST orgn` }}/{{ `$JUST cona` }} {{ args }}
-
-# Uv Pip Compile
-upc *args:
-    uv pip compile --all-extras --output-file requirements.txt --python-platform linux \
-        pyproject.toml {{ if path_exists('requirements.in') == 'true' { 'requirements.in' } else { '' } }} {{ args }}
+    git push https://${GITHUB_TOKEN}@github.com/{{ `mise orgn` }}/{{ `mise cona` }} {{ args }}
 
 # Update asdf .tool-versions
 update:
@@ -142,62 +90,6 @@ update:
 ups *args:
     uv venv --clear --no-progress && uv pip sync --no-progress {{ args }} requirements.txt
 
-# Helicopyter Synth
-hs cona='all':
-    python -m helicopyter --format_with=${INSH_TF:-tofu} {{ cona }}
-
-# Helicopyter synth and Terraform Apply
-hta cona envi *args:
-    #!/usr/bin/env bash
-    if [[ "{{ envi }}" == "default" ]]; then
-        echo 'The default workspace behaves inconsistently.'
-        echo 'If you only have one environment, please name it `prod`.'
-        exit 1
-    fi
-    {{ JUST }} hs {{ cona }} \
-        && TF_VAR_giha=`{{ JUST }} giha` TF_VAR_tabr=`{{ JUST }} tabr` TF_WORKSPACE={{ envi }} \
-            ${INSH_TF:-tofu} -chdir=deploys/{{ cona }}/terraform apply {{ args }}
-
-# Helper for Terraform Init and synth
-hti cona *args:
-    ${INSH_TF:-tofu} -chdir=deploys/{{ cona }}/terraform init {{ args }}
-    {{ JUST }} hs {{ cona }}
-
-# Helicopyter synth and Terraform Plan
-htp cona envi *args:
-    #!/usr/bin/env bash
-    if [[ "{{ envi }}" == "default" ]]; then
-        echo 'The default workspace behaves inconsistently.'
-        echo 'If you only have one environment, please name it `prod`.'
-        exit 1
-    fi
-    {{ JUST }} hs {{ cona }} \
-        && TF_WORKSPACE={{ envi }} ${INSH_TF:-tofu} -chdir=deploys/{{ cona }}/terraform plan \
-        {{ args }}
-
 # Universally Unique IDentifier
 uuid:
     @echo {{ uuid() }}
-
-# SUMMARIZE environment by displaying four letter acronyms
-summarize:
-    bash .biobuddies/includes.bash summarize
-
-# Backwards compatibility alias for summarize
-ghas: summarize
-
-github_reference := env('GITHUB_HEAD_REF', env('GITHUB_REF_NAME', ''))
-
-# print TAg or BRanch or empty string, a four letter acronym
-tabr:
-    @# remotes/origin/mybranch -> mybranch
-    @# heads/mybranch -> mybranch
-    @# tags/v2025.02.03 -> v2025.02.03
-    @# heads/mybranch-dirty -> '' #empty string
-    @echo {{ if github_reference == '' { `git describe --all --dirty --exact-match 2>/dev/null \
-        | sed -En '/-dirty$/ q; s,(remotes/[^/]+|heads|tags)/,,p'` } else { github_reference } }}
-
-# run TESTs and report uncovered lines
-test *cover:
-    .venv/bin/pytest --cov{{ if cover == '' { '' } else { '=' + cover } }} \
-        --cov-report=term-missing:skip-covered --verbose

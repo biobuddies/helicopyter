@@ -158,34 +158,6 @@ a() {
     fi
 }
 
-build_twine() {
-    : 'clean, BUILD, check, and optionally upload python package with TWINE'
-    local upload="${1:-}"
-    if [[ $upload != '' ]]; then
-        if [[ $(git describe --exact-match --tags) != v20* ]]; then
-            echo 'ERROR: Please tag in the gvcount or yucount format'
-            return 1
-        fi
-        if [[ $TWINE_USERNAME != '__token__' || -z $TWINE_PASSWORD ]]; then
-            echo 'ERROR: Please set TWINE_USERNAME=__token__ and TWINE_PASSWORD=...'
-            return 1
-        fi
-    fi
-    rm -rf dist && .venv/bin/python -m build && .venv/bin/python -m twine check --strict dist/*
-    [[ $upload == '' ]] || .venv/bin/python -m twine upload dist/*
-}
-
-cona() {
-    : 'print CodeNAme, a four letter acronym'
-    if [[ ${GITHUB_REPOSITORY-} ]]; then
-        echo "${GITHUB_REPOSITORY##*/}"
-    elif [[ ${VIRTUAL_ENV-} ]]; then
-        basename "${VIRTUAL_ENV%/.venv}"
-    else
-        basename "$PWD"
-    fi
-}
-
 check_mailmap() {
     : 'CHECK for missing MAILMAP entries by surfacing different names for the same email'
     # Could be expanded to optionally require ALLOWEDFLARE_PRIVATE_DOMAIN.
@@ -202,11 +174,6 @@ check_mailmap() {
     return $return_code
 }
 
-dcb() {
-    : 'Docker Compose Build'
-    docker compose --progress=plain build "$@"
-}
-
 dcp() {
     : 'Docker Compose Push'
     docker compose push --quiet "$@"
@@ -219,7 +186,7 @@ dcr() {
 
 dcs() {
     : 'Docker Compose Shell'
-    docker compose run "$(cona)" bash "$@"
+    docker compose run "$(mise cona)" bash "$@"
 }
 
 dcu() {
@@ -397,17 +364,6 @@ export INSH_EMAIL=youremail@yourdomain.tld; forceready'
     ups "$@"
 }
 
-envi() {
-    : 'print ENVIronment, a four letter acronym'
-    if [[ ${ENVI-} ]]; then
-        echo "$ENVI"
-    elif [[ ${GITHUB_ACTIONS-} ]]; then
-        echo github
-    else
-        echo local
-    fi
-}
-
 functions() {
     : 'list FUNCTIONS defined by .biobuddies/includes.bash'
     gsed -En 's/^ *([^(]+)\(\) \{$/\1/; T; N; s/\n +: /\t\t/; p' "${BASH_SOURCE[0]}"
@@ -420,67 +376,10 @@ functions() {
     echo -e "INSH_TF\t\t\tSet to 'terraform' to use it instead. Default is 'tofu'"
 }
 
-giha() {
-    : 'print GIt HAsh, a four letter acronym'
-    git describe --abbrev=40 --always --dirty --match=-
-}
-
-gash() {
-    : 'backwards compatibility wrapper around giha'
-    giha
-}
-
 hs() {
     : 'Helicopyter Synth'
     local cona="${1:-all}"
     python -m helicopyter --format_with="${INSH_TF:-tofu}" "$cona"
-}
-
-hta() {
-    : 'Helicopyter synth and Terraform Apply'
-    local cona="${1?:Please provide a code name as the first argument}"
-    local envi="${2?:Please provide an environment as the second argument}"
-    if [[ $envi == default ]]; then
-        echo 'The default workspace behaves inconsistently.'
-        echo 'If you only have one environment, please name it `prod`.'
-        return 1
-    fi
-    shift 2
-    hs "$cona" \
-        && TF_VAR_giha=$(giha) TF_VAR_tabr=$(tabr) TF_WORKSPACE="$envi" \
-            ${INSH_TF:-tofu} -chdir="deploys/$cona/terraform" apply "$@"
-}
-
-hti() {
-    : 'Helper for Terraform Init and synth'
-    local cona="${1?:Please provide a code name as the first argument}"
-    shift
-    ${INSH_TF:-tofu} -chdir="deploys/$cona/terraform" init "$@"
-}
-
-htp() {
-    : 'Helicopyter synth and Terraform Plan'
-    local cona="${1?:Please provide a code name as the first argument}"
-    local envi="${2?:Please provide an environment as the second argument}"
-    if [[ $envi == default ]]; then
-        echo 'The default workspace behaves inconsistently.'
-        echo 'If you only have one environment, please name it `prod`.'
-        return 1
-    fi
-    shift 2
-    hs "$cona" \
-        && TF_VAR_giha=$(giha) TF_VAR_tabr=$(tabr) TF_WORKSPACE="$envi" \
-            ${INSH_TF:-tofu} -chdir="deploys/$cona/terraform" plan "$@"
-}
-
-orgn() {
-    : 'print ORGanizatioN, a four letter acronym'
-    if [[ ${GITHUB_REPOSITORY_OWNER-} ]]; then
-        echo "$GITHUB_REPOSITORY_OWNER"
-    else
-        # git will have colon :, https will have slash /
-        git remote get-url origin | sed -E 's,.+github.com[:/]([^/]+).+,\1,'
-    fi
 }
 
 pc() {
@@ -490,7 +389,7 @@ pc() {
 
 pca() {
     : 'run Pre-Commit on All files'
-    if [[ $(cona) == helicopyter ]]; then
+    if [[ $(mise cona) == helicopyter ]]; then
         command=try-repo
     else
         command=run
@@ -506,76 +405,6 @@ pcam() {
 pcm() {
     : 'run Pre-Commit on modified files including Manual stage hooks'
     pre-commit run --hook-stage manual "$@"
-}
-
-release() {
-    : 'create a github RELEASE, and optionally also run build and twine upload'
-    local prefix
-    prefix=$(date -u "+v${INSH_RELEASE_PREFIX:-%Y.%U.}")
-    git fetch --tags
-    local count
-    count=$(git tag --list "$prefix*" | gsed "s/$prefix//" | sort -r | head -1)
-    gh release create "$prefix$(printf '%02d' $((${count:-0} + 1)))" --generate-notes
-    git fetch --tags
-    [[ $* == build ]] && build_twine upload
-}
-
-summarize() {
-    : 'SUMMARIZE environment by setting and displaying four letter acronyms'
-    CONA=$(cona)
-    ENVI=$(envi)
-    GIHA=$(giha)
-    ORGN=$(orgn)
-    ROLE="${ROLE-}"
-    TABR=$(tabr)
-    cat <<EOD | tee "${GITHUB_STEP_SUMMARY:-/dev/null}"
-| Unabbreviat. | FLAN | Value                                          |
-| ------------ | ---- | ---------------------------------------------- |
-| COdeNAme     | CONA | $CONA |
-| ENVIronment  | ENVI | $ENVI |
-| GIt HAsH     | GIHA | $GIHA |
-| ORGanizatioN | ORGN | $ORGN |
-| ROLE         | ROLE | $ROLE |
-| TAg/BRanch   | TABR | $TABR |
-EOD
-    if [[ $GITHUB_ENV ]]; then
-        # For use by later steps
-        cat <<EOD | tee -a "$GITHUB_ENV"
-CONA=$CONA
-ENVI=$ENVI
-GIHA=$GIHA
-ORGN=$ORGN
-ROLE=$ROLE
-TABR=$TABR
-EOD
-        # For use during this step
-        set -o allexport
-        # shellcheck disable=SC1090
-        source "$GITHUB_ENV"
-    fi
-}
-
-# Backwards compatibility with GitHub Actions Summary abbreviation
-ghas() { summarize; }
-
-tabr() {
-    : 'print TAg or BRanch or empty string, a four letter acronym'
-    # GITHUB_HEAD_REF works for Pull Requests, GITHUB_REF_NAME for all the other triggers
-    # https://stackoverflow.com/questions/58033366
-    # In contrast to the git metadata, the GitHub Actions environment variables are available before
-    # git checkout, and may be less ambiguous.
-    if [[ ${GITHUB_HEAD_REF-} ]]; then
-        echo "$GITHUB_HEAD_REF"
-    elif [[ ${GITHUB_REF_NAME-} ]]; then
-        echo "$GITHUB_REF_NAME"
-    else
-        # remotes/origin/mybranch -> mybranch
-        # heads/mybranch -> mybranch
-        # tags/v2025.02.03 -> v2025.02.03
-        # heads/mybranch-dirty -> '' #empty string
-        git describe --all --dirty --exact-match 2>/dev/null \
-            | gsed -En '/-dirty$/ q; s,(remotes/[^/]+|heads|tags)/,,p'
-    fi
 }
 
 upc() {
