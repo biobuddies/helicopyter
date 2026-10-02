@@ -118,6 +118,10 @@ run = 'mise run-on-sources basedpyright "*.py{,i}" --level error "$@"'
 run = '''
 #!/usr/bin/env bash
 set -o errexit -o nounset -o pipefail
+rm -rf dist
+uv build
+uv publish --dry-run dist/*
+uvx twine check --strict dist/*
 if [[ -f Dockerfile && -f compose.yaml ]]; then
     docker compose --progress=plain build "$@"
 fi

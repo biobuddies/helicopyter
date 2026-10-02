@@ -57,7 +57,7 @@ jobs:
               with:
                   experimental: true
             - run: mise run set-environment
-            - run: .venv/bin/just build_twine
+            - run: mise run build
             - uses: pypa/gh-action-pypi-publish@release/v1
 
 on: # yamllint disable-line rule:truthy
