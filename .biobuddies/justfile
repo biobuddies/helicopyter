@@ -32,10 +32,6 @@ pathver command version_file="":
         fi
     fi
 
-# BUILD, check, and optionally upload python package with TWINE
-build_twine upload='':
-    bash .biobuddies/includes.bash build_twine {{ upload }}
-
 # Docker Compose Build
 dcb *args:
     docker compose --progress=plain build {{ args }}

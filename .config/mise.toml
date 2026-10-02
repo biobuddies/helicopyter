@@ -118,6 +118,10 @@ run = 'mise run-on-sources basedpyright "*.py{,i}" --level error "$@"'
 run = '''
 #!/usr/bin/env bash
 set -o errexit -o nounset -o pipefail
+rm -rf dist
+uv build
+uv publish --dry-run dist/*
+uvx twine check --strict dist/*
 if [[ -f Dockerfile && -f compose.yaml ]]; then
     docker compose --progress=plain build "$@"
 fi
@@ -225,11 +229,11 @@ run = 'mise run-on-sources pyrefly "*.py{,i}" check "$@"'
 run = '''
 #!/usr/bin/env bash
 set -o errexit -o nounset -o pipefail
-prefix=$(date -u '+v%Y.%U.')
+prefix=$(date -u '+v%Y.%-U.')
 git fetch --tags
 latest=$(git tag --list "$prefix*" --sort=-version:refname | head -1)
 count=${latest#"$prefix"}
-gh release create "$prefix$(printf '%02d' "$((10#${count:-0} + 1))")" --generate-notes
+gh release create "$prefix$((${count:-0} + 1))" --generate-notes
 git fetch --tags
 '''
 

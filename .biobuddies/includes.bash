@@ -158,23 +158,6 @@ a() {
     fi
 }
 
-build_twine() {
-    : 'clean, BUILD, check, and optionally upload python package with TWINE'
-    local upload="${1:-}"
-    if [[ $upload != '' ]]; then
-        if [[ $(git describe --exact-match --tags) != v20* ]]; then
-            echo 'ERROR: Please tag in the gvcount or yucount format'
-            return 1
-        fi
-        if [[ $TWINE_USERNAME != '__token__' || -z $TWINE_PASSWORD ]]; then
-            echo 'ERROR: Please set TWINE_USERNAME=__token__ and TWINE_PASSWORD=...'
-            return 1
-        fi
-    fi
-    rm -rf dist && .venv/bin/python -m build && .venv/bin/python -m twine check --strict dist/*
-    [[ $upload == '' ]] || .venv/bin/python -m twine upload dist/*
-}
-
 cona() {
     : 'print CodeNAme, a four letter acronym'
     if [[ ${GITHUB_REPOSITORY-} ]]; then
@@ -416,7 +399,6 @@ functions() {
     echo -e "INSH_TRACE\t\tSet to 'off' to skip \`set -x\`"
     echo -e "INSH_NAME\t\tgit user.name"
     echo -e "INSH_EMAIL\t\tgit user.email"
-    echo -e "INSH_RELEASE_PREFIX\tSet to '-%G.%V.' for ISO year and week. Default is '-%Y.%U.'"
     echo -e "INSH_TF\t\t\tSet to 'terraform' to use it instead. Default is 'tofu'"
 }
 
@@ -506,18 +488,6 @@ pcam() {
 pcm() {
     : 'run Pre-Commit on modified files including Manual stage hooks'
     pre-commit run --hook-stage manual "$@"
-}
-
-release() {
-    : 'create a github RELEASE, and optionally also run build and twine upload'
-    local prefix
-    prefix=$(date -u "+v${INSH_RELEASE_PREFIX:-%Y.%U.}")
-    git fetch --tags
-    local count
-    count=$(git tag --list "$prefix*" | gsed "s/$prefix//" | sort -r | head -1)
-    gh release create "$prefix$(printf '%02d' $((${count:-0} + 1)))" --generate-notes
-    git fetch --tags
-    [[ $* == build ]] && build_twine upload
 }
 
 summarize() {
