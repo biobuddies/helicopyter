@@ -233,7 +233,7 @@ prefix=$(date -u '+v%Y.%-U.')
 git fetch --tags
 latest=$(git tag --list "$prefix*" --sort=-version:refname | head -1)
 count=${latest#"$prefix"}
-gh release create "$prefix$((${count:-0} + 1))" --generate-notes
+gh release create "$prefix$((${count:-0} + 1))" --generate-notes --target "$(git rev-parse HEAD)"
 git fetch --tags
 '''
 

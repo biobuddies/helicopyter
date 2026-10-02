@@ -214,6 +214,7 @@ run = '''
 #!/usr/bin/env bash
 set -o errexit -o nounset -o pipefail
 for cona in demo demojampublic demojamstaff; do mise tvalid "$cona"; done
+mise build
 pytest --cov${PYTEST_COV-} \
     --cov-report=term-missing:skip-covered --verbose "$@"
 '''
@@ -253,12 +254,6 @@ run = 'typos --write-changes --config .biobuddies/typos.toml "$@"'
 
 [tasks.uv-pip-check]
 run = 'uv pip check "$@"'
-
-[tasks.uv-pip-compile]
-run = '''
-uv pip compile --all-extras --output-file requirements.txt \
-    --python-platform linux pyproject.toml "$@"
-'''
 
 [tasks.validate-pyproject]
 run = 'validate-pyproject pyproject.toml "$@"'

@@ -73,21 +73,19 @@ jobs:
             id-token: write
         runs-on: ubuntu-latest
         environment:
-            name: >-
-                ${{ github.event_name == 'release'
-                && 'prod'
-                || github.head_ref
-                || github.ref_name }}
+            name: ${{ github.head_ref || github.ref_name }}
         steps:
             - uses: actions/checkout@v7
             - uses: jdx/mise-action@v4
               with:
                   experimental: true
             - run: mise set-environment
+            - if: github.event_name == 'push'
+              run: mise release
             - run: mise build
-            - if: github.event_name == 'release'
+            - if: github.event_name == 'push'
               uses: pypa/gh-action-pypi-publish@release/v1
-            - if: github.event_name == 'release'
+            - if: github.event_name == 'push'
               run: |
                   expected=$(git ls-remote --refs origin refs/heads/prod | cut -f 1)
                   git push "--force-with-lease=refs/heads/prod:$expected" origin HEAD:prod
@@ -97,9 +95,6 @@ on: # yamllint disable-line rule:truthy
     push:
         branches:
             - main
-    release:
-        types:
-            - published
     workflow_dispatch:
 
 run-name: Acting on behalf of ${{ github.actor }}
