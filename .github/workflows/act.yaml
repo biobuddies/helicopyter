@@ -1,3 +1,6 @@
+concurrency:
+    group: ${{ github.workflow }}-${{ github.event_name == 'push' && 'main' || github.ref }}
+    cancel-in-progress: ${{ github.event_name != 'push' }}
 defaults:
     run:
         shell: bash --noprofile --norc -o errexit -o nounset -o pipefail -o xtrace {0}
@@ -5,6 +8,9 @@ env:
     INSH_TF: tofu
     PATH: .venv/bin:/home/runner/.local/bin:/home/runner/.local/share/mise/shims:/usr/bin:/bin
     TENV_GITHUB_TOKEN: ${{ github.token }}
+name: act
+permissions:
+    contents: read
 jobs:
     check:
         runs-on: ubuntu-latest
@@ -43,4 +49,4 @@ on: # yamllint disable-line rule:truthy
         branches:
             - main
     workflow_dispatch:
-run-name: Checking on behalf of ${{ github.actor }}
+run-name: Acting on behalf of ${{ github.actor }}
