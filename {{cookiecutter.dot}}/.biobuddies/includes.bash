@@ -399,7 +399,6 @@ functions() {
     echo -e "INSH_TRACE\t\tSet to 'off' to skip \`set -x\`"
     echo -e "INSH_NAME\t\tgit user.name"
     echo -e "INSH_EMAIL\t\tgit user.email"
-    echo -e "INSH_RELEASE_PREFIX\tSet to '-%G.%V.' for ISO year and week. Default is '-%Y.%U.'"
     echo -e "INSH_TF\t\t\tSet to 'terraform' to use it instead. Default is 'tofu'"
 }
 
@@ -489,17 +488,6 @@ pcam() {
 pcm() {
     : 'run Pre-Commit on modified files including Manual stage hooks'
     pre-commit run --hook-stage manual "$@"
-}
-
-release() {
-    : 'create a github RELEASE'
-    local prefix
-    prefix=$(date -u "+v${INSH_RELEASE_PREFIX:-%Y.%U.}")
-    git fetch --tags
-    local count
-    count=$(git tag --list "$prefix*" | gsed "s/$prefix//" | sort -r | head -1)
-    gh release create "$prefix$(printf '%02d' $((${count:-0} + 1)))" --generate-notes
-    git fetch --tags
 }
 
 summarize() {
