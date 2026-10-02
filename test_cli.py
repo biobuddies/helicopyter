@@ -64,7 +64,7 @@ def test_without_cdktf(tmp_path: Path, arguments: list[str]) -> None:
 def test_fqdn() -> None:
     assert (
         check_output(
-            [executable, '-m', 'helicopyter', 'fqdn', 'logoff.cov.ing/', 'branch'], text=True
+            [executable, '-m', 'helicopyter', 'fqdn', 'rt.biobuddi.es/', 'branch'], text=True
         )
-        == 'logoff-branch.cov.ing/\n'
+        == 'rt-branch.biobuddi.es/\n'
     )
