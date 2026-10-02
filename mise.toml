@@ -214,6 +214,7 @@ run = '''
 #!/usr/bin/env bash
 set -o errexit -o nounset -o pipefail
 for cona in demo demojampublic demojamstaff; do mise tvalid "$cona"; done
+mise build
 pytest --cov${PYTEST_COV-} \
     --cov-report=term-missing:skip-covered --verbose "$@"
 '''
