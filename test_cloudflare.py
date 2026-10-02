@@ -6,7 +6,7 @@ from pytest import MonkeyPatch, fixture, mark, raises
 
 import helicopyter
 from helicopyter import Block, registry
-from helicopyter.cloudflare import jam
+from helicopyter.cloudflare import fqdn, jam
 
 
 @fixture
@@ -79,3 +79,16 @@ def test_jam_rejects(render: Callable[[str], dict[str, str]], url: str) -> None:
     """Other users raise, as does staff@ on an apex, which wildcard Access skips."""
     with raises(ValueError, match=url):
         render(url)
+
+
+@mark.parametrize(
+    ('url', 'envi', 'expected'),
+    (
+        ('rivertide.biobuddi.es/', 'main', 'rivertide.biobuddi.es/'),
+        ('rivertide.biobuddi.es/', 'branch', 'rivertide-branch.biobuddi.es/'),
+        ('https://cov.ing/covey/', 'branch', 'branch.cov.ing/covey/'),
+        ('staff@admin.cov.ing/', 'branch', 'admin-branch.cov.ing/'),
+    ),
+)
+def test_fqdn(url: str, envi: str, expected: str) -> None:
+    assert fqdn(url, envi) == expected

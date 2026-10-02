@@ -56,6 +56,10 @@ jam(
 jam('staff@admin.cov.ing/')  # $CLOUDFLARE_ACCOUNT_ID and $CLOUDFLARE_ZONE_ID read from environment
 ```
 
+`python -m helicopyter fqdn URL ENVI` prints where `jam()` serves a workspace, such as
+`rivertide-branch.biobuddi.es/` for `rivertide.biobuddi.es/` and `branch`; `main` serves `URL`.
+Subcommands are reserved: codenames must never be `fqdn`.
+
 ## 2. Migrate existing CDKTF to Python Syntax for Terraform
 
 Migrate one deployment at a time. Before editing, synthesize its existing configuration and save

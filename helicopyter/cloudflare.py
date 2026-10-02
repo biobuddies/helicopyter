@@ -8,6 +8,24 @@ import helicopyter
 from helicopyter import Block, data, resource, terraform
 
 
+def fqdn(url: str, envi: str) -> str:
+    """Name where workspace `envi` serves `url/`: main at `url`, others at previews.
+
+    Subdomains prefix their label, as in `rivertide-branch.biobuddi.es/`; apexes prepend one, as
+    in `branch.cov.ing/covey/`.
+    """
+    parts = urlsplit(url if '//' in url else f'//{url}')
+    hostname = parts.hostname or ''
+    first, _, parent = hostname.partition('.')
+    if envi == 'main':
+        return f'{hostname}{parts.path}'
+    return (
+        f'{first}-{envi}.{parent}{parts.path}'
+        if '.' in parent
+        else f'{envi}.{hostname}{parts.path}'
+    )
+
+
 def jam(
     url: str, *, account_id: str = '', compatibility_date: str = '2026-08-28', zone_id: str = ''
 ) -> Block:
@@ -26,15 +44,14 @@ def jam(
     """
     parts = urlsplit(url if '//' in url else f'//{url}')
     hostname = parts.hostname or ''
-    first, _, parent = hostname.partition('.')
+    parent = hostname.partition('.')[2]
     # Wildcards cover subdomains but not apexes
     subdomain = '.' in parent
     if parts.username not in {None, 'staff'} or (parts.username and not subdomain):
         raise ValueError(f'Expected no user, or staff@ on a subdomain, not {url}')
     account_id = account_id or environ['CLOUDFLARE_ACCOUNT_ID']
     zone_id = zone_id or environ['CLOUDFLARE_ZONE_ID']
-    label, apex = (f'{first}-', parent) if subdomain else ('', hostname)
-    preview = '%s${%s}.%s' % (label, terraform.workspace, apex)
+    apex = parent if subdomain else hostname
 
     # Routes only see proxied traffic
     wildcard = f'"*.{apex}"'
@@ -109,8 +126,8 @@ def jam(
     )
     resource.cloudflare_workers_route.this(
         pattern=Block(
-            f'{terraform.workspace} == "main" ? "{hostname}{parts.path}*"'
-            f' : "{preview}{parts.path}*"'
+            f'{terraform.workspace} == "main" ? "{fqdn(url, "main")}*"'
+            f' : "{fqdn(url, "${%s}" % terraform.workspace)}*"'
         ),
         script=script.script_name,
         zone_id=zone_id,

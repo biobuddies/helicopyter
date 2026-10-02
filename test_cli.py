@@ -50,3 +50,12 @@ def test_without_cdktf(tmp_path: Path, arguments: list[str]) -> None:
               input = "hello"
             }
         """).strip()
+
+
+def test_fqdn() -> None:
+    assert (
+        check_output(
+            [executable, '-m', 'helicopyter', 'fqdn', 'logoff.cov.ing/', 'branch'], text=True
+        )
+        == 'logoff-branch.cov.ing/\n'
+    )
