@@ -302,6 +302,16 @@ depends = [
     'uv-pip-compile',  # needs Internet
 ]
 
+[tasks.pre-commit-all]
+run = '''
+#!/usr/bin/env bash
+set -o errexit -o nounset -o pipefail
+mise pre-commit-fast
+mise uv-pip-compile  # needs Internet
+[[ $(mise envi) == local ]] || { git diff --color=always --exit-code; exit $?; }
+git diff --cached --quiet || echo Auto-staged modifications
+'''
+
 [tools]
 'aqua:tofuutils/tenv' = '4.9.3'
 gh = 'latest'
