@@ -80,12 +80,10 @@ jobs:
               with:
                   experimental: true
             - run: mise set-environment
+            # Fail on drift: the install hook regenerates requirements.txt
+            - run: git diff --color=always --exit-code
             - if: github.event_name == 'push'
-              # The install hook rewrites requirements.txt; a dirty tree would bump the version
-              run: |
-                  mise release
-                  tag=$(git describe --tags --abbrev=0)
-                  echo "SETUPTOOLS_SCM_PRETEND_VERSION=${tag#v}" >> "$GITHUB_ENV"
+              run: mise release
             - run: mise build
             - if: github.event_name == 'push'
               uses: pypa/gh-action-pypi-publish@release/v1
