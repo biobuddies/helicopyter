@@ -95,6 +95,7 @@ on: # yamllint disable-line rule:truthy
     push:
         branches:
             - main
+            - release-on-merge # TODO remove before merging
     workflow_dispatch:
 
 run-name: Acting on behalf of ${{ github.actor }}
