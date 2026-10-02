@@ -29,7 +29,7 @@ jobs:
             - run: mise tvalid demojampublic
             - run: mise tvalid demojamstaff
             - run: mise test
-            - run: .venv/bin/just build_twine
+            - run: mise run build
     tabularize:
         runs-on: ubuntu-latest
         steps:
