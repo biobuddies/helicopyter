@@ -42,11 +42,31 @@ jobs:
               with:
                   experimental: true
             - run: mise run tabularize
+    publish:
+        if: github.event_name == 'release'
+        needs: [check]
+        permissions:
+            id-token: write
+        runs-on: ubuntu-latest
+        environment: prod
+        steps:
+            - uses: actions/checkout@v6
+              with:
+                  fetch-depth: 0
+            - uses: jdx/mise-action@v3
+              with:
+                  experimental: true
+            - run: mise run set-environment
+            - run: .venv/bin/just build_twine
+            - uses: pypa/gh-action-pypi-publish@release/v1
 
 on: # yamllint disable-line rule:truthy
     pull_request:
     push:
         branches:
             - main
+    release:
+        types:
+            - published
     workflow_dispatch:
 run-name: Acting on behalf of ${{ github.actor }}
