@@ -9,7 +9,15 @@ from textwrap import dedent
 from pytest import mark
 
 
-@mark.parametrize('arguments', (['--help'], ['example'], ['example', '--format_with', 'cat']))
+@mark.parametrize(
+    'arguments',
+    (
+        ['--help'],
+        ['example'],
+        ['example', '--format_with', 'cat'],
+        ['example', '--format_with', 'terraform'],
+    ),
+)
 def test_without_cdktf(tmp_path: Path, arguments: list[str]) -> None:
     (tmp_path / 'sitecustomize.py').write_text(
         "import sys\nsys.modules.update(dict.fromkeys(('cdktf', 'constructs', 'jsii')))\n"
@@ -39,8 +47,9 @@ def test_without_cdktf(tmp_path: Path, arguments: list[str]) -> None:
     if arguments == ['--help']:
         assert 'usage:' in output
     else:
+        formatter = arguments[-1] if '--format_with' in arguments else 'tofu'
         assert (tmp_path / 'formatter.txt').read_text() == (
-            'tofu fmt -' if arguments == ['example'] else 'cat'
+            'cat' if formatter == 'cat' else f'{formatter} fmt -'
         )
         assert 'Generating deploys/example/terraform/main.tf' in output
         assert (deploy / 'main.tf').read_text().strip() == dedent("""

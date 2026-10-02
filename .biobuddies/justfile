@@ -144,7 +144,7 @@ ups *args:
 
 # Helicopyter Synth
 hs cona='all':
-    python -m helicopyter --format_with=${INSH_TF:-terraform} {{ cona }}
+    python -m helicopyter --format_with=${INSH_TF:-tofu} {{ cona }}
 
 # Helicopyter synth and Terraform Apply
 hta cona envi *args:
@@ -156,11 +156,11 @@ hta cona envi *args:
     fi
     {{ JUST }} hs {{ cona }} \
         && TF_VAR_giha=`{{ JUST }} giha` TF_VAR_tabr=`{{ JUST }} tabr` TF_WORKSPACE={{ envi }} \
-            ${INSH_TF:-terraform} -chdir=deploys/{{ cona }}/terraform apply {{ args }}
+            ${INSH_TF:-tofu} -chdir=deploys/{{ cona }}/terraform apply {{ args }}
 
 # Helper for Terraform Init and synth
 hti cona *args:
-    ${INSH_TF:-terraform} -chdir=deploys/{{ cona }}/terraform init {{ args }}
+    ${INSH_TF:-tofu} -chdir=deploys/{{ cona }}/terraform init {{ args }}
     {{ JUST }} hs {{ cona }}
 
 # Helicopyter synth and Terraform Plan
@@ -172,7 +172,7 @@ htp cona envi *args:
         exit 1
     fi
     {{ JUST }} hs {{ cona }} \
-        && TF_WORKSPACE={{ envi }} ${INSH_TF:-terraform} -chdir=deploys/{{ cona }}/terraform plan \
+        && TF_WORKSPACE={{ envi }} ${INSH_TF:-tofu} -chdir=deploys/{{ cona }}/terraform plan \
         {{ args }}
 
 # Universally Unique IDentifier
