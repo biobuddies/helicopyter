@@ -7,9 +7,6 @@ ALLOWEDFLARE_EMAIL = "{{ get_env(name='ALLOWEDFLARE_EMAIL', default='person@emai
 ALLOWEDFLARE_PRIVATE_DOMAIN = "{{ get_env(name='ALLOWEDFLARE_PRIVATE_DOMAIN', default='organization.example') }}"
 CLOUDFLARE_ACCOUNT_ID = "{{ get_env(name='CLOUDFLARE_ACCOUNT_ID', default='0123456789abcdef0123456789abcdef00') }}"
 CLOUDFLARE_ZONE_ID = "{{ get_env(name='CLOUDFLARE_ZONE_ID', default='0123456789abcdef0123456789abcdef01') }}"
-# Download OpenTofu from releases without GitHub API calls
-TOFUENV_INSTALL_MODE = 'mirror'
-TOFUENV_LIST_MODE = 'mirror'
 
 [hooks]
 postinstall = """

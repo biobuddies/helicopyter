@@ -9,6 +9,9 @@ uv_venv_auto = 'create|source'
 [env]
 INSH_TF = 'tofu'
 TENV_AUTO_INSTALL = 'true'
+# Claude Code on the web blocks api.github.com, such as latest-release queries, but not downloads
+TOFUENV_INSTALL_MODE = 'mirror'
+TOFUENV_LIST_MODE = 'mirror'
 _.path = ['./node_modules/.bin']
 _.python.venv = { path = '.venv' }
 
