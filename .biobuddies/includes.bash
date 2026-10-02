@@ -417,7 +417,7 @@ functions() {
     echo -e "INSH_NAME\t\tgit user.name"
     echo -e "INSH_EMAIL\t\tgit user.email"
     echo -e "INSH_RELEASE_PREFIX\tSet to '-%G.%V.' for ISO year and week. Default is '-%Y.%U.'"
-    echo -e "INSH_TF\t\t\tSet to 'tofu' where appropriate. Default is 'terraform'"
+    echo -e "INSH_TF\t\t\tSet to 'terraform' to use it instead. Default is 'tofu'"
 }
 
 giha() {
@@ -433,7 +433,7 @@ gash() {
 hs() {
     : 'Helicopyter Synth'
     local cona="${1:-all}"
-    python -m helicopyter --format_with="${INSH_TF:-terraform}" "$cona"
+    python -m helicopyter --format_with="${INSH_TF:-tofu}" "$cona"
 }
 
 hta() {
@@ -448,14 +448,14 @@ hta() {
     shift 2
     hs "$cona" \
         && TF_VAR_giha=$(giha) TF_VAR_tabr=$(tabr) TF_WORKSPACE="$envi" \
-            ${INSH_TF:-terraform} -chdir="deploys/$cona/terraform" apply "$@"
+            ${INSH_TF:-tofu} -chdir="deploys/$cona/terraform" apply "$@"
 }
 
 hti() {
     : 'Helper for Terraform Init and synth'
     local cona="${1?:Please provide a code name as the first argument}"
     shift
-    ${INSH_TF:-terraform} -chdir="deploys/$cona/terraform" init "$@"
+    ${INSH_TF:-tofu} -chdir="deploys/$cona/terraform" init "$@"
 }
 
 htp() {
@@ -470,7 +470,7 @@ htp() {
     shift 2
     hs "$cona" \
         && TF_VAR_giha=$(giha) TF_VAR_tabr=$(tabr) TF_WORKSPACE="$envi" \
-            ${INSH_TF:-terraform} -chdir="deploys/$cona/terraform" plan "$@"
+            ${INSH_TF:-tofu} -chdir="deploys/$cona/terraform" plan "$@"
 }
 
 orgn() {

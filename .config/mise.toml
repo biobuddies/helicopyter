@@ -7,7 +7,11 @@ experimental = true
 uv_venv_auto = 'create|source'
 
 [env]
+INSH_TF = 'tofu'
 TENV_AUTO_INSTALL = 'true'
+# Claude Code on the web blocks api.github.com, such as latest-release queries, but not downloads
+TOFUENV_INSTALL_MODE = 'mirror'
+TOFUENV_LIST_MODE = 'mirror'
 _.path = ['./node_modules/.bin']
 _.python.venv = { path = '.venv' }
 
@@ -96,9 +100,8 @@ run = """
 set -o errexit -o nounset -o pipefail
 cona=${1:?missing cona}
 shift
-tf=${INSH_TF:-terraform}
-"$tf" -chdir="deploys/$cona/terraform" init "$@"
-python -m helicopyter --format_with="$tf" "$cona"
+"$INSH_TF" -chdir="deploys/$cona/terraform" init "$@"
+python -m helicopyter --format_with="$INSH_TF" "$cona"
 """
 
 # Leaf tasks
@@ -166,7 +169,7 @@ run = 'mise run-on-sources end-of-file-fixer . "$@"'
 run = 'mise run-on-sources hadolint "*Dockerfile*" "$@"'
 
 [tasks.helicopyter]
-run = 'python -m helicopyter --format_with=${INSH_TF:-terraform} all "$@"'
+run = 'python -m helicopyter --format_with="$INSH_TF" all "$@"'
 
 [tasks.mailmap]
 run = """
@@ -294,9 +297,8 @@ if [[ "$envi" == "default" ]]; then
     exit 1
 fi
 mise tinit "$cona"
-tf=${INSH_TF:-terraform}
 TF_VAR_giha=$(mise giha) TF_VAR_tabr=$(mise tabr) TF_WORKSPACE="$envi" \
-    "$tf" -chdir="deploys/$cona/terraform" apply "$@"
+    "$INSH_TF" -chdir="deploys/$cona/terraform" apply "$@"
 """
 
 [tasks.test]
@@ -320,9 +322,8 @@ if [[ "$envi" == "default" ]]; then
     exit 1
 fi
 mise tinit "$cona"
-tf=${INSH_TF:-terraform}
 TF_VAR_giha=$(mise giha) TF_VAR_tabr=$(mise tabr) TF_WORKSPACE="$envi" \
-    "$tf" -chdir="deploys/$cona/terraform" plan "$@"
+    "$INSH_TF" -chdir="deploys/$cona/terraform" plan "$@"
 """
 
 [tasks.trailing-whitespace-fixer]
@@ -335,7 +336,7 @@ set -o errexit -o nounset -o pipefail
 cona=${1:?missing cona}
 shift
 mise tinit "$cona"
-${INSH_TF:-terraform} -chdir="deploys/$cona/terraform" validate "$@"
+"$INSH_TF" -chdir="deploys/$cona/terraform" validate "$@"
 """
 
 [tasks.npm-package-lock]
