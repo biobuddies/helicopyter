@@ -1,8 +1,3 @@
-### Background and Links
-* 
-
-### Changes and Testing
-* For future you and others to re-run the same test or a variation and incrementally automate
-
-### Questions and Followup
-* 
+* Terse highlights only
+* Omit the body when the title says enough
+* See CONTRIBUTING.md

@@ -10,14 +10,17 @@ specifiers = ["4.9.3"]
 [tools."aqua:tofuutils/tenv"."platforms.linux-arm64"]
 checksum = "sha256:f5980315ad0389c79103223c01d179e415ab496dcde13995dc7bb122dcf66ee5"
 url = "https://github.com/tofuutils/tenv/releases/download/v4.9.3/tenv_v4.9.3_Linux_arm64.tar.gz"
+url_api = "https://api.github.com/repos/tofuutils/tenv/releases/assets/354391018"
 
 [tools."aqua:tofuutils/tenv"."platforms.linux-x64"]
 checksum = "sha256:2445ca52106743abf71197bd0414a480d345a1972f7caede24b0a951094a6e17"
 url = "https://github.com/tofuutils/tenv/releases/download/v4.9.3/tenv_v4.9.3_Linux_x86_64.tar.gz"
+url_api = "https://api.github.com/repos/tofuutils/tenv/releases/assets/354391057"
 
 [tools."aqua:tofuutils/tenv"."platforms.macos-arm64"]
 checksum = "sha256:a7da0448afa755f6d180cf5c34bb6b8edf89bd2344b05a3127757b632e40dadf"
 url = "https://github.com/tofuutils/tenv/releases/download/v4.9.3/tenv_v4.9.3_Darwin_arm64.tar.gz"
+url_api = "https://api.github.com/repos/tofuutils/tenv/releases/assets/354391027"
 
 [[tools.gh]]
 version = "2.101.0"

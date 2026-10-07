@@ -2,6 +2,41 @@
 
 lockfile_version = 3
 
+[[tools.lychee]]
+version = "0.23.0"
+backend = "aqua:lycheeverse/lychee"
+specifiers = ["0.23.0"]
+
+[tools.lychee."platforms.linux-arm64"]
+checksum = "sha256:97eb93b02a7d78a752fc33e5b0983439ccaadbf3db952b68a0a4401acd92e6e0"
+url = "https://github.com/lycheeverse/lychee/releases/download/lychee-v0.23.0/lychee-aarch64-unknown-linux-gnu.tar.gz"
+url_api = "https://api.github.com/repos/lycheeverse/lychee/releases/assets/355422488"
+
+[tools.lychee."platforms.linux-arm64-musl"]
+checksum = "sha256:97eb93b02a7d78a752fc33e5b0983439ccaadbf3db952b68a0a4401acd92e6e0"
+url = "https://github.com/lycheeverse/lychee/releases/download/lychee-v0.23.0/lychee-aarch64-unknown-linux-gnu.tar.gz"
+url_api = "https://api.github.com/repos/lycheeverse/lychee/releases/assets/355422488"
+
+[tools.lychee."platforms.linux-x64"]
+checksum = "sha256:1fcb6ccf10d04c22b8c5873c5b9cb7be32ee7423e12169d6f1a79a6f1962ef81"
+url = "https://github.com/lycheeverse/lychee/releases/download/lychee-v0.23.0/lychee-x86_64-unknown-linux-gnu.tar.gz"
+url_api = "https://api.github.com/repos/lycheeverse/lychee/releases/assets/355422074"
+
+[tools.lychee."platforms.linux-x64-musl"]
+checksum = "sha256:5538440d2c69a45a0a09983271e5dee0c2fe7137d8035d25b2632e10a66a090a"
+url = "https://github.com/lycheeverse/lychee/releases/download/lychee-v0.23.0/lychee-x86_64-unknown-linux-musl.tar.gz"
+url_api = "https://api.github.com/repos/lycheeverse/lychee/releases/assets/355422587"
+
+[tools.lychee."platforms.macos-arm64"]
+checksum = "sha256:1953bb425486e1b887757201e54e8fdf866c9cada6c270d8f6ed21ffbed4145a"
+url = "https://github.com/lycheeverse/lychee/releases/download/lychee-v0.23.0/lychee-arm64-macos.tar.gz"
+url_api = "https://api.github.com/repos/lycheeverse/lychee/releases/assets/355419865"
+
+[tools.lychee."platforms.windows-x64"]
+checksum = "sha256:0fda7ff0a60c0250939fc25361c2d4e6e7853c31c996733fdd5a1dd760bcb824"
+url = "https://github.com/lycheeverse/lychee/releases/download/lychee-v0.23.0/lychee-x86_64-windows.exe"
+url_api = "https://api.github.com/repos/lycheeverse/lychee/releases/assets/355423012"
+
 [[tools.node]]
 version = "24.0.2"
 backend = "core:node"

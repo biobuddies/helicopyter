@@ -57,12 +57,7 @@ jobs:
             - uses: jdx/mise-action@v4
               with:
                   experimental: true
-            - run: |
-                  # shellcheck disable=SC2086
-                  mkdir -p $HOME/code
-                  # shellcheck disable=SC2086
-                  ln -s ../work/helicopyter/helicopyter $HOME/code/helicopyter
-
+            - run: mise checkout
             - run: mise test
 
     # Leaf jobs
@@ -79,9 +74,13 @@ jobs:
             - uses: jdx/mise-action@v4
               with:
                   experimental: true
+            # TABR is the branch, so FQDN is the preview or production domain
             - run: mise set-environment
             - if: github.event_name == 'push'
+              env:
+                  GH_TOKEN: ${{ github.token }}
               run: mise release
+            # HEAD is tagged: TABR is now the tag
             - run: mise build
             - if: github.event_name == 'push'
               uses: pypa/gh-action-pypi-publish@release/v1

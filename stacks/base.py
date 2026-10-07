@@ -14,7 +14,7 @@ def provide(source: str, version: str, **kwargs: Any) -> Block:
     AWS_SECRET_ACCESS_KEY - R2 secret
     AWS_ENDPOINT_URL_S3   - R2 location: https://ACCOUNT_ID.r2.cloudflarestorage.com
     """
-    from helicopyter import cona
+    from helicopyter import cona  # noqa: PLC0415 read after multisynth sets it
 
     terraform.backend('s3')(
         bucket='terraform',
