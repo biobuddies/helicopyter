@@ -1,2 +1,4 @@
-prune node_modules
+include pypi_compatible_build.py
+# TODO measles omits these; setuptools_scm otherwise packs every tracked file into the sdist
 prune deploys
+prune node_modules

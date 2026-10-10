@@ -1,2 +1,3 @@
 [tool.basedpyright]
+failOnWarnings = false
 reportUnusedCallResult = false # _ = function() is silly

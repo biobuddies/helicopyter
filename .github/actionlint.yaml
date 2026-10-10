@@ -1,4 +1,4 @@
 paths:
-    .github/workflows/**/*.yaml:
+    .github/workflows/act.yaml:
         ignore:
-            - 'shellcheck reported issue in this script: SC2119:.+'
+            - '^"github\.head_ref" is potentially untrusted\..*for more details$'

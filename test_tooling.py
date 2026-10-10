@@ -4,7 +4,7 @@ from json import loads
 from os import environ, getenv
 from pathlib import Path
 from re import match
-from subprocess import check_output
+from subprocess import check_output, run
 
 from pytest import mark
 
@@ -53,14 +53,15 @@ def test_mise():
     )
 
 
-def test_prettier():
-    test_path = Path('tmp-test-prettier.j2.html')
+def test_djlint_jinja_html():
+    test_path = Path('tmp-test-djlint.j2.html')
     test_path.write_text(
         '<html><body>\n{% for item in items %}<div>{{item}}</div>{% endfor %}\n</body></html>\n'
     )
     check_output(['git', 'add', str(test_path)])
     try:
-        check_output(['mise', 'prettier-write'])
+        # The final djlint --lint step rejects this fragment for lacking lang, title, etc.
+        run(['mise', 'djlint-jinja-html'], check=False, env={**environ, 'AUTOFORMAT_EXCLUDES': ''})
         assert test_path.read_text() == (
             '<html>\n'
             '    <body>\n'
@@ -74,16 +75,17 @@ def test_prettier():
 
 def test_typos():
     input_path = Path('wxperiment-\xb5.yml')  # noqa: RUF100  # noqa: typos
-    input_path.write_text('wxperiment:\n  - \xb5\n  yml')  # noqa: RUF100  # noqa: typos
     output_path = Path('experiment-\u03bc.yaml')
-    check_output(['git', 'add', str(input_path)])
     try:
-        check_output(['mise', 'typos'])  # noqa: typos
-        assert output_path.read_text() == 'experiment:\n  - \u03bc\n  yaml'
+        input_path.write_text('wxperiment:\n  - \xb5\n  yml\n')  # noqa: RUF100  # noqa: typos
+        check_output(
+            ['mise', 'typos', str(input_path)],
+            env={'AUTOFORMAT_EXCLUDES': '', 'HOME': environ['HOME'], 'PATH': environ['PATH']},
+        )
+        assert output_path.read_text() == 'experiment:\n  - \u03bc\n  yaml\n'
     finally:
         input_path.unlink(missing_ok=True)
         output_path.unlink(missing_ok=True)
-        check_output(['git', 'rm', '--force', '--quiet', str(input_path)])
     # TODO also the html escape sequence &micro; -> &mu;
 
 

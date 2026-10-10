@@ -1,0 +1,5 @@
+# github.com answers GitHub Actions' link checks with 503
+# TODO check GitHub links against local checkouts and/or while logged in
+# medium.com rejects link checkers
+# TODO yaml.org dropped its FAQ; cite another source for preferring .yaml
+exclude = ['github\.com', 'medium\.com', 'yaml\.org/faq']

@@ -1,9 +1,9 @@
 {
+    "// prettier": ">=3.8.2; 3.8.1 crashes with `TypeError: Cannot read properties of undefined (reading 'findPair')`",
     "devDependencies": {
-        "prettier": "*",
+        "prettier": ">=3.8.2",
         "prettier-plugin-jinja-template": "*",
         "prettier-plugin-organize-attributes": "*",
-        "prettier-plugin-toml": "*",
-        "wrangler": "*"
+        "prettier-plugin-toml": "*"
     }
 }

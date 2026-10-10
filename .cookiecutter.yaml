@@ -1,4 +1,9 @@
 default_context:
+    classifiers:
+        - 'Operating System :: OS Independent'
+        - 'Programming Language :: Python :: 3.12'
+        - 'Topic :: System :: Installation/Setup'
+        - 'Topic :: System :: Systems Administration'
     description: Python-defined infrastructure
     github_actions_env:
         GITHUB_TOKEN: ${{ github.token }}
@@ -10,3 +15,17 @@ default_context:
     publish_to_pypi: true
     python_dependencies:
         - typed-argument-parser
+    python_optional_dependencies:
+        cdktf:
+            - cdktf
+        demos:
+            - cdktf-cdktf-provider-aws
+            # prebuilt package 12+ brings provider 5+
+            # https://registry.terraform.io/providers/cloudflare/cloudflare/latest/docs/guides/version-5-upgrade
+            - cdktf-cdktf-provider-cloudflare==11.*
+            - cdktf-cdktf-provider-docker
+            - cdktf-cdktf-provider-github
+            - cdktf-cdktf-provider-null
+        test:
+            # TODO drop with the legacy justfile once allowedflare and lynch-library adopt measles
+            - rust-just

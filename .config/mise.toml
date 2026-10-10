@@ -2,6 +2,7 @@
 # Override from mise.toml
 [settings]
 experimental = true
+lockfile = true
 
 [settings.python]
 uv_venv_auto = 'create|source'
@@ -24,12 +25,17 @@ set -o errexit -o nounset
 [ -d .git ] || git init --initial-branch=main
 npm install --no-audit --no-fund &
 npm_pid=$!
+uv_status=0
 # dup :359 tasks.uv-pip-compile
+# Styleforce wheels require manylinux 2.28; uv's generic linux target assumes manylinux 2.17.
 uv pip compile --all-extras --output-file requirements.txt --quiet \
-    --python-platform linux --python-version 3.12 pyproject.toml
-uv venv --allow-existing --no-progress
-uv pip sync requirements.txt
+    --python-platform x86_64-manylinux_2_28 \
+    --python-version 3.12 pyproject.toml \
+    && uv venv --allow-existing --quiet \
+    && uv pip sync requirements.txt --allow-empty-requirements --quiet \
+    || uv_status=$?
 wait "$npm_pid"
+[ "$uv_status" -eq 0 ] || exit "$uv_status"
 mise generate pre-commit > .git/hooks/pre-commit
 chmod +x .git/hooks/pre-commit
 """
@@ -49,7 +55,7 @@ fi
 """
 
 [tasks.fqdn]
-run = ''
+run = ':'
 
 [tasks.giha]
 run = 'git describe --abbrev=40 --always --dirty --match=-'
@@ -84,29 +90,78 @@ set -- $(
 run = '''
 #!/usr/bin/env bash
 set -o errexit -o nounset -o pipefail
-if [[ ${GITHUB_HEAD_REF-} ]]; then tabr="$GITHUB_HEAD_REF"
-elif [[ ${GITHUB_REF_NAME-} ]]; then tabr="$GITHUB_REF_NAME"
+tag=$(git tag --points-at HEAD --sort=-refname 2>/dev/null | sed -n '1p') || {
+    status=$?
+    [[ $status == 128 || $status == 129 ]]  # no commits yet or unsupported tag options
+}
+if [[ $tag ]]; then echo "$tag"
+elif [[ ${GITHUB_HEAD_REF-} ]]; then echo "$GITHUB_HEAD_REF"
+elif [[ ${GITHUB_REF_NAME-} ]]; then echo "$GITHUB_REF_NAME"
 else
-    # 128 if no commits yet
-    tabr=$(git describe --all --dirty --exact-match 2>/dev/null \
-        | sed -En '/-dirty$/ q; s,(remotes/[^/]+|heads|tags)/,,p') || [[ $? -eq 128 ]]
+    git describe --all --dirty --exact-match 2>/dev/null \
+        | sed -En '/-dirty$/ q; s,(remotes/[^/]+|heads|tags)/,,p' || [[ $? -eq 128 ]]
 fi
-if [[ $tabr ]]; then echo "$tabr"; fi
 '''
 
 [tasks.tinit]
+run = 'mise tact init "$@"'
+
+[tasks.tact]
+# Usage: mise tact ACTION [CONA] [ENVI] [ARGUMENTS...]
 run = """
 #!/usr/bin/env bash
 set -o errexit -o nounset -o pipefail
-cona=${1:?missing cona}
+action=${1:?missing action}
 shift
-"$INSH_TF" -chdir="deploys/$cona/terraform" init "$@"
+conas=$(ls deploys 2>/dev/null || true)
+if [[ ${1-} && -d deploys/$1/terraform ]]; then
+    cona=$1
+    shift
+elif [[ $conas != *[[:space:]]* && -d deploys/$conas/terraform ]]; then
+    cona=$conas
+else
+    echo 'Missing or unknown cona' >&2
+    exit 1
+fi
+[[ ${1-} && $1 != -* ]] && envi=$1 && shift || envi=''
+if [[ $envi == default ]]; then
+    echo 'The default workspace behaves inconsistently.'
+    echo 'If you only have one environment, please name it `main`.'
+    exit 1
+fi
+if [[ ! $envi && $action =~ ^(apply|plan)$ ]]; then
+    echo 'Missing envi' >&2
+    exit 1
+fi
 python -m helicopyter --format_with="$INSH_TF" "$cona"
+if [[ $action == init ]]; then
+    "$INSH_TF" -chdir="deploys/$cona/terraform" init "$@"
+else
+    "$INSH_TF" -chdir="deploys/$cona/terraform" init
+fi
+# Just trying to create the workspace as needed
+[[ ! $envi ]] || "$INSH_TF" -chdir="deploys/$cona/terraform" workspace select -or-create "$envi"
+[[ $action != init ]] || exit 0
+# Always set TF_WORKSPACE explicitly; don't rely on this side effect
+TF_VAR_giha=$(mise giha) TF_VAR_tabr=$(mise tabr) TF_WORKSPACE=$envi \
+    "$INSH_TF" -chdir="deploys/$cona/terraform" "$action" "$@"
 """
 
 # Leaf tasks
 [tasks.actionlint]
-run = 'actionlint "$@"'
+run = '''
+#!/usr/bin/env bash
+set -o errexit -o nounset -o pipefail
+# dup .config/setup.bash proxy_ca
+proxy_ca=/root/.ccr/agent-proxy-ca.crt
+if [[ -f $proxy_ca ]] \
+    && ! openssl x509 -in $proxy_ca -noout -ext keyUsage 2>/dev/null | grep -q "Key Usage"
+then
+    echo 'Skipping actionlint because broken certificate' >&2
+    exit 0
+fi
+actionlint "$@"
+'''
 
 [tasks.bash]
 run = 'env bash --login -o errexit -o pipefail'
@@ -146,24 +201,34 @@ cookiecutter --config-file .cookiecutter.yaml --no-input --overwrite-if-exists $
 [tasks.django-upgrade]
 run = 'mise run-on-sources django-upgrade \*.py "$@"'
 
+[tasks.deploy]
+run = 'mise tapply "$@"'
+
 [tasks.djlint-django]
-run = 'mise run-on-sources djlint \*.dj.html --quiet --reformat --profile=django "$@"'
+# Resolve long attribute and other potential formatting differences in favor of prettier
+run = '''
+mise run-on-sources djlint \*.dj.html --quiet --reformat --profile=django "$@" || test $? -eq 1
+mise run-on-sources prettier \*.dj.html --write "$@"
+mise run-on-sources djlint \*.dj.html --lint --quiet --profile=django "$@"
+'''
 
 [tasks.djlint-jinja-html]
-run = 'mise run-on-sources djlint \*.j2.html --quiet --reformat --profile=jinja "$@"'
+# Resolve long attribute and other potential formatting differences in favor of prettier
+run = '''
+mise run-on-sources djlint \*.j2.html --quiet --reformat --profile=jinja "$@" || test $? -eq 1
+mise run-on-sources prettier \*.j2.html --write "$@"
+mise run-on-sources djlint \*.j2.html --lint --quiet --profile=jinja "$@"
+'''
 
 [tasks.djlint-jinja-yaml]
 # djlint hopefully does some Jinja linting and autoformatting. This configuration avoids
 # mangling YAML.
 # Workflow templates use YAML-shaped Jinja indentation that djlint flattens.
+# Suppress return code 1 for reformatted to avoid aborting sibling tasks
 run = '''
-#!/usr/bin/env bash
-set -o errexit -o nounset -o pipefail
-mapfile -t sources < <(git ls-files \*.j2.yaml)
-[[ -z ${sources[*]} ]] && exit 0
-djlint "${sources[@]}" \
+mise run-on-sources djlint \*.j2.yaml \
     --no-function-formatting --preserve-blank-lines --preserve-leading-space --quiet --reformat \
-    --profile=jinja "$@"
+    --profile=jinja "$@" || test $? -eq 1
 '''
 
 [tasks.end-of-file-fixer]
@@ -174,6 +239,9 @@ run = 'mise run-on-sources hadolint "*Dockerfile*" "$@"'
 
 [tasks.helicopyter]
 run = 'python -m helicopyter --format_with="$INSH_TF" all "$@"'
+
+[tasks.lychee]
+run = 'lychee --no-progress "$@" .'
 
 [tasks.mailmap]
 run = """
@@ -191,12 +259,12 @@ done
 exit $return_code
 """
 
-[tasks.no-branch-slashes]
+[tasks.check-branch]
 run = """
 #!/usr/bin/env bash
 set -o errexit -o nounset -o pipefail
-[[ ${GITHUB_HEAD_REF:-$(git branch --show-current)} == */* ]] || exit 0
-echo 'Slashes overcomplicate preview deployments.' >&2
+[[ ${GITHUB_HEAD_REF:-$(git branch --show-current)} =~ ^[a-z0-9]+(-[a-z0-9]+)*$ ]] && exit 0
+echo 'Branch names must use lowercase letters and digits separated by single hyphens.' >&2
 exit 1
 """
 
@@ -215,10 +283,65 @@ printf '%s' "$paths"
 exit 1
 """
 
-[tasks.prettier-write]
-# Markdown skipped to conserve vertical space; .j2.yaml routed to djlint-jinja-yaml
+[tasks.checkout]
+# Usage: mise checkout [[ORGN/]CONA[@TABR]...]
+# Clone arguments and .cookiecutter.yaml peer_checkouts
+# Ensure ~/code/$CONA works (../$CONA doesn't everywhere)
 run = '''
-mise run-on-sources prettier "*.{css,html,j2.html,js,json,jsx,toml,ts,tsx,yaml} :!*.j2.yaml" \
+#!/usr/bin/env bash
+set -o errexit -o nounset -o pipefail
+commands=$(python - "$(git rev-parse --show-toplevel)" "$@" <<'EOD'
+from pathlib import Path
+from shlex import join, quote
+from sys import argv
+
+from yaml import safe_load
+
+toplevel = Path(argv[1])
+code = Path.home() / 'code'
+organizations = {
+    'gitignore': 'github',
+    'helicopyter': 'biobuddies',
+    'measles': 'biobuddies',
+    'speedrun': 'biobuddies',
+    'terraform-provider-cloudflare': 'cloudflare',
+    'wriggle': 'biobuddies',
+}
+cookiecutter = toplevel / '.cookiecutter.yaml'
+required = (safe_load(cookiecutter.read_text()) if cookiecutter.exists() else {}).get(
+    'default_context', {}
+).get('peer_checkouts', [])
+print(join(['mkdir', '-p', str(code)]))
+paths = [toplevel]
+for peer in [*required, *argv[2:]]:
+    repository, _, tabr = (peer if '@' in peer else f'{peer}@main').partition('@')
+    repository = repository if '/' in repository else f'{organizations[repository]}/{repository}'
+    paths.append(path := toplevel.parent / repository.split('/')[-1])
+    print(
+        join(['git', '-C', str(path), 'fetch', 'origin', tabr])
+        if path.exists()
+        else join([
+            'git',
+            'clone',
+            f'--branch={tabr}',
+            '--filter=blob:none',
+            f'https://github.com/{repository}.git',
+            str(path),
+        ])
+    )
+for path in paths if toplevel.parent != code else []:
+    print(f'[[ -e {quote(str(code / path.name))} ]] || ' + join(['ln', '-s', str(path), str(code)]))
+EOD
+)
+eval "$commands"
+'''
+
+[tasks.prettier-write]
+# Prettier incorporated into djlint tasks to reconcile formatting differences
+# Skip Markdown to conserve vertical space.
+# The Jinja parser's HTML layout mangles Jinja JSON; djlint handles Jinja YAML.
+run = '''
+mise run-on-sources prettier "*.{css,html,js,json,jsx,toml,ts,tsx,yaml} :!*.dj.html :!*.j2.html :!*.j2.json :!*.j2.yaml" \
     --write "$@"
 '''
 
@@ -233,7 +356,7 @@ prefix=$(date -u '+v%Y.%-U.')
 git fetch --tags
 latest=$(git tag --list "$prefix*" --sort=-version:refname | head -1)
 count=${latest#"$prefix"}
-gh release create "$prefix$((${count:-0} + 1))" --generate-notes --target "$(git rev-parse HEAD)"
+gh release create "$prefix$((${count:-0} + 1))" --generate-notes
 git fetch --tags
 '''
 
@@ -271,6 +394,9 @@ mise run-on-sources shfmt "*.{bash,sh}" \
     --indent 4 --language-dialect bash "$@"
 '''
 
+[tasks.styleforce]
+run = 'AUTOFORMAT_EXCLUDES=${AUTOFORMAT_EXCLUDES-} mise run-on-sources styleforce "*.py{,i}" "$@"'
+
 [tasks.tabularize]
 run = """
 #!/usr/bin/env bash
@@ -289,21 +415,7 @@ EOD
 """
 
 [tasks.tapply]
-run = """
-#!/usr/bin/env bash
-set -o errexit -o nounset -o pipefail
-cona=${1:?missing cona}
-envi=${2:?missing envi}
-shift 2
-if [[ "$envi" == "default" ]]; then
-    echo 'The default workspace behaves inconsistently.'
-    echo 'If you only have one environment, please name it `prod`.'
-    exit 1
-fi
-mise tinit "$cona"
-TF_VAR_giha=$(mise giha) TF_VAR_tabr=$(mise tabr) TF_WORKSPACE="$envi" \
-    "$INSH_TF" -chdir="deploys/$cona/terraform" apply "$@"
-"""
+run = 'mise tact apply "$@"'
 
 [tasks.test]
 run = '''
@@ -314,51 +426,32 @@ python -m pytest --cov${PYTEST_COV-} \
 '''
 
 [tasks.tplan]
-run = """
-#!/usr/bin/env bash
-set -o errexit -o nounset -o pipefail
-cona=${1:?missing cona}
-envi=${2:?missing envi}
-shift 2
-if [[ "$envi" == "default" ]]; then
-    echo 'The default workspace behaves inconsistently.'
-    echo 'If you only have one environment, please name it `prod`.'
-    exit 1
-fi
-mise tinit "$cona"
-TF_VAR_giha=$(mise giha) TF_VAR_tabr=$(mise tabr) TF_WORKSPACE="$envi" \
-    "$INSH_TF" -chdir="deploys/$cona/terraform" plan "$@"
-"""
+run = 'mise tact plan "$@"'
 
 [tasks.trailing-whitespace-fixer]
 run = 'mise run-on-sources trailing-whitespace-fixer . "$@"'
 
 [tasks.tvalid]
-run = """
-#!/usr/bin/env bash
-set -o errexit -o nounset -o pipefail
-cona=${1:?missing cona}
-shift
-mise tinit "$cona"
-"$INSH_TF" -chdir="deploys/$cona/terraform" validate "$@"
-"""
+run = 'mise tact validate "$@"'
 
 [tasks.npm-package-lock]
 run = 'npm install --package-lock-only "$@"'
 
 [tasks.typos]
-run = 'typos --write-changes --config .biobuddies/typos.toml "$@"'
+run = 'mise run-on-sources typos "*" --write-changes --config .biobuddies/typos.toml "$@"'
 
 [tasks.uv-pip-check]
 run = 'uv pip check "$@"'
 
-# dup :24 hooks.postinstall
+# dup :25 hooks.postinstall
 [tasks.uv-pip-compile]
 run = '''
 #!/usr/bin/env bash
 set -o errexit -o nounset -o pipefail
+# Styleforce wheels require manylinux 2.28; uv's generic linux target assumes manylinux 2.17.
 uv pip compile --all-extras --output-file requirements.txt --quiet \
-    --python-platform linux --python-version 3.12 pyproject.toml "$@"
+    --python-platform x86_64-manylinux_2_28 \
+    --python-version 3.12 pyproject.toml "$@"
 [[ $(mise envi) != local ]] || git add requirements.txt
 '''
 
@@ -372,7 +465,8 @@ run = 'validate-pyproject pyproject.toml "$@"'
 run = 'mise x -- gh run list --branch $(git branch --show-current) --limit 1 --json databaseId --jq ".[0].databaseId" | xargs -I {} mise x -- gh run watch {}'
 
 [tasks.yamllint]
-run = 'mise run-on-sources yamllint \*.yaml "$@"'
+# Jinja tags are invalid YAML; djlint handles Jinja YAML.
+run = 'mise run-on-sources yamllint "*.yaml :!*.j2.yaml" "$@"'
 
 # Task collections
 [tasks.parallel-pre-commit]
@@ -391,9 +485,9 @@ depends = [
     'typos',
     # line keepers
     'actionlint',
+    'check-branch',
     'hadolint',
     'mailmap',
-    'no-branch-slashes',
     'no-field-separators',
     'pyrefly',
     'shellcheck',
@@ -431,6 +525,7 @@ run = '''
 set -o errexit -o nounset -o pipefail
 mise cookiecutter "$@"  # needs Internet
 mise pre-commit "$@"
+mise lychee  # Requires Internet
 mise uv-pip-compile  # needs Internet
 # dup :414 tasks.pre-commit
 [[ $(mise envi) == local ]] || { git diff --color=always --exit-code; exit $?; }
@@ -439,6 +534,7 @@ git diff --cached --quiet || echo Auto-staged modifications
 
 [tools]
 # latest gh from ~/.config/mise/config.toml
+lychee = '0.23.0'
 node = '24'
 # python from uv
 uv = '0.12.5'

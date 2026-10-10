@@ -1,74 +1,105 @@
 [build-system]
-requires = ['setuptools>=61.0', 'setuptools_scm[toml]>=6.2', 'wheel']
-build-backend = 'pypi_compatible_build'
 backend-path = ['']
+build-backend = 'pypi_compatible_build'
+requires = ['setuptools>=77', 'setuptools_scm']
 
 [project]
 classifiers = [
-    'Programming Language :: Python :: 3.12',
-    'License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)',
+    
     'Operating System :: OS Independent',
-    'Topic :: System :: Systems Administration',
+    
+    'Programming Language :: Python :: 3.12',
+    
     'Topic :: System :: Installation/Setup',
+    
+    'Topic :: System :: Systems Administration',
+    
 ]
-description = 'Python Terraform JSON configuration generator'
-dependencies = ['typed-argument-parser']
-dynamic = ['version']
+description = 'Python-defined infrastructure'
+license = 'MPL-2.0'
 name = 'helicopyter'
-requires-python = '>=3.12'
 readme = 'README.md'
+requires-python = '>=3.12'
+dynamic = ['version']
+
+dependencies = [
+    
+    'typed-argument-parser',
+    
+]
 
 [project.optional-dependencies]
-buildrelease = ['build', 'ipython', 'twine']
-cdktf = ['cdktf']
+build = [
+    'setuptools',
+]
+cdktf = [
+    'cdktf',
+]
 demos = [
     'cdktf-cdktf-provider-aws',
-    # prebuilt package 12+ brings provider 5+
-    # https://registry.terraform.io/providers/cloudflare/cloudflare/latest/docs/guides/version-5-upgrade
     'cdktf-cdktf-provider-cloudflare==11.*',
     'cdktf-cdktf-provider-docker',
     'cdktf-cdktf-provider-github',
     'cdktf-cdktf-provider-null',
 ]
-precommit = [
+pre-commit = [
     'actionlint-py',
     'basedpyright',
-    'codespell>=2.3',                                               # For codespell inline ignore comment support
     'cookiecutter',
     'django-upgrade',
-    'djlint',
+    'djlint>=1.45.0',
     'hadolint-py @ git+https://github.com/AleksaC/hadolint-py.git',
-    'mypy',
-    'pre-commit',
     'pre-commit-hooks',
     'pyrefly',
-    'pytest',
-    'pytest-cov',
     'ruff',
-    'rust-just',
     'shellcheck-py',
     'shfmt-py',
-    'types-setuptools',
+    'styleforce',
     'typos',
-    # uv from asdf
     'validate-pyproject[all]',
     'yamllint',
+]
+test = [
+    'pytest',
+    'pytest-cov',
+    'rust-just',
 ]
 
 [project.urls]
 source = 'https://github.com/biobuddies/helicopyter'
 
-[tool.basedpyright]
-extends = '.biobuddies/basedpyright.toml'
-failOnWarnings = false
+[tool.coverage.run]
+source_pkgs = ['helicopyter']
 
-[tool.ruff]
-extend = '.biobuddies/ruff.toml'
+[tool.pytest.ini_options]
+norecursedirs = ['.venv', 'node_modules', '{{cookiecutter.dot}}']
 
 [tool.setuptools]
 py-modules = ['helicopyter']
 
+# TODO measles renders py-modules only; teach it packages, then stop overriding after cookiecutter
 [tool.setuptools.packages.find]
 exclude = ['deploys*', 'node_modules*'] # Applies to wheel but not sdist
 
 [tool.setuptools_scm]
+
+[tool.basedpyright]
+extends = '.biobuddies/basedpyright.toml'
+
+[tool.djlint]
+close_void_tags = true
+format_attribute_template_tags = true
+indent = 4
+max_attribute_length = 100
+max_blank_lines = 1
+max_line_length = 100
+quote_style = 'single'
+
+[tool.ruff]
+extend = '.biobuddies/ruff.toml'
+
+[tool.pyrefly]
+project-includes = [
+    "**/*.py*",
+    "**/*.ipynb",
+]

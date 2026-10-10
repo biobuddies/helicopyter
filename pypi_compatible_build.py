@@ -8,12 +8,12 @@ https://stackoverflow.com/questions/54887301/how-can-i-use-git-repos-as-dependen
 from io import StringIO
 from typing import TextIO
 
-import setuptools
+import setuptools  # pyrefly: ignore[missing-import]  # pyright: ignore[reportMissingModuleSource]
 from packaging.metadata import Metadata
-from setuptools._core_metadata import (  # type: ignore[import-not-found]  # pyright: ignore[reportMissingImports]
-    _write_requirements,  # pyright: ignore[reportUnknownVariableType]
+from setuptools._core_metadata import (  # pyrefly: ignore[missing-import]  # pyright: ignore[reportMissingImports]
+    _write_requirements,
 )
-from setuptools.build_meta import *  # noqa: F403  # pyright: ignore[reportWildcardImportFromLibrary]
+from setuptools.build_meta import *  # noqa: F403  # pyrefly: ignore[missing-import]  # pyright: ignore[reportMissingModuleSource]
 
 
 def write_pypi_compatible_requirements(self: Metadata, final_file: TextIO) -> None:
@@ -29,4 +29,4 @@ def write_pypi_compatible_requirements(self: Metadata, final_file: TextIO) -> No
         final_file.write(final_line)
 
 
-setuptools._core_metadata._write_requirements = write_pypi_compatible_requirements  # pyright: ignore[reportUnknownMemberType,reportAttributeAccessIssue]
+setuptools._core_metadata._write_requirements = write_pypi_compatible_requirements  # pyrefly: ignore[bad-assignment]  # pyright: ignore[reportAttributeAccessIssue]
