@@ -1,0 +1,88 @@
+diff --git a/internal/services/workers_script/resource.go b/internal/services/workers_script/resource.go
+index d2c54071..3c3971b0 100644
+--- a/internal/services/workers_script/resource.go
++++ b/internal/services/workers_script/resource.go
+@@ -668,4 +668,5 @@ func (r *WorkersScriptResource) ModifyPlan(ctx context.Context, req resource.Mod
+ 	// To prevent this, we must explicitly mark any computed attributes we know can change as unknown.
+ 	resp.Diagnostics.Append(resp.Plan.SetAttribute(ctx, path.Root("modified_on"), timetypes.NewRFC3339Unknown())...)
+ 	resp.Diagnostics.Append(resp.Plan.SetAttribute(ctx, path.Root("has_assets"), types.BoolUnknown())...)
++	resp.Diagnostics.Append(resp.Plan.SetAttribute(ctx, path.Root("startup_time_ms"), types.Int64Unknown())...)
+ }
+diff --git a/internal/services/workers_script/resource_modify_plan_test.go b/internal/services/workers_script/resource_modify_plan_test.go
+new file mode 100644
+index 00000000..27c0e5c8
+--- /dev/null
++++ b/internal/services/workers_script/resource_modify_plan_test.go
+@@ -0,0 +1,72 @@
++package workers_script_test
++
++import (
++	"context"
++	"testing"
++
++	"github.com/cloudflare/terraform-provider-cloudflare/internal/services/workers_script"
++	"github.com/hashicorp/terraform-plugin-framework/attr"
++	"github.com/hashicorp/terraform-plugin-framework/path"
++	"github.com/hashicorp/terraform-plugin-framework/resource"
++	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
++	"github.com/hashicorp/terraform-plugin-framework/types"
++	"github.com/hashicorp/terraform-plugin-go/tftypes"
++)
++
++// Terraform fails an apply with "Provider produced inconsistent result after apply" when a
++// computed value planned as known comes back different, e.g. a startup time measured as 5 ms
++// then 2 ms. ModifyPlan sees assets-only uploads after the framework has already copied computed
++// values from state, so any value the API may change must be replanned as unknown.
++func TestWorkersScriptModifyPlanLeavesOnlyStableComputedValuesKnown(t *testing.T) {
++	stable := map[string]bool{
++		"created_on":         true,
++		"etag":               true,
++		"handlers":           true,
++		"has_modules":        true,
++		"id":                 true,
++		"last_deployed_from": true,
++		"migration_tag":      true,
++		"named_handlers":     true,
++		"placement_mode":     true,
++		"placement_status":   true,
++	}
++	ctx := context.Background()
++	schema := workers_script.ResourceSchema(ctx)
++	state := tfsdk.State{Schema: schema, Raw: tftypes.NewValue(schema.Type().TerraformType(ctx), nil)}
++	manifest := path.Root("assets").AtName("asset_manifest_sha256")
++	for attribute, value := range map[string]attr.Value{
++		"account_id":  types.StringValue("account"),
++		"id":          types.StringValue("script"),
++		"script_name": types.StringValue("script"),
++	} {
++		if diagnostics := state.SetAttribute(ctx, path.Root(attribute), value); diagnostics.HasError() {
++			t.Fatal(diagnostics)
++		}
++	}
++	if diagnostics := state.SetAttribute(ctx, manifest, types.StringValue("old")); diagnostics.HasError() {
++		t.Fatal(diagnostics)
++	}
++	plan := tfsdk.Plan{Schema: schema, Raw: state.Raw.Copy()}
++	if diagnostics := plan.SetAttribute(ctx, manifest, types.StringValue("new")); diagnostics.HasError() {
++		t.Fatal(diagnostics)
++	}
++
++	response := resource.ModifyPlanResponse{Plan: plan}
++	(&workers_script.WorkersScriptResource{}).ModifyPlan(
++		ctx, resource.ModifyPlanRequest{Plan: plan, State: state}, &response,
++	)
++	if response.Diagnostics.HasError() {
++		t.Fatal(response.Diagnostics)
++	}
++
++	for name, attribute := range schema.Attributes {
++		if !attribute.IsComputed() || attribute.IsOptional() || stable[name] {
++			continue
++		}
++		var planned attr.Value
++		response.Plan.GetAttribute(ctx, path.Root(name), &planned)
++		if !planned.IsUnknown() {
++			t.Errorf("planned %s = %s, want unknown since the API may change it", name, planned)
++		}
++	}
++}

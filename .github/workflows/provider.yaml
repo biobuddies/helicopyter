@@ -1,0 +1,87 @@
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+defaults:
+    run:
+        shell: bash --noprofile --norc -o errexit -o nounset -o pipefail -o xtrace {0}
+
+env:
+    GITHUB_TOKEN: ${{ github.token }}
+    UPSTREAM_TAG: v5.27.0
+
+name: provider
+
+permissions:
+    contents: read
+
+jobs:
+    build-release:
+        permissions:
+            contents: write
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v7
+            - uses: jdx/mise-action@v4
+              with:
+                  experimental: true
+            - run: |
+                  mise checkout "terraform-provider-cloudflare@$UPSTREAM_TAG"
+                  # Bump the suffix whenever the patch changes; consumers pin this exact version.
+                  echo "VERSION=${UPSTREAM_TAG#v}-startup.1" >> "$GITHUB_ENV"
+            - uses: actions/setup-go@v6
+              with:
+                  cache: false
+                  go-version-file: /home/runner/code/terraform-provider-cloudflare/go.mod
+            # Union of resources and data sources in helicopyter.cloudflare.jam() and
+            # the covicovey, mublog, rivertide, and other deploys
+            - working-directory: providers/cloudflare
+              run: >-
+                  python -m trim ~/code/terraform-provider-cloudflare/internal/provider.go
+                  dns_record r2_bucket ruleset workers_custom_domain workers_route
+                  workers_script workers_script_subdomain zero_trust_access_application
+                  zero_trust_access_identity_provider zero_trust_access_policy
+                  zero_trust_tunnel_cloudflared
+            - run: |
+                  cd ~/code/terraform-provider-cloudflare
+                  git apply ~/code/helicopyter/providers/cloudflare/startup-time-ms.patch
+                  gofmt -w internal/provider.go
+                  df -h /
+                  go test ./internal/services/workers_script/...
+                  go build -v -trimpath \
+                      "-ldflags=-s -w -X main.version=$VERSION" \
+                      "-o=$RUNNER_TEMP/terraform-provider-cloudflare_v$VERSION" . 2>&1 \
+                      | awk '{ print NR, $0 }'
+                  df -h /
+                  du -sh "$(go env GOCACHE)"
+            - working-directory: ${{ runner.temp }}
+              run: |
+                  zip -j "terraform-provider-cloudflare_${VERSION}_linux_amd64.zip" \
+                      "terraform-provider-cloudflare_v$VERSION"
+                  sha256sum "terraform-provider-cloudflare_${VERSION}_linux_amd64.zip"
+            - if: github.event_name != 'pull_request'
+              working-directory: ${{ runner.temp }}
+              run: |
+                  gh release view "terraform-provider-cloudflare-v$VERSION" \
+                      --repo="$GITHUB_REPOSITORY" && exit
+                  gh release create "terraform-provider-cloudflare-v$VERSION" \
+                      "terraform-provider-cloudflare_${VERSION}_linux_amd64.zip" \
+                      --latest=false \
+                      --notes="Upstream plus providers/cloudflare/startup-time-ms.patch" \
+                      --repo="$GITHUB_REPOSITORY" \
+                      --target="$GITHUB_SHA"
+
+on: # yamllint disable-line rule:truthy
+    pull_request:
+        paths:
+            - .github/workflows/provider.yaml
+            - providers/cloudflare/**
+    push:
+        branches:
+            - main
+        paths:
+            - .github/workflows/provider.yaml
+            - providers/cloudflare/**
+    workflow_dispatch:
+
+run-name: Building provider on behalf of ${{ github.actor }}
