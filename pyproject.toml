@@ -82,6 +82,8 @@ py-modules = ['helicopyter']
 exclude = ['deploys*', 'node_modules*'] # Applies to wheel but not sdist
 
 [tool.setuptools_scm]
+# Skip provider release tags like terraform-provider-cloudflare-v5.27.0-startup.1
+git_describe_command = "git describe --dirty --tags --long --match 'v*'"
 
 [tool.basedpyright]
 extends = '.biobuddies/basedpyright.toml'
