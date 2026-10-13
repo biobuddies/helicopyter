@@ -2,10 +2,11 @@ diff --git a/internal/services/workers_script/resource.go b/internal/services/wo
 index d2c54071..3c3971b0 100644
 --- a/internal/services/workers_script/resource.go
 +++ b/internal/services/workers_script/resource.go
-@@ -668,4 +668,5 @@ func (r *WorkersScriptResource) ModifyPlan(ctx context.Context, req resource.Mod
+@@ -668,4 +668,6 @@ func (r *WorkersScriptResource) ModifyPlan(ctx context.Context, req resource.Mod
  	// To prevent this, we must explicitly mark any computed attributes we know can change as unknown.
  	resp.Diagnostics.Append(resp.Plan.SetAttribute(ctx, path.Root("modified_on"), timetypes.NewRFC3339Unknown())...)
  	resp.Diagnostics.Append(resp.Plan.SetAttribute(ctx, path.Root("has_assets"), types.BoolUnknown())...)
++	resp.Diagnostics.Append(resp.Plan.SetAttribute(ctx, path.Root("etag"), types.StringUnknown())...)
 +	resp.Diagnostics.Append(resp.Plan.SetAttribute(ctx, path.Root("startup_time_ms"), types.Int64Unknown())...)
  }
 diff --git a/internal/services/workers_script/resource_modify_plan_test.go b/internal/services/workers_script/resource_modify_plan_test.go
@@ -13,7 +14,7 @@ new file mode 100644
 index 00000000..27c0e5c8
 --- /dev/null
 +++ b/internal/services/workers_script/resource_modify_plan_test.go
-@@ -0,0 +1,72 @@
+@@ -0,0 +1,71 @@
 +package workers_script_test
 +
 +import (
@@ -36,7 +37,6 @@ index 00000000..27c0e5c8
 +func TestWorkersScriptModifyPlanLeavesOnlyStableComputedValuesKnown(t *testing.T) {
 +	stable := map[string]bool{
 +		"created_on":         true,
-+		"etag":               true,
 +		"handlers":           true,
 +		"has_modules":        true,
 +		"id":                 true,

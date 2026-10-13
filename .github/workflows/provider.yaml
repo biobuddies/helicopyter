@@ -28,7 +28,7 @@ jobs:
             - run: |
                   mise checkout "terraform-provider-cloudflare@$UPSTREAM_TAG"
                   # Bump the suffix whenever the patch changes; consumers pin this exact version.
-                  echo "VERSION=${UPSTREAM_TAG#v}-startup.1" >> "$GITHUB_ENV"
+                  echo "VERSION=${UPSTREAM_TAG#v}-startup.2" >> "$GITHUB_ENV"
             - uses: actions/setup-go@v6
               with:
                   cache: false
