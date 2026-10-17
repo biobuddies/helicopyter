@@ -7,6 +7,24 @@ CLOUDFLARE_ZONE_ID = "{{ get_env(name='CLOUDFLARE_ZONE_ID', default='0123456789a
 
 # Override .config/mise.toml from https://github.com/biobuddies/measles
 
+[tasks.build]
+# Attach the patched provider to the release mise release just tagged, when it changed
+run = '''
+#!/usr/bin/env bash
+set -o errexit -o nounset -o pipefail
+rm -rf dist
+uv build
+uv publish --dry-run dist/*
+uvx twine check --strict dist/*
+tag=$(mise tabr)
+[[ $tag == v* ]] || exit 0
+git fetch --deepen=1 --quiet origin
+git diff --quiet HEAD^ HEAD -- providers/cloudflare && exit
+bash providers/cloudflare/build.bash
+gh release upload "$tag" --clobber \
+    "${RUNNER_TEMP:-/tmp}"/terraform-provider-cloudflare_*_linux_amd64.zip
+'''
+
 [tasks.pre-commit-all]
 # TODO harmonize pyproject.toml packaging then drop this override to restore mise cookiecutter
 run = '''
