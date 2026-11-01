@@ -8,6 +8,7 @@ repositories = {
     'allowedflare': ('Intranet connectivity for Django and more', ['django', 'python']),
     'django-plugin-field-day': ('Django plugin field day', ['django', 'python']),
     'helicopyter': ('Python-defined infrastructure', ['ansible', 'cdktf', 'python', 'terraform']),
+    'mapmymerchants': ('Map merchants from card transactions', ['django', 'python']),
     'measles': ('Continuous cookiecutter featuring mise', ['cookiecutter', 'python']),
     'styleforce': ('Autoformat the Rule of Three and more', ['autoformatting']),
     'wellplated': ('Python Django models for liquid handling', ['django', 'python']),
