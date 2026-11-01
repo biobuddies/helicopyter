@@ -415,7 +415,18 @@ EOD
 """
 
 [tasks.tapply]
-run = 'mise tact apply "$@"'
+# GitHub Actions also writes the applied changes to the step summary
+run = '''
+#!/usr/bin/env bash
+set -o errexit -o nounset -o pipefail
+[[ ${GITHUB_STEP_SUMMARY:-} ]] || exec mise tact apply "$@"
+apply_status=0
+apply_output=$(NO_COLOR=1 TF_CLI_ARGS=-no-color mise tact apply "$@" 2>&1) || apply_status=$?
+printf '%s\n' "$apply_output"
+printf '### OpenTofu apply\n\n```tf\n%s\n```\n' "$(mise tofu-trim <<< "$apply_output")" \
+    >> "$GITHUB_STEP_SUMMARY"
+exit "$apply_status"
+'''
 
 [tasks.test]
 run = '''
@@ -425,8 +436,37 @@ python -m pytest --cov${PYTEST_COV-} \
     --cov-report=term-missing:skip-covered --verbose "$@"
 '''
 
+[tasks.tofu-trim]
+# Keep only planned actions and results, or everything when OpenTofu never got that far
+run = '''
+#!/usr/bin/env bash
+set -o errexit -o nounset -o pipefail
+output=$(cat)
+trimmed=$(awk '
+    !on && /^No changes|Error:/ { on = 1 }
+    on && !/^(─)+$/ && !/^Note: You didn.t use the -out option/ && !/^guarantee to take exactly/
+    !on && /following actions.*:$/ { on = 1 }
+' <<< "$output")
+printf '%s\n' "${trimmed:-$output}"
+'''
+
 [tasks.tplan]
-run = 'mise tact plan "$@"'
+# Pull request CI also comments the plan, editing the previous comment
+run = '''
+#!/usr/bin/env bash
+set -o errexit -o nounset -o pipefail
+[[ ${GITHUB_HEAD_REF:-} ]] || exec mise tact plan "$@"
+plan_comment=$(mktemp)
+trap 'rm -f "$plan_comment"' EXIT
+plan_status=0
+printf '### OpenTofu plan against %s\n\n```tf\n' "${*:-default}" > "$plan_comment"
+plan_output=$(NO_COLOR=1 TF_CLI_ARGS=-no-color mise tact plan "$@" 2>&1) || plan_status=$?
+printf '%s\n' "$plan_output"
+mise tofu-trim <<< "$plan_output" >> "$plan_comment"
+printf '\n```\n' >> "$plan_comment"
+gh pr comment "$GITHUB_HEAD_REF" --create-if-none --edit-last --body-file "$plan_comment"
+exit "$plan_status"
+'''
 
 [tasks.trailing-whitespace-fixer]
 run = 'mise run-on-sources trailing-whitespace-fixer . "$@"'
