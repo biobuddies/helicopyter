@@ -107,6 +107,25 @@ resource "github_repository" "helicopyter" {
   topics                      = ["ansible", "cdktf", "python", "terraform"]
 }
 
+resource "github_repository" "mapmymates" {
+  allow_auto_merge            = true
+  allow_merge_commit          = false
+  allow_rebase_merge          = true
+  allow_squash_merge          = true
+  allow_update_branch         = true
+  delete_branch_on_merge      = true
+  description                 = "Map contacts from address books"
+  has_issues                  = true
+  has_projects                = false
+  has_wiki                    = false
+  merge_commit_message        = "PR_BODY"
+  merge_commit_title          = "PR_TITLE"
+  name                        = "mapmymates"
+  squash_merge_commit_message = "PR_BODY"
+  squash_merge_commit_title   = "PR_TITLE"
+  topics                      = ["django", "python"]
+}
+
 resource "github_repository" "mapmymerchants" {
   allow_auto_merge            = true
   allow_merge_commit          = false
