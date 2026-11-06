@@ -25,6 +25,11 @@ provider "github" {
   owner = "biobuddies"
 }
 
+import {
+  id = "spamhammer"
+  to = github_repository.spamhammer
+}
+
 resource "github_actions_organization_workflow_permissions" "biobuddies" {
   can_approve_pull_request_reviews = true
   default_workflow_permissions     = "write"
@@ -162,6 +167,25 @@ resource "github_repository" "measles" {
   squash_merge_commit_message = "PR_BODY"
   squash_merge_commit_title   = "PR_TITLE"
   topics                      = ["cookiecutter", "python"]
+}
+
+resource "github_repository" "spamhammer" {
+  allow_auto_merge            = true
+  allow_merge_commit          = false
+  allow_rebase_merge          = true
+  allow_squash_merge          = true
+  allow_update_branch         = true
+  delete_branch_on_merge      = true
+  description                 = "Easily trigger multiple responses to unsolicited email"
+  has_issues                  = true
+  has_projects                = false
+  has_wiki                    = false
+  merge_commit_message        = "PR_BODY"
+  merge_commit_title          = "PR_TITLE"
+  name                        = "spamhammer"
+  squash_merge_commit_message = "PR_BODY"
+  squash_merge_commit_title   = "PR_TITLE"
+  topics                      = ["django", "python"]
 }
 
 resource "github_repository" "styleforce" {
