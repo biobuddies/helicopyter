@@ -142,42 +142,32 @@ in Python while leaving planning, state management, and application to OpenTofu 
 
 ## What Helicopyter does (goals)
 
-- Name in the resource-prefix Terraform style, instead of the hash-suffix CDK style. This makes
-  reviewing plan output easier, and aligns with "Namespaces are one honking great idea -- let's do
-  more of those!"
-- Simplify `main.py` files by
-    * Removing the `App` class, which does not correspond to a Terraform concept. Instead
-        - A string attribute provides name information
-        - Resource-specific scopes are provided by `HeliStack.push()`
-        - The `synth` method is replaced by a module-level function, and called from a central
-          location instead of distributed boilerplate.
-    * Making custom TerraformStack/HeliStack subclasses optional instead of required. Defining a
-      subclass only to instantiate one instance of it is more complicated than instantiating the
-      base class and modifying the instance.
+* Provide a Python syntax for Terraform
+* Example migration from CDKTF:
 ```diff
 --- documentation/learn_cdktf_docker.py
-+++ documentation/learn_helicopyter_cdktf_docker.py
++++ documentation/learn_helicopyter_pst_docker.py
 @@ -1,30 +1,18 @@
 -"""Upstream CDKTF example to compare with Helicopyter."""
-+"""Docker example using Helicopyter with legacy CDKTF syntax."""
++"""Docker example using Python Syntax for Terraform."""
  
 -from cdktf import App, TerraformStack
- from cdktf_cdktf_provider_docker.container import Container
- from cdktf_cdktf_provider_docker.image import Image
+-from cdktf_cdktf_provider_docker.container import Container
+-from cdktf_cdktf_provider_docker.image import Image
 -from cdktf_cdktf_provider_docker.provider import DockerProvider
 -from constructs import Construct
 +
-+from helicopyter.cdktf import HeliStack
++from helicopyter import Block, provider, resource, terraform
  
  
 -class MyStack(TerraformStack):
 -    def __init__(self, scope: Construct, ns: str) -> None:
 -        super().__init__(scope, ns)
-+def synth(stack: HeliStack) -> None:
-+    stack.provide('docker')
- 
--        DockerProvider(self, 'docker')
 -
+-        DockerProvider(self, 'docker')
++terraform.required_providers(docker={'source': 'kreuzwerker/docker', 'version': '3.4.0'})
++provider.docker()
+ 
 -        docker_image = Image(self, 'nginxImage', name='nginx:latest', keep_locally=False)
 -
 -        Container(
@@ -193,34 +183,34 @@ in Python while leaving planning, state management, and application to OpenTofu 
 -MyStack(app, 'learn-cdktf-docker')
 -
 -app.synth()
-+    stack.push(
-+        Container,
-+        'nginxContainer',
-+        name='tutorial',
-+        image=stack.push(Image, 'nginxImage', name='nginx:latest', keep_locally=False).name,
-+        ports=[{'internal': 80, 'external': 8000}],
-+    )
++resource.docker_container.nginxContainer(
++    name='tutorial',
++    image=resource.docker_image.nginxImage(name='nginx:latest', keep_locally=False).name,
++    ports=Block('ports')(internal=80, external=8000),
++)
 ```
-- Enable hand-written and auto-generated Hashicorp Configuration Language (HCL) files to
+* Enable hand-written and auto-generated Hashicorp Configuration Language (HCL) files to
   co-exist, allowing incremental adoption.
-- Separate object instantiation from synthesis, allowing Python script to import the objects/data
+* Separate object instantiation from synthesis, allowing Python script to import the objects/data
   and do completely different things with them.
-- Golang Terraform has a pretty good command line interface. The `ht[aip]` recipes in
+* Golang Terraform has a pretty good command line interface. The `ht[aip]` recipes in
   `.biobuddies/justfile` try to wrap it very lightly.
 
 ## What Helicopyter will probably never do (non-goals)
 
-- Support languages other than Python
-- Use CDKTF's command line interface. Integration with it is untested and not recommended.
+* Support languages other than Python
+* Provide an alternative command line interface, although there are examples mise tasks that set
+  TF_WORKSPACE and TF_VAR_foo and call tofu/terraform
 
 ## What Helicopyter might do in the future
 
-- Support multiple backend configurations per codename
-- Iterate on supported directory structures. For hysterical raisins, the currently supported
+* Update to latest release and drop local fixes for https://github.com/cloudflare/terraform-provider-cloudflare/issues/7446
+* Provide more advanced usage examples
+* Support multiple backend configurations per codename
+* Iterate on supported directory structures. For hysterical raisins, the currently supported
   directory structure is `f'deploys/{cona}/terraform'`, grouping
-    * Primarily by COdeNAme (CONA), which is probably synonymous with application, deployment, and service
-    * Secondarily by tool, such as `ansible`, `docker`, `terraform`, `python`
-- Why do we need a Node.js server? Can we build dataclasses or Pydantic models out of the type annotations already being
-  generated?
-- Provide helper classes or functions for useful but annoyingly verbose patterns such as local-exec provisioner command
-- Backend / state file linter such as: prod must exist, and region/bucket/workspace_key_prefix/key must follow pattern
+    - Primarily by COdeNAme (CONA), which is probably synonymous with application, deployment, and service
+    - Secondarily by tool, such as `ansible`, `docker`, `terraform`, `python`
+* Can we build dataclasses or Pydantic models out of generated type data, reviving one of the best parts of CDKTF?
+* Provide helper classes or functions for useful but annoyingly verbose patterns such as local-exec provisioner command
+* Backend / state file linter such as: prod must exist, and region/bucket/workspace_key_prefix/key must follow pattern
