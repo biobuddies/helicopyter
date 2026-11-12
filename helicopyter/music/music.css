@@ -1,0 +1,108 @@
+@font-face {
+    font-family: 'Helicopyter Music';
+    src: url('https://raw.githubusercontent.com/google/fonts/main/ofl/notomusic/NotoMusic-Regular.ttf')
+        format('truetype');
+}
+
+.helicopyter-music {
+    --staff-size: STAFF_SIZE_REMrem;
+    --staff-step: calc(var(--staff-size) * 0.122);
+    --note-size: calc(var(--staff-step) * 4);
+    margin: 1.5rem 0;
+    color: inherit;
+}
+
+.helicopyter-music details {
+    text-align: left;
+}
+
+.helicopyter-music .music-score {
+    display: flex;
+    flex-wrap: wrap;
+    overflow-x: auto;
+    padding: 0.5rem 0;
+    gap: 0.5rem 0;
+}
+
+.helicopyter-music .music-measure {
+    flex: 0 0 var(--width);
+    height: 10rem;
+    position: relative;
+    break-inside: avoid;
+}
+
+.helicopyter-music .music-measure::before {
+    content: '\1d11a'; /* MUSICAL SYMBOL FIVE-LINE STAFF */
+    font: var(--staff-size) / 1 'Helicopyter Music';
+    left: calc(-0.05 * var(--staff-size) * var(--stretch));
+    position: absolute;
+    top: 2rem;
+    transform: scaleX(var(--stretch));
+    transform-origin: left top;
+}
+
+.helicopyter-music .music-measure::after {
+    border-right: 1px solid;
+    content: '';
+    height: calc(var(--staff-step) * 8);
+    position: absolute;
+    right: 0;
+    top: 2.036rem;
+}
+
+.helicopyter-music .music-final::after {
+    border-right: 4px double;
+}
+.helicopyter-music .music-event {
+    position: absolute;
+    top: 0;
+}
+.helicopyter-music .music-chord {
+    position: absolute;
+    top: 0;
+    font-weight: bold;
+}
+.helicopyter-music .music-lyric {
+    position: absolute;
+    top: 8rem;
+    white-space: pre;
+}
+
+.helicopyter-music .music-note {
+    font: var(--note-size) / 1 'Helicopyter Music';
+    position: absolute;
+    left: 0;
+    top: calc(2.036rem + var(--pitch) * var(--staff-step) - var(--note-size) * 0.873);
+}
+
+.helicopyter-music .music-down {
+    transform: rotate(180deg);
+    top: calc(2.036rem + var(--pitch) * var(--staff-step) - var(--note-size) * 0.127);
+}
+
+.helicopyter-music .music-dot {
+    position: absolute;
+    left: 0.9rem;
+    top: calc(2.036rem + var(--pitch) * var(--staff-step) - 0.6rem);
+}
+
+.helicopyter-music .music-clef {
+    font: var(--note-size) / 1 'Helicopyter Music';
+    position: absolute;
+    left: 0.1rem;
+    top: calc(2.036rem + 6 * var(--staff-step) - var(--note-size) * 0.873);
+}
+
+.helicopyter-music .music-key {
+    font: 1.5rem/1 'Helicopyter Music';
+    position: absolute;
+    left: 1.8rem;
+    top: calc(2.036rem - 1.5rem * 0.8645);
+}
+
+.helicopyter-music .music-meter {
+    font: bold 1.7rem/1.37 serif;
+    position: absolute;
+    left: 2.45rem;
+    top: 2rem;
+}

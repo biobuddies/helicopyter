@@ -23,7 +23,9 @@ requires-python = '>=3.12'
 dynamic = ['version']
 
 dependencies = [
-    
+
+    'markupsafe',
+
     'typed-argument-parser',
     
 ]
@@ -80,6 +82,9 @@ py-modules = ['helicopyter']
 # TODO measles renders py-modules only; teach it packages, then stop overriding after cookiecutter
 [tool.setuptools.packages.find]
 exclude = ['deploys*', 'node_modules*'] # Applies to wheel but not sdist
+
+[tool.setuptools.package-data]
+'helicopyter.music' = ['*.css']
 
 [tool.setuptools_scm]
 # Skip provider release tags like terraform-provider-cloudflare-v5.27.0-startup.1
