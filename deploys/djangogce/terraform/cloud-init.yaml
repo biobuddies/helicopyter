@@ -1,0 +1,152 @@
+#cloud-config
+package_update: true
+packages:
+  # DEBS from .biobuddies/includes.bash, plus build and runtime dependencies
+  - bash
+  - ca-certificates
+  - bind9-host
+  - curl
+  - file
+  - fping
+  - git
+  - less
+  - procps
+  - tmux
+  - tree
+  - build-essential
+  - libpq-dev
+  - nginx
+  - postgresql
+  - python3
+  - redis-server
+users:
+  - default
+  - name: django
+    homedir: /opt/django
+    shell: /bin/bash
+    lock_passwd: true
+write_files:
+  - path: /usr/local/sbin/django-deploy
+    permissions: '0755'
+    content: |
+      #!/usr/bin/env bash
+      set -o errexit -o nounset -o pipefail
+      exec 9>/run/django-deploy.lock
+      flock 9
+      metadata() {
+          curl --fail --silent --show-error --retry 5 -H 'Metadata-Flavor: Google' \
+              "http://metadata.google.internal/computeMetadata/v1/instance/attributes/$1"
+      }
+      systemctl stop django-web django-worker django-beat
+      install -d -m 0750 -o root -g django /etc/django
+      install -d -m 0755 -o django -g django /opt/django
+      metadata app-repository > /etc/django/repository
+      metadata app-revision > /etc/django/revision
+      revision=$(cat /etc/django/revision)
+      [[ $revision =~ ^[a-f0-9]{40}$ ]]
+      repository=$(cat /etc/django/repository)
+      [[ $repository == https://* ]]
+      secret=$(metadata app-environment-secret)
+      token=$(curl --fail --silent --show-error -H 'Metadata-Flavor: Google' \
+          http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token \
+          | python3 -c 'import json, sys; print(json.load(sys.stdin)["access_token"])')
+      umask 077
+      curl --fail --silent --show-error --retry 5 -H "Authorization: Bearer $token" \
+          "https://secretmanager.googleapis.com/v1/$secret:access" \
+          | python3 -c 'import base64, json, sys; sys.stdout.buffer.write(
+          base64.b64decode(json.load(sys.stdin)["payload"]["data"]))' > /etc/django/app.env.new
+      chown django:django /etc/django/app.env.new
+      mv /etc/django/app.env.new /etc/django/app.env
+      printf 'WSGI_MODULE=%s\nCELERY_APP=%s\n' \
+          "$(metadata app-wsgi-module)" "$(metadata app-celery-app)" > /etc/django/process.env
+      runuser -u django -- env REPOSITORY="$repository" REVISION="$revision" bash -euo pipefail <<'BASH'
+      cd /opt/django
+      [[ -d code ]] || git clone "$REPOSITORY" code
+      cd code
+      git remote set-url origin "$REPOSITORY"
+      git fetch origin "$REVISION"
+      git checkout --detach "$REVISION"
+      export PATH="/opt/django/.local/bin:$PATH"
+      export MISE_NO_HOOKS=1
+      if [[ ! -x /opt/django/.local/bin/mise ]]; then
+          curl --fail --location --silent --show-error https://mise.run | bash
+      fi
+      mise trust --all
+      mise install
+      mise exec -- uv venv --allow-existing
+      mise exec -- uv pip sync requirements.txt
+      [[ ! -f package-lock.json ]] || mise exec -- npm ci --no-audit --no-fund
+      set -o allexport
+      source /etc/django/app.env
+      set +o allexport
+      .venv/bin/python -m gunicorn --version
+      .venv/bin/python manage.py check --deploy --fail-level ERROR
+      .venv/bin/python manage.py migrate --noinput
+      .venv/bin/python manage.py collectstatic --noinput
+      BASH
+      systemctl restart django-web django-worker django-beat
+  - path: /etc/systemd/system/django-deploy.service
+    content: |
+      [Unit]
+      Description=Install Django release and migrate before starting processes
+      Wants=network-online.target
+      After=network-online.target postgresql.service redis-server.service
+      Requires=postgresql.service redis-server.service
+      [Service]
+      Type=oneshot
+      ExecStart=/usr/local/sbin/django-deploy
+      TimeoutStartSec=1800
+      [Install]
+      WantedBy=multi-user.target
+  - path: /etc/systemd/system/django-web.service
+    content: |
+      [Service]
+      User=django
+      WorkingDirectory=/opt/django/code
+      EnvironmentFile=/etc/django/app.env
+      EnvironmentFile=/etc/django/process.env
+      ExecStart=/opt/django/code/.venv/bin/gunicorn ${WSGI_MODULE} --bind 127.0.0.1:8000
+      Restart=on-failure
+  - path: /etc/systemd/system/django-worker.service
+    content: |
+      [Service]
+      User=django
+      WorkingDirectory=/opt/django/code
+      EnvironmentFile=/etc/django/app.env
+      EnvironmentFile=/etc/django/process.env
+      ExecStart=/opt/django/code/.venv/bin/celery -A ${CELERY_APP} worker --loglevel=INFO
+      Restart=on-failure
+  - path: /etc/systemd/system/django-beat.service
+    content: |
+      [Service]
+      User=django
+      WorkingDirectory=/opt/django/code
+      EnvironmentFile=/etc/django/app.env
+      EnvironmentFile=/etc/django/process.env
+      ExecStart=/opt/django/code/.venv/bin/celery -A ${CELERY_APP} beat --loglevel=INFO --schedule=/opt/django/celerybeat-schedule
+      Restart=on-failure
+  - path: /etc/nginx/sites-available/django
+    content: |
+      server {
+          listen 80 default_server;
+          server_name _;
+          location /static/ {
+              alias /opt/django/static/;
+          }
+          location / {
+              proxy_set_header Host $host;
+              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+              proxy_pass http://127.0.0.1:8000;
+          }
+      }
+runcmd:
+  - [systemctl, enable, --now, postgresql, redis-server]
+  - [runuser, -u, postgres, --, createuser, django]
+  - [runuser, -u, postgres, --, createdb, --owner=django, django]
+  - [rm, -f, /etc/nginx/sites-enabled/default]
+  - [ln, -sf, /etc/nginx/sites-available/django, /etc/nginx/sites-enabled/django]
+  - [nginx, -t]
+  - [systemctl, restart, nginx]
+  - [systemctl, daemon-reload]
+  - [systemctl, enable, django-deploy]
+  - [systemctl, start, django-deploy]

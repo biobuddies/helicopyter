@@ -37,6 +37,9 @@ to generate multiple deployments. Additional hand-written `.tf` files can coexis
 Compare the Docker examples using [Python Syntax for Terraform](documentation/learn_helicopyter_pst_docker.py)
 and [legacy CDKTF syntax](documentation/learn_helicopyter_cdktf_docker.py).
 
+For Django on a Google Cloud VM, see the [cloud-init example](deploys/djangogce/README.md),
+including repeat deployments, migrations, Celery, mise, and required permissions.
+
 ### Cloudflare Workers JAM stacks
 
 `jam()` provides Cloudflare Workers hosting, with branch-specific preview environments, given a

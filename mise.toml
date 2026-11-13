@@ -41,7 +41,7 @@ git diff --cached --quiet || echo Auto-staged modifications
 run = '''
 #!/usr/bin/env bash
 set -o errexit -o nounset -o pipefail
-for cona in demo demojampublic demojamstaff; do mise tvalid "$cona"; done
+for cona in demo demojampublic demojamstaff djangogce; do mise tvalid "$cona"; done
 mise build
 python -m pytest --cov${PYTEST_COV-} \
     --cov-report=term-missing:skip-covered --verbose "$@"
