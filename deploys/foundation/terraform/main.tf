@@ -26,6 +26,16 @@ provider "github" {
 }
 
 import {
+  id = "cxml"
+  to = github_repository.cxml
+}
+
+import {
+  id = "scheming"
+  to = github_repository.scheming
+}
+
+import {
   id = "spamhammer"
   to = github_repository.spamhammer
 }
@@ -72,6 +82,25 @@ resource "github_repository" "allowedflare" {
   squash_merge_commit_message = "PR_BODY"
   squash_merge_commit_title   = "PR_TITLE"
   topics                      = ["django", "python"]
+}
+
+resource "github_repository" "cxml" {
+  allow_auto_merge            = true
+  allow_merge_commit          = false
+  allow_rebase_merge          = true
+  allow_squash_merge          = true
+  allow_update_branch         = true
+  delete_branch_on_merge      = true
+  description                 = "Markdown reference for **cXML (commerce eXtensible Markup Language)**"
+  has_issues                  = true
+  has_projects                = false
+  has_wiki                    = false
+  merge_commit_message        = "PR_BODY"
+  merge_commit_title          = "PR_TITLE"
+  name                        = "cxml"
+  squash_merge_commit_message = "PR_BODY"
+  squash_merge_commit_title   = "PR_TITLE"
+  topics                      = ["cxml", "python", "xml"]
 }
 
 resource "github_repository" "django-plugin-field-day" {
@@ -167,6 +196,25 @@ resource "github_repository" "measles" {
   squash_merge_commit_message = "PR_BODY"
   squash_merge_commit_title   = "PR_TITLE"
   topics                      = ["cookiecutter", "python"]
+}
+
+resource "github_repository" "scheming" {
+  allow_auto_merge            = true
+  allow_merge_commit          = false
+  allow_rebase_merge          = true
+  allow_squash_merge          = true
+  allow_update_branch         = true
+  delete_branch_on_merge      = true
+  description                 = "Cache and render public specification sources"
+  has_issues                  = true
+  has_projects                = false
+  has_wiki                    = false
+  merge_commit_message        = "PR_BODY"
+  merge_commit_title          = "PR_TITLE"
+  name                        = "scheming"
+  squash_merge_commit_message = "PR_BODY"
+  squash_merge_commit_title   = "PR_TITLE"
+  topics                      = []
 }
 
 resource "github_repository" "spamhammer" {
