@@ -6,18 +6,24 @@ from stacks.base import provide
 repositories = {
     'airdjang': ('Airflow + Django', ['airflow', 'django', 'python']),
     'allowedflare': ('Intranet connectivity for Django and more', ['django', 'python']),
+    'cxml': (
+        'Markdown reference for **cXML (commerce eXtensible Markup Language)**',
+        ['cxml', 'python', 'xml'],
+    ),
     'django-plugin-field-day': ('Django plugin field day', ['django', 'python']),
     'helicopyter': ('Python-defined infrastructure', ['ansible', 'cdktf', 'python', 'terraform']),
     'mapmymates': ('Map contacts from address books', ['django', 'python']),
     'mapmymerchants': ('Map merchants from card transactions', ['django', 'python']),
     'measles': ('Continuous cookiecutter featuring mise', ['cookiecutter', 'python']),
+    'scheming': ('Cache and render public specification sources', []),
     'spamhammer': ('Easily trigger multiple responses to unsolicited email', ['django', 'python']),
     'styleforce': ('Autoformat the Rule of Three and more', ['autoformatting']),
     'wellplated': ('Python Django models for liquid handling', ['django', 'python']),
 }
 
 provide('integrations/github', '>=6.6.0', owner='biobuddies')
-Block('import')(id='spamhammer', to=resource.github_repository.spamhammer)
+for name in ('cxml', 'scheming', 'spamhammer'):
+    Block('import')(id=name, to=getattr(resource.github_repository, name))
 resource.github_actions_organization_workflow_permissions('biobuddies')(
     can_approve_pull_request_reviews=True,
     default_workflow_permissions='write',
