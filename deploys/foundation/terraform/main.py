@@ -9,7 +9,6 @@ repositories = {
     'django-plugin-field-day': ('Django plugin field day', ['django', 'python']),
     'helicopyter': ('Python-defined infrastructure', ['ansible', 'cdktf', 'python', 'terraform']),
     'mapmymates': ('Map contacts from address books', ['django', 'python']),
-    'mapmymerchants': ('Map merchants from card transactions', ['django', 'python']),
     'mapmymoney': ('Chart cash flow and map merchants from transactions', ['django', 'python']),
     'measles': ('Continuous cookiecutter featuring mise', ['cookiecutter', 'python']),
     'spamhammer': ('Easily trigger multiple responses to unsolicited email', ['django', 'python']),
