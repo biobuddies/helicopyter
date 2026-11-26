@@ -150,6 +150,25 @@ resource "github_repository" "mapmymerchants" {
   topics                      = ["django", "python"]
 }
 
+resource "github_repository" "mapmymoney" {
+  allow_auto_merge            = true
+  allow_merge_commit          = false
+  allow_rebase_merge          = true
+  allow_squash_merge          = true
+  allow_update_branch         = true
+  delete_branch_on_merge      = true
+  description                 = "Chart cash flow and map merchants from transactions"
+  has_issues                  = true
+  has_projects                = false
+  has_wiki                    = false
+  merge_commit_message        = "PR_BODY"
+  merge_commit_title          = "PR_TITLE"
+  name                        = "mapmymoney"
+  squash_merge_commit_message = "PR_BODY"
+  squash_merge_commit_title   = "PR_TITLE"
+  topics                      = ["django", "python"]
+}
+
 resource "github_repository" "measles" {
   allow_auto_merge            = true
   allow_merge_commit          = false
