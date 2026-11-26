@@ -10,6 +10,7 @@ repositories = {
     'helicopyter': ('Python-defined infrastructure', ['ansible', 'cdktf', 'python', 'terraform']),
     'mapmymates': ('Map contacts from address books', ['django', 'python']),
     'mapmymerchants': ('Map merchants from card transactions', ['django', 'python']),
+    'mapmymoney': ('Chart cash flow and map merchants from transactions', ['django', 'python']),
     'measles': ('Continuous cookiecutter featuring mise', ['cookiecutter', 'python']),
     'spamhammer': ('Easily trigger multiple responses to unsolicited email', ['django', 'python']),
     'styleforce': ('Autoformat the Rule of Three and more', ['autoformatting']),
